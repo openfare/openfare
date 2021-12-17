@@ -10,7 +10,7 @@ OpenFare is a system for compensating source available software maintainers. The
 
 * the OpenFare license
 * payment plans defined in code
-* management of payment obligations across OpenFare licensed software packages
+* a tool for managing payment obligations across OpenFare licensed software packages
 * seamless micro-payments using the [Bitcoin Lightning Network](https://lightning.readthedocs.io/lightning-keysend.7.html), [Stripe](stripe.com), etc.
 
 Non-commercial use of software under an OpenFare license is free. For commercial use, the license specifies payment plans which are committed in code.
