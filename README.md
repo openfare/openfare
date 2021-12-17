@@ -33,6 +33,65 @@ The open source software ecosystem has a maintenance problem. Thousands of criti
 
 Sponsorship and donation schemes have largely failed. They are not game theoretically viable strategies for addressing the problem. The solution is micro-payment compensation at scale.
 
+## OPENFARE.json
+
+The `OPENFARE.json` file defines commercial payment plans for a software package. Within a project, it is always located next to the project `LICENSE` file (usually in the top level directory).
+
+```json
+{
+    "plans": [
+        {
+            "condition": [
+                {
+                    "developers_count": ">=100"
+                }
+            ],
+            "payments": [
+                {
+                    "type": "stripe",
+                    "public_key": "pk_live_thn8fkM3p7jV25rj5HwkRVJq",
+                    "url": "https://api.stripe.com",
+                    "recipient": {
+                        "name": "Company LLC.",
+                        "address": "12, Yellow Brick Road, UK"
+                    },
+                    "amount": "50 USD"
+                }
+            ],
+            "frequency": "30 days"
+        },
+        {
+            "condition": [
+                {
+                    "developers_count": "<100"
+                }
+            ],
+            "payments": [
+                {
+                    "type": "btc_lightning_keysend",
+                    "address": "02788242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7ff4",
+                    "recipient": {
+                        "name": "Contributor A",
+                        "address": null
+                    },
+                    "amount": "0.0002 BTC"
+                },
+                {
+                    "type": "btc_lightning_keysend",
+                    "address": "03446242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7p8kk2",
+                    "recipient": {
+                        "name": "Contributor B",
+                        "address": null
+                    },
+                    "amount": "0.0001 BTC"
+                }
+            ],
+            "frequency": "30 days"
+        }
+    ]
+}
+```
+
 ## Concerns
 
 > Can't project maintainers just setup a website with payment plans and customer accounts?
