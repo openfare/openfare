@@ -6,16 +6,14 @@
   <a href="https://matrix.to/#/#openfare:matrix.org"><img src="https://img.shields.io/matrix/openfare:matrix.org?label=chat&logo=matrix" alt="Matrix"></a>
 </p>
 
-OpenFare is a system for compensating source available software maintainers at scale using micropayments.
-
-The system is composed of the following components:
+OpenFare is a system for compensating source available software maintainers. The system is composed of the following components:
 
 * the OpenFare license
 * payment plans defined in code
 * management of payment obligations across OpenFare licensed software packages
-* seamless micro-payments using the Bitcoin Lightning Network.
+* seamless micro-payments using the [Bitcoin Lightning Network](https://lightning.readthedocs.io/lightning-keysend.7.html), [Stripe](stripe.com), etc.
 
-Non-commercial use of software under an OpenFare license is free. For commercial use, the license specifies a payment plan which is committed in code.
+Non-commercial use of software under an OpenFare license is free. For commercial use, the license specifies payment plans which are committed in code.
 
 Payments sent to software maintainers using Lightning arrive passively. OpenFare is designed for simple setup and payment obligation management across thousands of software dependencies.
 
@@ -37,11 +35,13 @@ Sponsorship and donation schemes have largely failed. They are not game theoreti
 
 The `OPENFARE.json` file defines commercial payment plans for a software package. Within a project, it is always located next to the project `LICENSE` file (usually in the top level directory).
 
+The following example describes two payment plans. One plan is applicable for organizations with more than 100 developers, and the other for those with less. In the latter case, two payments must be made every 30 days using the Lightning Network, one to `Contributor A` and the other to `Contributor B`.
+
 ```json
 {
     "plans": [
         {
-            "condition": [
+            "conditions": [
                 {
                     "developers_count": ">=100"
                 }
@@ -61,7 +61,7 @@ The `OPENFARE.json` file defines commercial payment plans for a software package
             "frequency": "30 days"
         },
         {
-            "condition": [
+            "conditions": [
                 {
                     "developers_count": "<100"
                 }
@@ -109,3 +109,7 @@ Software developers who work for commercial entities **want** to pay for well ma
 > What obligation do maintainers have to the project after being payed?
 
 They have no obligation. A maintainer could receive payment and not work further on the project. But the popularity of the project and the associated payment plans would be public information. Competing projects where maintainers are willing to work for the same payments would win out.
+
+> What happens if a project uses several versions of the same software package?
+
+For a given software package, only the payment plans given in the latest in use version is considered.
