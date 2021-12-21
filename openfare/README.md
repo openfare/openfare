@@ -35,11 +35,9 @@ The following example describes two payment plans. One plan is applicable for or
 {
     "plans": [
         {
-            "conditions": [
-                {
-                    "developers_count": ">=100"
-                }
-            ],
+            "conditions": {
+                "developers_count": ">=100"
+            },
             "payments": [
                 {
                     "method": {
@@ -57,11 +55,9 @@ The following example describes two payment plans. One plan is applicable for or
             "frequency": "once"
         },
         {
-            "conditions": [
-                {
-                    "developers_count": "<100"
-                }
-            ],
+            "conditions": {
+                "developers_count": "<100"
+            },
             "payments": [
                 {
                     "method": {

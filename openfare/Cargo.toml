@@ -1,0 +1,50 @@
+[package]
+name = "openfare"
+version = "0.1.0"
+authors = ["rndhouse <rndhouse@protonmail.com>"]
+edition = "2021"
+repository = "https://github.com/openfare/openfare"
+license = "MIT"
+default-run = "openfare"
+description = "Monetize software with one commit."
+
+[dependencies]
+openfare-lib = { path = "../openfare-lib", version = "0.1.0" }
+openfare-js = { path = "../../openfare-js", version = "0.1.0" }
+
+anyhow = "1.0.31"
+structopt = "0.3.21"
+env_logger = "0.8.2"
+log = "0.4.8"
+regex = "1.3.9"
+crossbeam = "0.8.0"
+crossbeam-utils = "0.8.1"
+maplit = "1.0.2"
+dialoguer = "0.8.0"
+
+directories = "3.0.1"
+dirs = "3.0.1"
+tempdir = "0.3.7"
+shellexpand = "2.1.0"
+git2 = "0.13.20"
+
+url = { version = "2.1.1", features = ["serde"] }
+reqwest = { version = "0.11.0", features = ["blocking"] }
+
+serde = { version = "1.0.104", features = ["derive"] }
+serde_json = "1.0.48"
+serde_yaml = "0.8.13"
+blake3 = "0.3.7"
+uuid = { version = "0.8.2", features = ["v4"] }
+bincode = "1.2.1"
+rusqlite = { version = "0.23.1", features = ["bundled"] }
+
+zip = "0.5.10"
+flate2 = "1.0.14"
+tar = "0.4.33"
+
+tokei = "12.1.2"
+prettytable-rs = "0.8.0"
+
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3.9" }

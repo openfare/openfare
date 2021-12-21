@@ -1,0 +1,96 @@
+name: CI for release tags
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  once:
+    name: Create single release for all builds
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create a release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+  build:
+    name: OS specific build
+    needs: once
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+          
+          - os: macos-latest
+            target: x86_64-apple-darwin
+
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get openfare-js
+        uses: actions/checkout@v2
+        with:
+          repository: 'openfare/openfare-js'
+          fetch-depth: 1
+          path: openfare-js
+
+      - name: Set openfare-js symlink
+        shell: bash
+        run: |
+          ln -s "$(pwd)/openfare-js" ../openfare-js;
+
+      - name: Set package metadata
+        id: meta
+        shell: bash
+        run: |
+          echo ::set-output name=NAME::openfare
+          echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: ${{ matrix.target }}
+
+      - name: Build musl
+        if: "contains(matrix.target, 'x86_64-unknown-linux-musl')"
+        run: |
+          docker pull clux/muslrust
+          docker run -v $(dirname `pwd`):/volume -v $(pwd)/openfare-js:/volume/openfare-js -w /volume/openfare --rm -t clux/muslrust cargo build --release --all-features --locked --verbose --package ${{ steps.meta.outputs.NAME }}
+
+      - name: Build non-musl
+        if: "!contains(matrix.target, 'x86_64-unknown-linux-musl')"
+        env:
+          OPENSSL_STATIC: yes
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --locked --all-features --verbose --package ${{ steps.meta.outputs.NAME }} --target ${{ matrix.target }}
+
+      - name: Archive release assets
+        id: archive_assets
+        run: |
+          7z a -tzip ${{ github.workspace }}/${{ steps.meta.outputs.NAME }}-${{ steps.meta.outputs.VERSION }}-${{ matrix.target }}.zip ${{ github.workspace }}/target/${{ matrix.target }}/release/${{ steps.meta.outputs.NAME }}* ${{ github.workspace }}/LICENSE
+
+      - name: Upload release archive
+        id: upload_archive
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.once.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/${{ steps.meta.outputs.NAME }}-${{ steps.meta.outputs.VERSION }}-${{ matrix.target }}.zip
+          asset_name: ${{ steps.meta.outputs.NAME }}-${{ steps.meta.outputs.VERSION }}-${{ matrix.target }}.zip
+          asset_content_type: application/octet-stream
