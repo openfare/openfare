@@ -48,14 +48,16 @@ The following example describes two payment plans. One plan is applicable for or
             ],
             "payments": [
                 {
-                    "type": "stripe",
-                    "public_key": "pk_live_thn8fkM3p7jV25rj5HwkRVJq",
-                    "url": "https://api.stripe.com",
+                    "method": {
+                        "name": "stripe",
+                        "public_key": "pk_live_thn8fkM3p7jV25rj5HwkRVJq",
+                        "url": "https://api.stripe.com"
+                    },
                     "recipient": {
                         "name": "Company LLC.",
                         "address": "12, Yellow Brick Road, UK"
                     },
-                    "amount": "50 USD"
+                    "price": "50 USD"
                 }
             ],
             "frequency": "30 days"
@@ -68,22 +70,26 @@ The following example describes two payment plans. One plan is applicable for or
             ],
             "payments": [
                 {
-                    "type": "btc_lightning_keysend",
-                    "address": "02788242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7ff4",
+                    "method": {
+                        "name": "btc_lightning_keysend",
+                        "address": "02788242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7ff4"
+                    },
                     "recipient": {
                         "name": "Contributor A",
                         "address": null
                     },
-                    "amount": "0.0002 BTC"
+                    "price": "0.0002 BTC"
                 },
                 {
-                    "type": "btc_lightning_keysend",
-                    "address": "03446242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7p8kk2",
+                    "method": {
+                        "name": "btc_lightning_keysend",
+                        "address": "03446242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7p8kk2"
+                    },
                     "recipient": {
                         "name": "Contributor B",
                         "address": null
                     },
-                    "amount": "0.0001 BTC"
+                    "price": "0.0001 BTC"
                 }
             ],
             "frequency": "30 days"
