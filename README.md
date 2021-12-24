@@ -31,6 +31,11 @@ The open source software ecosystem has a maintenance problem. Thousands of criti
 
 Sponsorship and donation schemes have largely failed. They are not game theoretically viable strategies for addressing the problem. The solution is micro-payment compensation at scale.
 
+I've written two Hackernoon articles on this subject:
+
+* [MIT Licensed Software: Fashionable or Dead](https://hackernoon.com/mit-licensed-software-fashionable-or-dead) and [
+* [Funding the Next Million Public Software Contributors](https://hackernoon.com/funding-the-next-million-open-source-contributors)
+
 ## OPENFARE.json
 
 The `OPENFARE.json` file defines commercial payment plans for a software package. Within a project, it is always located next to the project `LICENSE` file (usually in the top level directory).
