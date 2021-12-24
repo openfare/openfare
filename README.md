@@ -33,7 +33,7 @@ Sponsorship and donation schemes have largely failed. They are not game theoreti
 
 I've written two Hackernoon articles on this subject:
 
-* [MIT Licensed Software: Fashionable or Dead](https://hackernoon.com/mit-licensed-software-fashionable-or-dead) and [
+* [MIT Licensed Software: Fashionable or Dead](https://hackernoon.com/mit-licensed-software-fashionable-or-dead)
 * [Funding the Next Million Public Software Contributors](https://hackernoon.com/funding-the-next-million-open-source-contributors)
 
 ## OPENFARE.json
