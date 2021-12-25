@@ -1,6 +1,6 @@
 <h1 align="center">OpenFare</h1>
 
-<p align="center">⚡️ Decentralized payment plans for source available software. ⚡️</p>
+<p align="center">⚡️ Payment plans for source available software. ⚡️</p>
 
 <p align="center">
   <a href="https://matrix.to/#/#openfare:matrix.org"><img src="https://img.shields.io/matrix/openfare:matrix.org?label=chat&logo=matrix" alt="Matrix"></a>
@@ -18,7 +18,7 @@ The OpenFare License is a lot like the MIT License. The code can be modified, fo
 1. Commercial users are subject to payment plans defined in code.
 2. The license and payment plans can only be modified by the license copyright holder.
 
-Payments sent to software maintainers using Lightning arrive passively. OpenFare is designed for simple setup and payment obligation management across thousands of software dependencies.
+OpenFare is designed for simple setup and payment obligation management across thousands of software dependencies.
 
 OpenFare is not a faultless solution. It hopes to present a saner trajectory. Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss further.
 
