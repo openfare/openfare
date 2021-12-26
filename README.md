@@ -6,20 +6,24 @@
   <a href="https://matrix.to/#/#openfare:matrix.org"><img src="https://img.shields.io/matrix/openfare:matrix.org?label=chat&logo=matrix" alt="Matrix"></a>
 </p>
 
-OpenFare monetizes software libraries in one commit.
+OpenFare monetizes any software library with one code change.
+
+The goal:
+
+* fund the next million software content creators.
 
 The system:
 
-* the OpenFare license
 * payment plans defined in code
-* a tool for managing payment obligations across OpenFare licensed software packages.
+* the OpenFare license
+* a tool for managing payment obligations across thousands of software dependencies.
 
 The OpenFare License is a lot like the MIT License. The code can be modified, forked, reproduced, executed, and compiled without restriction by anyone. With two exceptions:
 
 1. Commercial users are subject to payment plans defined in code.
 2. The license and payment plans can only be modified by the license copyright holder.
 
-OpenFare is designed for simple setup and payment obligation management across thousands of software dependencies.
+Simple setup for developers. And payment manegment across thousands of software dependencies for commercial users.
 
 Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss further.
 
@@ -31,7 +35,7 @@ Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss furthe
     </a>
 </p>
 
-The open source software ecosystem has a maintenance problem. Thousands of critical software dependencies are maintained on the good will of casual volunteers. This fragile state means that critical software is abandoned or maintained with a passing interest. A security and stability nightmare.
+The public software ecosystem has a maintenance problem. Thousands of critical software dependencies are maintained on the good will of casual volunteers. This fragile state means that critical software is abandoned or maintained with a passing interest. A security and stability nightmare.
 
 Sponsorship and donation schemes have largely failed. They are not game theoretically viable strategies for addressing the problem. The solution is micro-payment compensation at scale.
 
@@ -42,7 +46,7 @@ I've written two Hackernoon articles on this subject:
 
 ## OPENFARE.json
 
-The `OPENFARE.json` file defines commercial payment plans for a software package. Within a project, it is always located next to the project `LICENSE` file (usually in the top level directory).
+The `OPENFARE.json` file defines commercial payment plans for a software package. It is always located next to the project OpenFare `LICENSE` file (usually in the top level directory).
 
 The following example describes two payment plans. One plan is applicable for organizations with more than 100 developers, and the other for those with less. In the latter case, two payments must be made every 30 days using the Lightning Network, one to `Contributor A` and the other to `Contributor B`.
 
@@ -112,10 +116,6 @@ The following example describes two payment plans. One plan is applicable for or
 > Can't project maintainers just setup a website with payment plans and customer accounts?
 
 OpenFare defines payment plans in code whilst avoiding the unnecessary overhead of customer accounts or a website. A commercial entity can make use of thousands of software packages. OpenFare standardizes payment plan information across software packages such that it can be managed programmatically at large scales.
-
-> Why use the Bitcoin Lightning Network for payments?
-
-The Lightning Network facilitates permissionless micro-payments to anyone with a computer and an internet connection. Payments sent to software maintainers using Lightning arrive passively.
 
 > What if commercial users neglect to pay? Who will stand up for the project maintainers?
 
