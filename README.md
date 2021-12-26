@@ -1,17 +1,18 @@
 <h1 align="center">OpenFare</h1>
 
-<p align="center">⚡️ Payment plans for source available software. ⚡️</p>
+<p align="center">Monetize software with one commit.</p>
 
 <p align="center">
   <a href="https://matrix.to/#/#openfare:matrix.org"><img src="https://img.shields.io/matrix/openfare:matrix.org?label=chat&logo=matrix" alt="Matrix"></a>
 </p>
 
-OpenFare is a system for compensating source available software maintainers. The system is composed of the following components:
+OpenFare monetizes software libraries in one commit.
+
+The system:
 
 * the OpenFare license
 * payment plans defined in code
-* a tool for managing payment obligations across OpenFare licensed software packages
-* seamless micro-payments using the [Bitcoin Lightning Network](https://lightning.readthedocs.io/lightning-keysend.7.html), [Stripe](stripe.com), etc.
+* a tool for managing payment obligations across OpenFare licensed software packages.
 
 The OpenFare License is a lot like the MIT License. The code can be modified, forked, reproduced, executed, and compiled without restriction by anyone. With two exceptions:
 
@@ -20,7 +21,7 @@ The OpenFare License is a lot like the MIT License. The code can be modified, fo
 
 OpenFare is designed for simple setup and payment obligation management across thousands of software dependencies.
 
-OpenFare is not a faultless solution. It hopes to present a saner trajectory. Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss further.
+Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss further.
 
 ## Motivation
 
