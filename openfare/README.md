@@ -8,9 +8,7 @@
 
 OpenFare monetizes any software library with one code change.
 
-The goal:
-
-* fund the next million software content creators.
+The goal: fund the next million software content creators.
 
 The system:
 
@@ -44,7 +42,7 @@ I've written two Hackernoon articles on this subject:
 * [MIT Licensed Software: Fashionable or Dead](https://hackernoon.com/mit-licensed-software-fashionable-or-dead)
 * [Funding the Next Million Public Software Contributors](https://hackernoon.com/funding-the-next-million-open-source-contributors)
 
-## OPENFARE.json
+## Payment Plans Defined in Code
 
 The `OPENFARE.json` file defines commercial payment plans for a software package. It is always located next to the project OpenFare `LICENSE` file (usually in the top level directory).
 
