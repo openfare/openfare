@@ -21,7 +21,7 @@ The OpenFare License is a lot like the MIT License. The code can be modified, fo
 1. Commercial users are subject to payment plans defined in code.
 2. The license and payment plans can only be modified by the license copyright holder.
 
-Simple setup for developers. And payment manegment across thousands of software dependencies for commercial users.
+Simple setup for developers. And payment management across thousands of software dependencies for commercial users.
 
 Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss further.
 
@@ -29,7 +29,7 @@ Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss furthe
 
 The `OPENFARE.json` file defines commercial payment plans for a software package. It is always located next to the project OpenFare `LICENSE` file (usually in the top level directory).
 
-The following example describes two payment plans. One plan is applicable for organizations with more than 100 developers, and the other for those with less. In the latter case, two payments must be made every 30 days using the Lightning Network, one to `Contributor A` and the other to `Contributor B`.
+The following example describes two payment plans. One plan is applicable for organizations with more than 100 developers, and the other for those with less. In the former case, a one off payment of 50 USD must be made via Stripe. In the latter case, two payments must be made every 30 days using the Lightning Network, one to `Contributor A` and the other to `Contributor B`.
 
 ```json
 {
@@ -54,7 +54,7 @@ The following example describes two payment plans. One plan is applicable for or
                     "price": "50 USD"
                 }
             ],
-            "frequency": "30 days"
+            "frequency": "once"
         },
         {
             "conditions": [
@@ -104,10 +104,7 @@ The public software ecosystem has a maintenance problem. Thousands of critical s
 
 Sponsorship and donation schemes have largely failed. They are not game theoretically viable strategies for addressing the problem. The solution is micro-payment compensation at scale.
 
-I've written two Hackernoon articles on this subject:
-
-* [MIT Licensed Software: Fashionable or Dead](https://hackernoon.com/mit-licensed-software-fashionable-or-dead)
-* [Funding the Next Million Public Software Contributors](https://hackernoon.com/funding-the-next-million-open-source-contributors)
+I've written a Hackernoon article on this topic here: [Funding the Next Million Public Software Contributors](https://hackernoon.com/funding-the-next-million-open-source-contributors).
 
 ## Concerns
 
