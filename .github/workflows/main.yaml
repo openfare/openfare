@@ -74,15 +74,17 @@ jobs:
         if: "!contains(matrix.target, 'x86_64-unknown-linux-musl')"
         env:
           OPENSSL_STATIC: yes
-        uses: actions-rs/cargo@v1
+        uses: marcopolo/cargo@master
         with:
           command: build
           args: --release --locked --all-features --verbose --package ${{ steps.meta.outputs.NAME }} --target ${{ matrix.target }}
+          working-directory: ${{ steps.meta.outputs.NAME }}
+          toolchain: nightly
 
       - name: Archive release assets
         id: archive_assets
         run: |
-          7z a -tzip ${{ github.workspace }}/${{ steps.meta.outputs.NAME }}-${{ steps.meta.outputs.VERSION }}-${{ matrix.target }}.zip ${{ github.workspace }}/target/${{ matrix.target }}/release/${{ steps.meta.outputs.NAME }}* ${{ github.workspace }}/LICENSE
+          7z a -tzip ${{ github.workspace }}/${{ steps.meta.outputs.NAME }}-${{ steps.meta.outputs.VERSION }}-${{ matrix.target }}.zip ${{ github.workspace }}/target/${{ matrix.target }}/release/${{ steps.meta.outputs.NAME }}* ${{ github.workspace }}/openfare/LICENSE
 
       - name: Upload release archive
         id: upload_archive

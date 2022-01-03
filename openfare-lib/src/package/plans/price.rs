@@ -1,22 +1,17 @@
 use anyhow::{format_err, Result};
 
 #[derive(
-    Debug,
-    Default,
-    Clone,
-    Hash,
-    Ord,
-    PartialOrd,
-    Eq,
-    PartialEq,
-    serde::Serialize,
-    serde::Deserialize,
+    Debug, Clone, Hash, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize,
 )]
 pub enum Currency {
-    #[default]
     USD,
-
     BTC,
+}
+
+impl std::default::Default for Currency {
+    fn default() -> Self {
+        Self::USD
+    }
 }
 
 impl std::convert::TryFrom<&str> for Currency {
