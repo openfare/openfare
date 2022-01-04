@@ -28,7 +28,7 @@ pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()>
 
 #[derive(Debug, StructOpt, Clone)]
 pub enum Command {
-    /// Price package and its dependencies.
+    /// Price a package and its dependencies.
     #[structopt(name = "price")]
     Price(price::Arguments),
 
