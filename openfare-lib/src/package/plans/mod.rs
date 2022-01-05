@@ -4,27 +4,13 @@ pub mod conditions;
 mod frequency;
 pub mod price;
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct Recipient {
-    name: Option<String>,
-    address: Option<String>,
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct Payment {
-    recipient: Recipient,
-    price: price::Price,
-
-    #[serde(flatten)]
-    method: serde_json::Map<String, serde_json::Value>,
-}
+use super::payees;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct PaymentPlan {
     pub id: String,
     pub conditions: std::collections::BTreeMap<conditions::Condition, String>,
-    pub payments: Vec<Payment>,
-    pub frequency: frequency::Frequency,
+    pub payments: Payments,
 }
 
 impl PaymentPlan {
@@ -35,16 +21,19 @@ impl PaymentPlan {
         }
         Ok(all_conditions_pass)
     }
+}
 
-    pub fn total_price(&self) -> Result<price::Quantity> {
-        let mut currency_totals = std::collections::BTreeMap::<price::Currency, u64>::new();
-        for payment in &self.payments {
-            let quantity = currency_totals
-                .entry(payment.price.currency.clone())
-                .or_insert_with(|| payment.price.quantity);
-            *quantity += payment.price.quantity;
-        }
-        // TODO: Include non-USD currencies in price.
-        Ok(*currency_totals.get(&price::Currency::USD).unwrap_or(&0))
-    }
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct Payments {
+    pub total: price::Price,
+    pub frequency: frequency::Frequency,
+    pub split: Split,
+}
+
+pub type Percent = String;
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct Split {
+    parts: Option<std::collections::BTreeMap<payees::Label, Percent>>,
+    remainder: payees::Label,
 }

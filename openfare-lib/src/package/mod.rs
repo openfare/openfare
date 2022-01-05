@@ -1,3 +1,4 @@
+pub mod payees;
 pub mod plans;
 
 /// A software package's name and version.
@@ -11,6 +12,7 @@ pub struct Package {
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Config {
     pub plans: Vec<plans::PaymentPlan>,
+    pub payees: std::collections::BTreeMap<payees::Label, payees::Payee>,
 }
 
 pub type DependenciesConfigs = std::collections::BTreeMap<Package, Option<Config>>;

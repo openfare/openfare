@@ -88,7 +88,7 @@ pub fn get_package_price_report(
     Ok(if let Some(preferred_plan) = applicable_plans.first() {
         PackagePriceReport {
             package: package.clone(),
-            price_quantity: Some(preferred_plan.total_price()?),
+            price_quantity: Some(preferred_plan.payments.total.quantity),
             notes: vec![],
         }
     } else {
