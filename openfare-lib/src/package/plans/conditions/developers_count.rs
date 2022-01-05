@@ -38,9 +38,9 @@ fn test_evaluate_cases() -> Result<()> {
     let mut config = crate::config::Config::default();
     config.developers_count = Some(99);
 
-    assert!(evaluate("<=100", &config)?);
-    assert!(evaluate("=99", &config)?);
-    assert!(evaluate(">98", &config)?);
-    assert!(evaluate(">=99", &config)?);
+    assert!(evaluate("<= 100", &config)?);
+    assert!(evaluate("= 99", &config)?);
+    assert!(evaluate("> 98", &config)?);
+    assert!(evaluate(">= 99", &config)?);
     Ok(())
 }
