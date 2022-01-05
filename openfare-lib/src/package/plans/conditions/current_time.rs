@@ -12,7 +12,7 @@ pub fn evaluate(value: &str) -> Result<bool> {
 }
 
 fn parse_value(value: &str) -> Result<(common::Operator, chrono::DateTime<chrono::Utc>)> {
-    let re = regex!(r"(?P<operator>(>=)|(<=)|(<)|(>)|(=)) (?P<quantity>.*)");
+    let re = regex!(r"(?P<operator>(>=)|(<=)|(<)|(>)|(=)) (?P<time>.*)");
     let captures = re
         .captures(value)
         .ok_or(format_err!("Regex failed to capture field."))?;
@@ -24,7 +24,7 @@ fn parse_value(value: &str) -> Result<(common::Operator, chrono::DateTime<chrono
     let operator = common::Operator::try_from(operator_match)?;
 
     let time_match = captures
-        .name("quantity")
+        .name("time")
         .expect("extract time from regex capture")
         .as_str();
     let time = chrono::DateTime::parse_from_rfc3339(&time_match)?.with_timezone(&chrono::Utc);
