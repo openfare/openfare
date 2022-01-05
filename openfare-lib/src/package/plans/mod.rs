@@ -21,6 +21,7 @@ pub struct Payment {
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct PaymentPlan {
+    pub id: String,
     pub conditions: std::collections::BTreeMap<conditions::Condition, String>,
     pub payments: Vec<Payment>,
     pub frequency: frequency::Frequency,
