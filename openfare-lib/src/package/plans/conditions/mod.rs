@@ -20,6 +20,6 @@ pub fn evaluate(
 ) -> Result<bool> {
     Ok(match condition {
         Condition::DevelopersCount => developers_count::evaluate(&value, &config)?,
-        Condition::CurrentTime => current_time::evaluate(&value, &config)?,
+        Condition::CurrentTime => current_time::evaluate(&value)?,
     })
 }
