@@ -28,9 +28,9 @@ impl std::convert::TryFrom<&str> for Operator {
 }
 
 pub fn evaluate_operator<T: std::cmp::PartialOrd>(
-    variable_value: T,
+    variable_value: &T,
     operator: &Operator,
-    condition_value: T,
+    condition_value: &T,
 ) -> bool {
     match operator {
         Operator::GreaterThanEqual => variable_value >= condition_value,

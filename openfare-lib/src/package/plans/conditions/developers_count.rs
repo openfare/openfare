@@ -8,12 +8,12 @@ pub fn evaluate(value: &str, config: &crate::config::Config) -> Result<bool> {
     let developers_count = config.developers_count.ok_or(format_err!(
         "Attempting to evaluate condition but the `developers-count` metric is unset."
     ))?;
-    let result = common::evaluate_operator::<u64>(developers_count, &operator, quantity);
+    let result = common::evaluate_operator::<u64>(&developers_count, &operator, &quantity);
     Ok(result)
 }
 
 fn parse_value(value: &str) -> Result<(common::Operator, u64)> {
-    let re = regex!(r"(?P<operator>(>=)|(<=)|(<)|(>)|(=))\s*(?P<quantity>[0-9]+)");
+    let re = regex!(r"(?P<operator>(>=)|(<=)|(<)|(>)|(=)) (?P<quantity>[0-9]+)");
     let captures = re
         .captures(value)
         .ok_or(format_err!("Regex failed to capture field."))?;
@@ -26,7 +26,7 @@ fn parse_value(value: &str) -> Result<(common::Operator, u64)> {
 
     let quantity_match = captures
         .name("quantity")
-        .expect("extract operator from regex capture")
+        .expect("extract quantity from regex capture")
         .as_str();
     let quantity = quantity_match.parse::<u64>()?;
 
