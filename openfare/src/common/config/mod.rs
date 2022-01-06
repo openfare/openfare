@@ -4,8 +4,10 @@ mod common;
 mod core;
 mod extensions;
 mod metrics;
+mod payees;
 
 pub use metrics::Metrics;
+pub use payees::Payees;
 
 #[derive(
     Debug, Clone, Default, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize,

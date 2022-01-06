@@ -3,6 +3,7 @@ use structopt::{self, StructOpt};
 
 mod config;
 mod extension;
+mod payee;
 mod price;
 
 pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()> {
@@ -11,6 +12,11 @@ pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()>
             log::info!("Running command: price");
             crate::setup::ensure()?;
             price::run_command(&args, &extension_args)?;
+        }
+        Command::Payee(args) => {
+            log::info!("Running command: payee");
+            crate::setup::ensure()?;
+            payee::run_command(&args)?;
         }
         Command::Config(args) => {
             log::info!("Running command: config");
@@ -31,6 +37,10 @@ pub enum Command {
     /// Price a package and its dependencies.
     #[structopt(name = "price")]
     Price(price::Arguments),
+
+    /// Manage payee profiles.
+    #[structopt(name = "payee")]
+    Payee(payee::Subcommands),
 
     /// Configure settings.
     #[structopt(name = "config")]
