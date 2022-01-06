@@ -42,7 +42,7 @@ pub enum Command {
 }
 
 #[derive(Debug, StructOpt, Clone)]
-#[structopt(about = "Decentralized Payment Plans")]
+#[structopt(about = "Monetize software with one commit.")]
 #[structopt(global_setting = structopt::clap::AppSettings::ColoredHelp)]
 #[structopt(global_setting = structopt::clap::AppSettings::DeriveDisplayOrder)]
 pub struct Opts {
