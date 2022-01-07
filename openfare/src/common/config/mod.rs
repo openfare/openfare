@@ -6,6 +6,7 @@ mod extensions;
 mod metrics;
 mod payees;
 
+pub use common::FileStore;
 pub use metrics::Metrics;
 pub use payees::Payees;
 

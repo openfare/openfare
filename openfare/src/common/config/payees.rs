@@ -1,6 +1,7 @@
 use anyhow::{format_err, Context, Result};
 
 use super::super::fs;
+use super::common::{self, FilePath};
 
 type PayeeName = String;
 
@@ -11,41 +12,6 @@ pub struct Payees {
 }
 
 impl Payees {
-    pub fn load() -> Result<Self> {
-        if !Self::file_path()?.is_file() {
-            let mut default = Self::default();
-            default.dump()?;
-        }
-
-        let file = std::fs::File::open(Self::file_path()?)?;
-        let reader = std::io::BufReader::new(file);
-        Ok(serde_json::from_reader(reader)?)
-    }
-
-    pub fn dump(&mut self) -> Result<()> {
-        if Self::file_path()?.is_file() {
-            std::fs::remove_file(&Self::file_path()?)?;
-        }
-
-        let file = std::fs::OpenOptions::new()
-            .write(true)
-            .append(false)
-            .create(true)
-            .open(&Self::file_path()?)
-            .context(format!(
-                "Can't open/create file for writing: {}",
-                Self::file_path()?.display()
-            ))?;
-        let writer = std::io::BufWriter::new(file);
-        serde_json::to_writer(writer, &self)?;
-        Ok(())
-    }
-
-    fn file_path() -> Result<std::path::PathBuf> {
-        let paths = fs::ConfigPaths::new()?;
-        Ok(paths.payees_file)
-    }
-
     pub fn add(&mut self, name: &PayeeName) -> Result<()> {
         if self.payees.contains_key(name) {
             return Err(format_err!(
@@ -124,6 +90,13 @@ impl Payees {
                 ))?,
             ))
         })
+    }
+}
+
+impl common::FilePath for Payees {
+    fn file_path() -> Result<std::path::PathBuf> {
+        let paths = fs::ConfigPaths::new()?;
+        Ok(paths.payees_file)
     }
 }
 
