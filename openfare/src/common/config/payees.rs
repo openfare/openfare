@@ -1,7 +1,7 @@
-use anyhow::{format_err, Context, Result};
+use anyhow::{format_err, Result};
 
 use super::super::fs;
-use super::common::{self, FilePath};
+use super::common;
 
 type PayeeName = String;
 
