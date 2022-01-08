@@ -1,4 +1,4 @@
-use anyhow::{format_err, Context, Result};
+use anyhow::{format_err, Result};
 
 mod common;
 mod core;
@@ -20,36 +20,6 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn load() -> Result<Self> {
-        log::debug!("Loading config.");
-        let paths = super::fs::ConfigPaths::new()?;
-        log::debug!("Config paths: {:?}", paths);
-
-        let file = std::fs::File::open(paths.config_file)?;
-        let reader = std::io::BufReader::new(file);
-        Ok(serde_yaml::from_reader(reader)?)
-    }
-
-    pub fn dump(&self) -> Result<()> {
-        let paths = super::fs::ConfigPaths::new()?;
-        if paths.config_file.is_file() {
-            std::fs::remove_file(&paths.config_file)?;
-        }
-
-        let file = std::fs::OpenOptions::new()
-            .write(true)
-            .append(false)
-            .create(true)
-            .open(&paths.config_file)
-            .context(format!(
-                "Can't open/create file for writing: {}",
-                paths.config_file.display()
-            ))?;
-        let writer = std::io::BufWriter::new(file);
-        serde_yaml::to_writer(writer, &self)?;
-        Ok(())
-    }
-
     pub fn set(&mut self, name: &str, value: &str) -> Result<()> {
         let name_error_message = format!("Unknown settings field: {}", name);
 
@@ -76,6 +46,13 @@ impl Config {
         } else {
             Err(format_err!(name_error_message.clone()))
         };
+    }
+}
+
+impl common::FilePath for Config {
+    fn file_path() -> Result<std::path::PathBuf> {
+        let paths = super::fs::ConfigPaths::new()?;
+        Ok(paths.config_file)
     }
 }
 

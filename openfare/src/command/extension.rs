@@ -1,6 +1,8 @@
 use anyhow::{format_err, Result};
 use structopt::{self, StructOpt};
 
+use crate::common::config::FileStore;
+
 use crate::common;
 use crate::extension;
 

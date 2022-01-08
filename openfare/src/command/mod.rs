@@ -4,28 +4,26 @@ use structopt::{self, StructOpt};
 mod config;
 mod extension;
 mod payee;
+mod payment_method;
 mod price;
 
 pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()> {
+    crate::setup::ensure()?;
+    log::info!("Running command: {:?}", command);
     match command {
         Command::Price(args) => {
-            log::info!("Running command: price");
-            crate::setup::ensure()?;
             price::run_command(&args, &extension_args)?;
         }
         Command::Payee(args) => {
-            log::info!("Running command: payee");
-            crate::setup::ensure()?;
             payee::run_command(&args)?;
         }
+        Command::PaymentMethod(args) => {
+            payment_method::run_command(&args)?;
+        }
         Command::Config(args) => {
-            log::info!("Running command: config");
-            crate::setup::ensure()?;
             config::run_command(&args)?;
         }
         Command::Extension(args) => {
-            log::info!("Running command: extension");
-            crate::setup::ensure()?;
             extension::run_subcommand(&args)?;
         }
     }
@@ -41,6 +39,10 @@ pub enum Command {
     /// Manage payee profiles.
     #[structopt(name = "payee")]
     Payee(payee::Subcommands),
+
+    /// Manage payee payment methods.
+    #[structopt(name = "payment-method")]
+    PaymentMethod(payment_method::Subcommands),
 
     /// Configure settings.
     #[structopt(name = "config")]
