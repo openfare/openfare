@@ -1,12 +1,12 @@
 <h1 align="center">OpenFare</h1>
 
-<p align="center">:coin: Monetize software with one commit. :coin:</p>
+<p align="center">:coin: Micropayment funded software. :coin:</p>
 
 <p align="center">
   <a href="https://matrix.to/#/#openfare:matrix.org"><img src="https://img.shields.io/matrix/openfare:matrix.org?label=chat&logo=matrix" alt="Matrix"></a>
 </p>
 
-OpenFare monetizes any software library with one code change.
+**OpenFare monetizes any software library with one code change.**
 
 The goal: fund the next million software content creators.
 
