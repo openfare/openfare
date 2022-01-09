@@ -68,8 +68,8 @@ impl ConfigPaths {
         let root_directory = user_directories.config_dir();
         Ok(Self {
             root_directory: root_directory.into(),
-            config_file: root_directory.join("config.yaml"),
-            payees_file: root_directory.join("payees.yaml"),
+            config_file: root_directory.join("config.json"),
+            payees_file: root_directory.join("payees.json"),
             extensions_directory: root_directory.join("extensions"),
         })
     }

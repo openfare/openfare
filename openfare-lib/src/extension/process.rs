@@ -27,7 +27,7 @@ impl common::FromProcess for ProcessExtension {
         let static_data: StaticData = if extension_config_path.is_file() {
             let file = std::fs::File::open(&extension_config_path)?;
             let reader = std::io::BufReader::new(file);
-            serde_yaml::from_reader(reader)?
+            serde_json::from_reader(reader)?
         } else {
             let static_data: Box<StaticData> = run_process(&process_path, &vec!["static-data"])?;
             let static_data = *static_data;
@@ -41,7 +41,7 @@ impl common::FromProcess for ProcessExtension {
                     extension_config_path.display()
                 ))?;
             let writer = std::io::BufWriter::new(file);
-            serde_yaml::to_writer(writer, &static_data)?;
+            serde_json::to_writer(writer, &static_data)?;
             static_data
         };
 
