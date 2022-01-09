@@ -4,16 +4,23 @@ use structopt::{self, StructOpt};
 
 use crate::common;
 
+#[derive(Debug, Clone, StructOpt)]
+pub struct Arguments {
+    #[structopt(name = "verbosity", short, long, parse(from_occurrences))]
+    verbosity: u8,
+
+    // SUBCOMMANDS
+    #[structopt(subcommand)]
+    commands: Option<Subcommands>,
+}
+
 #[derive(Debug, StructOpt, Clone)]
-pub enum Subcommands {
+enum Subcommands {
     /// Add new payee.
     Add(AddArguments),
 
     /// Set active payee.
     Activate(ActivateArguments),
-
-    /// List payees.
-    List(ListArguments),
 
     /// Rename payee.
     Rename(RenameArguments),
@@ -22,28 +29,28 @@ pub enum Subcommands {
     Remove(RemoveArguments),
 }
 
-pub fn run_command(subcommand: &Subcommands) -> Result<()> {
-    match subcommand {
-        Subcommands::Add(args) => {
-            log::info!("Running command: payee add");
-            add(&args)?;
+pub fn run_command(args: &Arguments) -> Result<()> {
+    if let Some(subcommand) = &args.commands {
+        match subcommand {
+            Subcommands::Add(args) => {
+                log::info!("Running command: payee add");
+                add(&args)?;
+            }
+            Subcommands::Activate(args) => {
+                log::info!("Running command: payee activate");
+                activate(&args)?;
+            }
+            Subcommands::Rename(args) => {
+                log::info!("Running command: payee rename");
+                rename(&args)?;
+            }
+            Subcommands::Remove(args) => {
+                log::info!("Running command: payee remove");
+                remove(&args)?;
+            }
         }
-        Subcommands::Activate(args) => {
-            log::info!("Running command: payee activate");
-            activate(&args)?;
-        }
-        Subcommands::List(args) => {
-            log::info!("Running command: payee list");
-            list(&args)?;
-        }
-        Subcommands::Rename(args) => {
-            log::info!("Running command: payee rename");
-            rename(&args)?;
-        }
-        Subcommands::Remove(args) => {
-            log::info!("Running command: payee remove");
-            remove(&args)?;
-        }
+    } else {
+        show(&args.verbosity)?;
     }
     Ok(())
 }
@@ -103,9 +110,9 @@ fn activate(args: &ActivateArguments) -> Result<()> {
     no_version,
     global_settings = &[structopt::clap::AppSettings::DisableVersion]
 )]
-pub struct ListArguments {}
+pub struct ShowArguments {}
 
-fn list(_args: &ListArguments) -> Result<()> {
+fn show(_verbosity: &u8) -> Result<()> {
     let payees = common::config::Payees::load()?;
     let active_payee = if let Some((active_payee, _)) = payees.active()? {
         Some(active_payee)
@@ -123,8 +130,8 @@ fn list(_args: &ListArguments) -> Result<()> {
             ""
         };
 
-        let payment_methods_tag = if !payee.payment_methods.is_empty() {
-            format!("- {} payment methods", payee.payment_methods.len())
+        let payment_methods_tag = if !payee.payment_methods()?.is_empty() {
+            format!("- {} payment methods", payee.payment_methods()?.len())
         } else {
             "".to_string()
         };

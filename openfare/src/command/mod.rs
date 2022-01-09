@@ -38,7 +38,7 @@ pub enum Command {
 
     /// Manage payee profiles.
     #[structopt(name = "payee")]
-    Payee(payee::Subcommands),
+    Payee(payee::Arguments),
 
     /// Manage payee payment methods.
     #[structopt(name = "payment-method")]
