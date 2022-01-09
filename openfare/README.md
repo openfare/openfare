@@ -29,62 +29,49 @@ Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss furthe
 
 The `OPENFARE.json` file defines commercial payment plans for a software package. It is always located next to the project OpenFare `LICENSE` file (usually in the top level directory).
 
-The following example describes two payment plans. One plan is applicable for organizations with more than 100 developers, and the other for those with less. In the former case, a one off payment of 50 USD must be made via Stripe. In the latter case, two payments must be made every 30 days using the Lightning Network, one to `Contributor A` and the other to `Contributor B`.
+The following example describes a single payment plan. The plan is applicable to commercial organizations with more than 100 developers. It stipulates that this version of the software necessitates a one off payment totalling 20 USD. 40% of which goes to John and the remaining 60% to Steve. John can be payed via PayPal or lightning keysend. Steve can only be payed via PayPal.
 
 ```json
 {
     "plans": [
         {
+            "id": 0,
             "conditions": {
-                "developers_count": ">=100"
+                "developers-count": "> 100",
+                "current-time": "< 2022-12-19T00:00:00-00:00"
             },
-            "payments": [
+            "payments": {
+                "total": "20 USD",
+                "frequency": "once",
+                "split": {
+                    "john": "40%"
+                },
+                "remainder": "steve"
+            }
+        }
+    ],
+    "payees": {
+        "john": {
+            "payment-methods": [
                 {
-                    "method": {
-                        "name": "stripe",
-                        "public_key": "pk_live_thn8fkM3p7jV25rj5HwkRVJq",
-                        "url": "https://api.stripe.com"
-                    },
-                    "recipient": {
-                        "name": "Company LLC.",
-                        "address": "12, Yellow Brick Road, UK"
-                    },
-                    "price": "50 USD"
-                }
-            ],
-            "frequency": "once"
-        },
-        {
-            "conditions": {
-                "developers_count": "<100"
-            },
-            "payments": [
-                {
-                    "method": {
-                        "name": "btc_lightning_keysend",
-                        "address": "02788242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7ff4"
-                    },
-                    "recipient": {
-                        "name": "Contributor A",
-                        "address": null
-                    },
-                    "price": "0.0002 BTC"
+                    "name": "paypal",
+                    "email": "john@gmail.com"
                 },
                 {
-                    "method": {
-                        "name": "btc_lightning_keysend",
-                        "address": "03446242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7p8kk2"
-                    },
-                    "recipient": {
-                        "name": "Contributor B",
-                        "address": null
-                    },
-                    "price": "0.0001 BTC"
+                    "name": "btc-lightning-keysend",
+                    "address": "02788242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7ff4"
                 }
-            ],
-            "frequency": "30 days"
+            ]
+        },
+        "steve": {
+            "payment-methods": [
+                {
+                    "name": "paypal",
+                    "email": "steve@gmail.com"
+                }
+            ]
         }
-    ]
+    }
 }
 ```
 
