@@ -91,6 +91,20 @@ impl Payees {
             ))
         })
     }
+
+    pub fn active_mut(
+        &mut self,
+    ) -> Result<Option<(&mut PayeeName, &mut openfare_lib::package::payees::Payee)>> {
+        Ok(if self.payees.is_empty() {
+            None
+        } else {
+            let payee = self.payees.get_mut(&self.active).ok_or(format_err!(
+                "Code error failed to find active payee: {}",
+                &self.active
+            ))?;
+            Some((&mut self.active, payee))
+        })
+    }
 }
 
 impl common::FilePath for Payees {

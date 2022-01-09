@@ -53,8 +53,9 @@ where
                 "Can't open/create file for writing: {}",
                 Self::file_path()?.display()
             ))?;
+
         let writer = std::io::BufWriter::new(file);
-        serde_json::to_writer(writer, &self)?;
+        serde_json::to_writer_pretty(writer, &self)?;
         Ok(())
     }
 }

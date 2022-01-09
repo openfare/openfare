@@ -34,6 +34,6 @@ pub type Percent = String;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Split {
-    parts: Option<std::collections::BTreeMap<payees::Label, Percent>>,
-    remainder: payees::Label,
+    parts: Option<std::collections::BTreeMap<payees::PayeeName, Percent>>,
+    remainder: payees::PayeeName,
 }

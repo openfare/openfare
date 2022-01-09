@@ -42,7 +42,7 @@ pub enum Command {
 
     /// Manage payee payment methods.
     #[structopt(name = "payment-method")]
-    PaymentMethod(payment_method::Subcommands),
+    PaymentMethod(payment_method::Arguments),
 
     /// Configure settings.
     #[structopt(name = "config")]

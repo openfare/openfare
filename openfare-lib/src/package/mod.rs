@@ -12,7 +12,7 @@ pub struct Package {
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Config {
     pub plans: Vec<plans::PaymentPlan>,
-    pub payees: std::collections::BTreeMap<payees::Label, payees::Payee>,
+    pub payees: std::collections::BTreeMap<payees::PayeeName, payees::Payee>,
 }
 
 pub type DependenciesConfigs = std::collections::BTreeMap<Package, Option<Config>>;
