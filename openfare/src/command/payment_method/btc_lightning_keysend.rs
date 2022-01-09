@@ -13,12 +13,12 @@ type Method = openfare_lib::package::payees::payment_methods::BtcLightningKeysen
 )]
 pub struct SetArguments {
     /// Public key destination
-    #[structopt(name = "public-key-destination")]
-    pub public_key_destination: String,
+    #[structopt(name = "public-key")]
+    pub public_key: String,
 }
 
 pub fn set(args: &SetArguments) -> Result<()> {
-    let payment_method = Method::new(&args.public_key_destination)?;
+    let payment_method = Method::new(&args.public_key)?;
     let mut payees = crate::common::config::Payees::load()?;
     if let Some((_payee_name, payee)) = payees.active_mut()? {
         payee.set_payment_method(

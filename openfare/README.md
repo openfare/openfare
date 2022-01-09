@@ -59,7 +59,7 @@ The following example describes a single payment plan. The plan is applicable to
                 },
                 {
                     "name": "btc-lightning-keysend",
-                    "address": "02788242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7ff4"
+                    "public-key": "02788242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7ff4"
                 }
             ]
         },

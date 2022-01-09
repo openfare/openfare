@@ -45,13 +45,13 @@ impl PaymentMethod for PayPal {
 
 #[derive(Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct BtcLightningKeysend {
-    public_key_destination: String,
+    public_key: String,
 }
 
 impl BtcLightningKeysend {
-    pub fn new(public_key_destination: &str) -> Result<Self> {
+    pub fn new(public_key: &str) -> Result<Self> {
         Ok(Self {
-            public_key_destination: public_key_destination.to_string(),
+            public_key: public_key.to_string(),
         })
     }
 }
