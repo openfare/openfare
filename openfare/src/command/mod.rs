@@ -24,7 +24,7 @@ pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()>
             config::run_command(&args)?;
         }
         Command::Extension(args) => {
-            extension::run_subcommand(&args)?;
+            extension::run_command(&args)?;
         }
     }
     Ok(())
@@ -50,7 +50,7 @@ pub enum Command {
 
     /// Manage extensions.
     #[structopt(name = "extension")]
-    Extension(extension::Subcommands),
+    Extension(extension::Arguments),
 }
 
 #[derive(Debug, StructOpt, Clone)]

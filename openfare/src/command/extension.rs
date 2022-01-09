@@ -6,8 +6,18 @@ use crate::common::config::FileStore;
 use crate::common;
 use crate::extension;
 
+#[derive(Debug, Clone, StructOpt)]
+pub struct Arguments {
+    #[structopt(name = "verbosity", short, long, parse(from_occurrences))]
+    verbosity: u8,
+
+    // SUBCOMMANDS
+    #[structopt(subcommand)]
+    commands: Option<Subcommands>,
+}
+
 #[derive(Debug, StructOpt, Clone)]
-pub enum Subcommands {
+enum Subcommands {
     /// Add and enable extension.
     Add(AddArguments),
 
@@ -19,33 +29,30 @@ pub enum Subcommands {
 
     /// Disable extension without deleting.
     Disable(DisableArguments),
-
-    /// List installed extensions.
-    List(ListArguments),
 }
 
-pub fn run_subcommand(subcommand: &Subcommands) -> Result<()> {
-    match subcommand {
-        Subcommands::Add(args) => {
-            log::info!("Running command: extension add");
-            add(&args)?;
+pub fn run_command(args: &Arguments) -> Result<()> {
+    if let Some(subcommand) = &args.commands {
+        match subcommand {
+            Subcommands::Add(args) => {
+                log::info!("Running command: extension add");
+                add(&args)?;
+            }
+            Subcommands::Remove(args) => {
+                log::info!("Running command: extension remove");
+                remove(&args)?;
+            }
+            Subcommands::Enable(args) => {
+                log::info!("Running command: extension enable");
+                enable(&args)?;
+            }
+            Subcommands::Disable(args) => {
+                log::info!("Running command: extension disable");
+                disable(&args)?;
+            }
         }
-        Subcommands::Remove(args) => {
-            log::info!("Running command: extension remove");
-            remove(&args)?;
-        }
-        Subcommands::Enable(args) => {
-            log::info!("Running command: extension enable");
-            enable(&args)?;
-        }
-        Subcommands::Disable(args) => {
-            log::info!("Running command: extension disable");
-            disable(&args)?;
-        }
-        Subcommands::List(args) => {
-            log::info!("Running command: extension list");
-            list(&args)?;
-        }
+    } else {
+        show(args.verbosity)?;
     }
     Ok(())
 }
@@ -235,15 +242,7 @@ fn disable(args: &DisableArguments) -> Result<()> {
     Ok(())
 }
 
-#[derive(Debug, StructOpt, Clone)]
-#[structopt(
-    name = "no_version",
-    no_version,
-    global_settings = &[structopt::clap::AppSettings::DisableVersion]
-)]
-pub struct ListArguments {}
-
-fn list(_args: &ListArguments) -> Result<()> {
+fn show(_verbosity: u8) -> Result<()> {
     let mut config = common::config::Config::load()?;
     extension::manage::update_config(&mut config)?;
     for name in extension::manage::get_all_names(&config)? {
