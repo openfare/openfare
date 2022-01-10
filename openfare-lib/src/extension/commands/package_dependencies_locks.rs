@@ -3,7 +3,7 @@ use crate::extension::common::Extension;
 use anyhow::Result;
 use structopt::{self, StructOpt};
 
-pub const COMMAND_NAME: &str = "package-dependencies-configs";
+pub const COMMAND_NAME: &str = "package-dependencies-locks";
 
 #[derive(Debug, StructOpt, Clone)]
 #[structopt(
@@ -26,7 +26,7 @@ pub struct Arguments {
 }
 
 pub fn run_command<T: Extension + std::fmt::Debug>(args: &Arguments, extension: &T) -> Result<()> {
-    let result = extension.package_dependencies_configs(
+    let result = extension.package_dependencies_locks(
         &args.package_name,
         &args.package_version.as_deref(),
         &args.extension_args,
@@ -36,7 +36,7 @@ pub fn run_command<T: Extension + std::fmt::Debug>(args: &Arguments, extension: 
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct PackageDependenciesConfigs {
+pub struct PackageDependenciesLocks {
     pub registry_host_name: String,
-    pub package_configs: crate::package::PackageConfigs,
+    pub package_locks: crate::package::PackageLocks,
 }

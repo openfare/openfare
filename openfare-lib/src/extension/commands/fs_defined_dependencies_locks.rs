@@ -3,7 +3,7 @@ use crate::extension::common::Extension;
 use anyhow::Result;
 use structopt::{self, StructOpt};
 
-pub const COMMAND_NAME: &str = "fs-defined-dependencies-configs";
+pub const COMMAND_NAME: &str = "fs-defined-dependencies-locks";
 
 #[derive(Debug, StructOpt, Clone)]
 #[structopt(
@@ -23,14 +23,13 @@ pub struct Arguments {
 
 pub fn run_command<T: Extension + std::fmt::Debug>(args: &Arguments, extension: &T) -> Result<()> {
     let working_directory = std::path::PathBuf::from(&args.working_directory);
-    let result =
-        extension.fs_defined_dependencies_configs(&working_directory, &args.extension_args);
+    let result = extension.fs_defined_dependencies_locks(&working_directory, &args.extension_args);
     common::communicate_result(result)?;
     Ok(())
 }
 
 #[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize)]
-pub struct FsDefinedDependenciesConfigs {
+pub struct FsDefinedDependenciesLocks {
     pub project_path: std::path::PathBuf,
-    pub package_configs: crate::package::PackageConfigs,
+    pub package_locks: crate::package::PackageLocks,
 }

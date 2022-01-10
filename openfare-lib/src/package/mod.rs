@@ -8,24 +8,24 @@ pub struct Package {
     pub version: String,
 }
 
-/// A software package's OpenFare config file (OPENFARE.json).
+/// A software package's OpenFare lock file (OPENFARE.lock).
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct Config {
+pub struct Lock {
     pub plans: Vec<plans::PaymentPlan>,
     pub payees: std::collections::BTreeMap<payees::PayeeName, payees::Payee>,
 }
 
-pub type DependenciesConfigs = std::collections::BTreeMap<Package, Option<Config>>;
+pub type DependenciesLocks = std::collections::BTreeMap<Package, Option<Lock>>;
 
 #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize)]
-pub struct PackageConfigs {
+pub struct PackageLocks {
     pub primary_package: Option<Package>,
-    pub primary_package_config: Option<Config>,
-    pub dependencies_configs: DependenciesConfigs,
+    pub primary_package_lock: Option<Lock>,
+    pub dependencies_locks: DependenciesLocks,
 }
 
-impl PackageConfigs {
-    pub fn has_configs(&self) -> bool {
-        self.primary_package_config.is_some() || !self.dependencies_configs.is_empty()
+impl PackageLocks {
+    pub fn has_locks(&self) -> bool {
+        self.primary_package_lock.is_some() || !self.dependencies_locks.is_empty()
     }
 }

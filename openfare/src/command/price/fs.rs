@@ -16,17 +16,14 @@ pub fn price(
     log::debug!("Current working directory: {}", working_directory.display());
 
     let extensions = extension::manage::get_enabled(&extension_names, &config)?;
-    let extensions_results = extension::fs_defined_dependencies_configs(
-        &working_directory,
-        &extensions,
-        &extension_args,
-    )?;
+    let extensions_results =
+        extension::fs_defined_dependencies_locks(&working_directory, &extensions, &extension_args)?;
 
-    let mut configs_found = false;
+    let mut locks_found = false;
 
     for (extension, extension_result) in extensions.iter().zip(extensions_results.iter()) {
         log::debug!(
-            "Inspecting package OpenFare configs found by extension: {}",
+            "Inspecting package OpenFare locks found by extension: {}",
             extension.name()
         );
 
@@ -42,8 +39,8 @@ pub fn price(
             }
         };
 
-        configs_found |= extension_result.package_configs.has_configs();
-        if let Some(price_report) = report::generate(&extension_result.package_configs, &config)? {
+        locks_found |= extension_result.package_locks.has_locks();
+        if let Some(price_report) = report::generate(&extension_result.package_locks, &config)? {
             println!(
                 "Project: {path}",
                 path = extension_result.project_path.display()
@@ -53,8 +50,8 @@ pub fn price(
         }
     }
 
-    if !configs_found {
-        println!("No OpenFare configs found.")
+    if !locks_found {
+        println!("No OpenFare lock files found.")
     }
     Ok(())
 }

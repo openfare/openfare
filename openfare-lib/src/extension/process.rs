@@ -62,14 +62,14 @@ impl common::Extension for ProcessExtension {
         self.registry_host_names_.clone()
     }
 
-    fn package_dependencies_configs(
+    fn package_dependencies_locks(
         &self,
         package_name: &str,
         package_version: &Option<&str>,
         extension_args: &Vec<String>,
-    ) -> Result<commands::package_dependencies_configs::PackageDependenciesConfigs> {
+    ) -> Result<commands::package_dependencies_locks::PackageDependenciesLocks> {
         let mut args = vec![
-            super::commands::package_dependencies_configs::COMMAND_NAME,
+            super::commands::package_dependencies_locks::COMMAND_NAME,
             "--package-name",
             package_name,
         ];
@@ -81,23 +81,23 @@ impl common::Extension for ProcessExtension {
             args.push("--extension-args");
             args.push(extension_arg);
         }
-        let output: Box<commands::package_dependencies_configs::PackageDependenciesConfigs> =
+        let output: Box<commands::package_dependencies_locks::PackageDependenciesLocks> =
             run_process(&self.process_path_, &args)?;
         Ok(*output)
     }
 
     /// Returns a list of local package dependencies specification files.
-    fn fs_defined_dependencies_configs(
+    fn fs_defined_dependencies_locks(
         &self,
         working_directory: &std::path::PathBuf,
         extension_args: &Vec<String>,
-    ) -> Result<commands::fs_defined_dependencies_configs::FsDefinedDependenciesConfigs> {
+    ) -> Result<commands::fs_defined_dependencies_locks::FsDefinedDependenciesLocks> {
         let working_directory = working_directory.to_str().ok_or(format_err!(
             "Failed to parse path into string: {}",
             working_directory.display()
         ))?;
         let mut args = vec![
-            super::commands::fs_defined_dependencies_configs::COMMAND_NAME,
+            super::commands::fs_defined_dependencies_locks::COMMAND_NAME,
             "--working-directory",
             working_directory,
         ];
@@ -106,7 +106,7 @@ impl common::Extension for ProcessExtension {
             args.push(extension_arg);
         }
         // TODO: handle vec conversion
-        let output: Box<commands::fs_defined_dependencies_configs::FsDefinedDependenciesConfigs> =
+        let output: Box<commands::fs_defined_dependencies_locks::FsDefinedDependenciesLocks> =
             run_process(&self.process_path_, &args)?;
         Ok(*output)
     }
@@ -158,7 +158,7 @@ fn test_deserialize() -> Result<()> {
     let stdout = "0109000000000000006e706d6a732e636f6d01070000000000000069732d6576656e0500000000000000312e302e30000400000000000000090000000000000069732d6275666665720500000000000000312e312e3600090000000000000069732d6e756d6265720500000000000000332e302e3000060000000000000069732d6f64640500000000000000302e312e320007000000000000006b696e642d6f660500000000000000332e322e320000";
     let result = hex::decode(&stdout)?.clone();
     let process_result: ProcessResult<
-        crate::extension::commands::package_dependencies_configs::PackageDependenciesConfigs,
+        crate::extension::commands::package_dependencies_locks::PackageDependenciesLocks,
     > = bincode::deserialize(&result).expect("deserialize result with bincode");
     println!("process_result: {:?}", process_result);
     Ok(())

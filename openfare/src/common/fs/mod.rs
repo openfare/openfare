@@ -51,7 +51,7 @@ fn set_directory_hidden_windows(directory: &std::path::PathBuf) {
 #[cfg(not(windows))]
 fn set_directory_hidden_windows(_directory: &std::path::PathBuf) {}
 
-/// Filesystem openfare config directory absolute paths.
+/// Filesystem config directory absolute paths.
 #[derive(Debug)]
 pub struct ConfigPaths {
     pub root_directory: std::path::PathBuf,

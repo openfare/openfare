@@ -114,18 +114,18 @@ pub trait Extension: Send + Sync {
     // Returns supported registries host names.
     fn registries(&self) -> Vec<String>;
 
-    /// Returns OpenFare configs for package and its dependencies.
-    fn package_dependencies_configs(
+    /// Returns OpenFare locks for a package and its dependencies.
+    fn package_dependencies_locks(
         &self,
         package_name: &str,
         package_version: &Option<&str>,
         extension_args: &Vec<String>,
-    ) -> Result<super::commands::package_dependencies_configs::PackageDependenciesConfigs>;
+    ) -> Result<super::commands::package_dependencies_locks::PackageDependenciesLocks>;
 
-    /// Return OpenFare configs for a local project's dependencies.
-    fn fs_defined_dependencies_configs(
+    /// Return OpenFare locks for a local project's dependencies.
+    fn fs_defined_dependencies_locks(
         &self,
         working_directory: &std::path::PathBuf,
         extension_args: &Vec<String>,
-    ) -> Result<super::commands::fs_defined_dependencies_configs::FsDefinedDependenciesConfigs>;
+    ) -> Result<super::commands::fs_defined_dependencies_locks::FsDefinedDependenciesLocks>;
 }

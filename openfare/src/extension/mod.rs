@@ -5,19 +5,21 @@ mod common;
 pub mod manage;
 mod process;
 
-/// Identify all supported dependency OpenFare configs which are defined in a local project.
+/// Identify all supported dependency OpenFare locks which are defined in a local project.
 ///
 /// Conducts a parallel search across extensions.
-pub fn fs_defined_dependencies_configs(
+pub fn fs_defined_dependencies_locks(
     working_directory: &std::path::PathBuf,
     extensions: &Vec<Box<dyn openfare_lib::extension::Extension>>,
     extension_args: &Vec<String>,
-) -> Result<Vec<Result<openfare_lib::extension::commands::fs_defined_dependencies_configs::FsDefinedDependenciesConfigs>>>{
+) -> Result<
+    Vec<Result<openfare_lib::extension::commands::fs_defined_dependencies_locks::FsDefinedDependenciesLocks>>,
+>{
     crossbeam_utils::thread::scope(|s| {
         let mut threads = Vec::new();
         for extension in extensions {
             threads.push(s.spawn(move |_| {
-                extension.fs_defined_dependencies_configs(&working_directory, &extension_args)
+                extension.fs_defined_dependencies_locks(&working_directory, &extension_args)
             }));
         }
         let mut result = Vec::new();
@@ -29,20 +31,26 @@ pub fn fs_defined_dependencies_configs(
     .unwrap()
 }
 
-/// Get package dependencies OpenFare configs.
+/// Get package dependencies OpenFare locks.
 ///
 /// Conducts a parallel search across extensions.
-pub fn package_dependencies_configs(
+pub fn package_dependencies_locks(
     package_name: &str,
     package_version: &Option<&str>,
     extensions: &Vec<Box<dyn openfare_lib::extension::Extension>>,
     extension_args: &Vec<String>,
-) -> Result<Vec<Result<openfare_lib::extension::commands::package_dependencies_configs::PackageDependenciesConfigs>>>{
+) -> Result<
+    Vec<
+        Result<
+            openfare_lib::extension::commands::package_dependencies_locks::PackageDependenciesLocks,
+        >,
+    >,
+> {
     crossbeam_utils::thread::scope(|s| {
         let mut threads = Vec::new();
         for extension in extensions {
             threads.push(s.spawn(move |_| {
-                extension.package_dependencies_configs(
+                extension.package_dependencies_locks(
                     &package_name,
                     &package_version,
                     &extension_args,

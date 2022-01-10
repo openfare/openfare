@@ -1,6 +1,6 @@
 [package]
 name = "openfare"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["rndhouse <rndhouse@protonmail.com>"]
 edition = "2021"
 repository = "https://github.com/openfare/openfare"
@@ -9,8 +9,8 @@ default-run = "openfare"
 description = "Monetize software with one commit."
 
 [dependencies]
-openfare-lib = { path = "../openfare-lib", version = "0.1.0" }
-openfare-js = { path = "../../openfare-js", version = "0.1.0" }
+openfare-lib = { path = "../openfare-lib", version = "0.2.0" }
+openfare-js = { path = "../../openfare-js", version = "0.2.0" }
 
 anyhow = "1.0.31"
 structopt = "0.3.21"

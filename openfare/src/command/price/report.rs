@@ -1,7 +1,7 @@
 use anyhow::Result;
 
 pub fn generate(
-    package_configs: &openfare_lib::package::PackageConfigs,
+    package_locks: &openfare_lib::package::PackageLocks,
     config: &crate::common::config::Config,
 ) -> Result<Option<PriceReport>> {
     log::info!("Generating price report for package and it's dependencies.");
@@ -9,17 +9,17 @@ pub fn generate(
     // Handle primary package first.
     let mut package_reports = vec![];
 
-    if let Some(primary_package) = &package_configs.primary_package {
+    if let Some(primary_package) = &package_locks.primary_package {
         let primary_package_price_report = get_package_price_report(
             &primary_package,
-            &package_configs.primary_package_config,
+            &package_locks.primary_package_lock,
             &config,
         )?;
         package_reports.push(primary_package_price_report);
     }
 
-    for (package, package_config) in &package_configs.dependencies_configs {
-        let price_report = get_package_price_report(&package, &package_config, &config)?;
+    for (package, package_lock) in &package_locks.dependencies_locks {
+        let price_report = get_package_price_report(&package, &package_lock, &config)?;
         package_reports.push(price_report);
     }
 
@@ -59,13 +59,13 @@ pub struct PackagePriceReport {
     pub notes: Vec<String>,
 }
 
-/// Given a OpenFare package config, create a corresponding price report.
+/// Given a package's OpenFare lock, create a corresponding price report.
 pub fn get_package_price_report(
     package: &openfare_lib::package::Package,
-    package_config: &Option<openfare_lib::package::Config>,
+    package_lock: &Option<openfare_lib::package::Lock>,
     config: &crate::common::config::Config,
 ) -> Result<PackagePriceReport> {
-    let package_config = match package_config {
+    let package_lock = match package_lock {
         Some(c) => c,
         None => {
             return Ok(PackagePriceReport {
@@ -76,7 +76,7 @@ pub fn get_package_price_report(
         }
     };
 
-    let applicable_plans: Vec<_> = package_config
+    let applicable_plans: Vec<_> = package_lock
         .plans
         .iter()
         .filter(|plan| {
