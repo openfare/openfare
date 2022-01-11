@@ -99,14 +99,14 @@ fn show(verbosity: u8) -> Result<()> {
 }
 
 fn show_method_names_only(
-    methods: &Vec<Box<dyn openfare_lib::package::payees::payment_methods::PaymentMethod>>,
+    methods: &Vec<Box<dyn openfare_lib::lock::payee::payment_methods::PaymentMethod>>,
 ) {
     let names = methods.iter().map(|m| m.name()).collect::<Vec<String>>();
     println!("{}", names.join("\n"))
 }
 
 fn show_method_details(
-    methods: &Vec<Box<dyn openfare_lib::package::payees::payment_methods::PaymentMethod>>,
+    methods: &Vec<Box<dyn openfare_lib::lock::payee::payment_methods::PaymentMethod>>,
 ) -> Result<()> {
     let mut json_methods = vec![];
     for method in methods {

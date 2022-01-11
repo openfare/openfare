@@ -4,7 +4,7 @@ pub mod conditions;
 mod frequency;
 pub mod price;
 
-use super::payees;
+use super::payee;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct PaymentPlan {
@@ -34,6 +34,6 @@ pub type Percent = String;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Split {
-    parts: Option<std::collections::BTreeMap<payees::PayeeName, Percent>>,
-    remainder: payees::PayeeName,
+    parts: Option<std::collections::BTreeMap<payee::PayeeName, Percent>>,
+    remainder: payee::PayeeName,
 }

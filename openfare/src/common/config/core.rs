@@ -6,7 +6,7 @@ use std::convert::TryInto;
 )]
 pub struct Core {
     #[serde(rename = "preferred-currency")]
-    pub preferred_currency: openfare_lib::package::plans::price::Currency,
+    pub preferred_currency: openfare_lib::lock::plan::price::Currency,
 }
 
 fn get_regex() -> Result<regex::Regex> {

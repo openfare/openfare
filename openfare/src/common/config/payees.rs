@@ -8,7 +8,7 @@ type PayeeName = String;
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct Payees {
     active: PayeeName,
-    payees: std::collections::BTreeMap<PayeeName, openfare_lib::package::payees::Payee>,
+    payees: std::collections::BTreeMap<PayeeName, openfare_lib::lock::payee::Payee>,
 }
 
 impl Payees {
@@ -19,10 +19,8 @@ impl Payees {
                 name
             ));
         }
-        self.payees.insert(
-            name.clone(),
-            openfare_lib::package::payees::Payee::default(),
-        );
+        self.payees
+            .insert(name.clone(), openfare_lib::lock::payee::Payee::default());
         Ok(())
     }
 
@@ -74,11 +72,11 @@ impl Payees {
 
     pub fn payees(
         &self,
-    ) -> &std::collections::BTreeMap<PayeeName, openfare_lib::package::payees::Payee> {
+    ) -> &std::collections::BTreeMap<PayeeName, openfare_lib::lock::payee::Payee> {
         &self.payees
     }
 
-    pub fn active(&self) -> Result<Option<(&PayeeName, &openfare_lib::package::payees::Payee)>> {
+    pub fn active(&self) -> Result<Option<(&PayeeName, &openfare_lib::lock::payee::Payee)>> {
         Ok(if self.payees.is_empty() {
             None
         } else {
@@ -94,7 +92,7 @@ impl Payees {
 
     pub fn active_mut(
         &mut self,
-    ) -> Result<Option<(&mut PayeeName, &mut openfare_lib::package::payees::Payee)>> {
+    ) -> Result<Option<(&mut PayeeName, &mut openfare_lib::lock::payee::Payee)>> {
         Ok(if self.payees.is_empty() {
             None
         } else {

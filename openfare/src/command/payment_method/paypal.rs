@@ -1,9 +1,9 @@
 use crate::common::config::FileStore;
 use anyhow::{format_err, Result};
-use openfare_lib::package::payees::payment_methods::PaymentMethod;
+use openfare_lib::lock::payee::payment_methods::PaymentMethod;
 use structopt::{self, StructOpt};
 
-type Method = openfare_lib::package::payees::payment_methods::PayPal;
+type Method = openfare_lib::lock::payee::payment_methods::PayPal;
 
 #[derive(Debug, StructOpt, Clone)]
 #[structopt(
@@ -27,7 +27,7 @@ pub fn set(args: &SetArguments) -> Result<()> {
     if let Some((_payee_name, payee)) = payees.active_mut()? {
         payee.set_payment_method(
             &(Box::new(payment_method)
-                as Box<dyn openfare_lib::package::payees::payment_methods::PaymentMethod>),
+                as Box<dyn openfare_lib::lock::payee::payment_methods::PaymentMethod>),
         )?;
         payees.dump()?;
     } else {

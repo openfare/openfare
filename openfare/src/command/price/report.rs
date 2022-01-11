@@ -38,7 +38,7 @@ pub fn generate(
 
     let price_report = PriceReport {
         package_reports: package_reports,
-        price: openfare_lib::package::plans::price::Price {
+        price: openfare_lib::lock::plan::price::Price {
             quantity: total_price,
             currency: config.core.preferred_currency.clone(),
         },
@@ -49,20 +49,20 @@ pub fn generate(
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct PriceReport {
     pub package_reports: Vec<PackagePriceReport>,
-    pub price: openfare_lib::package::plans::price::Price,
+    pub price: openfare_lib::lock::plan::price::Price,
 }
 
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct PackagePriceReport {
     pub package: openfare_lib::package::Package,
-    pub price_quantity: Option<openfare_lib::package::plans::price::Quantity>,
+    pub price_quantity: Option<openfare_lib::lock::plan::price::Quantity>,
     pub notes: Vec<String>,
 }
 
 /// Given a package's OpenFare lock, create a corresponding price report.
 pub fn get_package_price_report(
     package: &openfare_lib::package::Package,
-    package_lock: &Option<openfare_lib::package::Lock>,
+    package_lock: &Option<openfare_lib::lock::Lock>,
     config: &crate::common::config::Config,
 ) -> Result<PackagePriceReport> {
     let package_lock = match package_lock {
