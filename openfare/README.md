@@ -29,7 +29,7 @@ Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss furthe
 
 The `OPENFARE.lock` file defines commercial payment plans for a software package. It is always located next to the project OpenFare `LICENSE` file (usually in the top level directory).
 
-The following example describes a single payment plan. The plan is applicable to commercial organizations with more than 100 developers. It stipulates that this version of the software necessitates a one off payment totalling 20 USD, 40% of which goes to John and the remaining 60% to Steve. John can be payed via PayPal or lightning keysend. Steve can only be payed via PayPal.
+The following example describes a single payment plan. The plan is applicable to commercial organizations with more than 100 developers. It stipulates that this version of the software necessitates a one off payment totalling 20 USD, 40% of which goes to John and 60% to Steve. John can be payed via PayPal or lightning keysend. Steve can only be payed via PayPal.
 
 ```json
 {
@@ -44,9 +44,9 @@ The following example describes a single payment plan. The plan is applicable to
                 "total": "20 USD",
                 "frequency": "once",
                 "split": {
+                    "steve": "60%",
                     "john": "40%"
-                },
-                "remainder": "steve"
+                }
             }
         }
     ],
