@@ -14,9 +14,9 @@ OpenFare can be used to fund open source or proprietary software at any scale. I
 
 With OpenFare, payments are managed programmatically. Payment plans and methods are defined in code. This leads to the following advantages:
 
-* Donations span the entire software dependency tree. This serves critical software which is outside the limelight.
+* Donations span the entire software dependency tree. Critical software which is outside the limelight is supported.
 
-* Proprietary software can be funded with micropayments. Payment obligations can be managed across thousands of software dependencies.
+* Micropayment obligations for proprietary software can be managed across thousands of software dependencies.
 
 Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss further.
 
