@@ -28,7 +28,7 @@ OpenFare reveals the demand for funding across the entire software dependency tr
 
 Setting up a project to receive donations is easy. Simply use the `openfare` tool to generate a `OPENFARE.lock` file in the project's top level directory.
 
-In this example `OPENFARE.lock` file Steve and John split their donations 60/40. John can be payed via PayPal or lightning keysend. Steve can only be payed via PayPal:
+In this example `OPENFARE.lock` file Steve and John split their donations 60/40. John can be paid via PayPal or lightning keysend. Steve can only be paid via PayPal:
 
 ```json
 {
@@ -85,7 +85,7 @@ The OpenFare Commercial License is a lot like the MIT License. The code can be m
 
 The `OPENFARE.lock` file defines commercial payment plans for a software package. It is created using the `openfare` tool and is always located next to the project OpenFare Commercial `LICENSE` file (usually in the top level directory).
 
-The following example describes a single payment plan. The plan is applicable to commercial organizations with more than 100 developers. It stipulates that this version of the software necessitates a one off payment totalling 20 USD, 40% of which goes to John and 60% to Steve. John can be payed via PayPal or lightning keysend. Steve can only be payed via PayPal.
+The following example describes a single payment plan. The plan is applicable to commercial organizations with more than 100 developers. It stipulates that this version of the software necessitates a one off payment totalling 20 USD, 40% of which goes to John and 60% to Steve. John can be paid via PayPal or lightning keysend. Steve can only be paid via PayPal.
 
 ```json
 {
