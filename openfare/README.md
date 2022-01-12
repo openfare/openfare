@@ -70,7 +70,7 @@ In this example `OPENFARE.lock` file Steve and John split their donations 60/40.
 
 ## Commercial Payment Plans
 
-With OpenFare payment obligations can be managed across thousands of software dependencies. Programmatic management and micropayments means that software maintainers can raise meaningful sums at small prices.
+With OpenFare payment obligations can be managed across thousands of software dependencies. Programmatic management and micropayments means that software maintainers can raise meaningful capital with low prices.
 
 The system:
 
