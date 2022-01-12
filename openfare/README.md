@@ -48,7 +48,7 @@ In this example `OPENFARE.lock` file Steve and John split their donations 60/40.
             "payment-methods": [
                 {
                     "name": "paypal",
-                    "email": "john@gmail.com"
+                    "email": "john@example.com"
                 },
                 {
                     "name": "btc-lightning-keysend",
@@ -60,7 +60,7 @@ In this example `OPENFARE.lock` file Steve and John split their donations 60/40.
             "payment-methods": [
                 {
                     "name": "paypal",
-                    "email": "steve@gmail.com"
+                    "email": "steve@example.com"
                 }
             ]
         }
@@ -111,11 +111,11 @@ The following example describes a single payment plan. The plan is applicable to
             "payment-methods": [
                 {
                     "name": "paypal",
-                    "email": "john@gmail.com"
+                    "email": "john@example.com"
                 },
                 {
                     "name": "btc-lightning-keysend",
-                    "public-key": "02788242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7ff4"
+                    "public-key": "03488242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7dd5"
                 }
             ]
         },
@@ -123,7 +123,7 @@ The following example describes a single payment plan. The plan is applicable to
             "payment-methods": [
                 {
                     "name": "paypal",
-                    "email": "steve@gmail.com"
+                    "email": "steve@example.com"
                 }
             ]
         }
