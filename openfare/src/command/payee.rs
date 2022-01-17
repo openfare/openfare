@@ -119,7 +119,7 @@ fn show(_verbosity: &u8) -> Result<()> {
     } else {
         None
     };
-    for (name, payee) in payees.payees().iter() {
+    for (name, _payee) in payees.payees().iter() {
         let active_status_tag = if let Some(active_payee) = active_payee {
             if name == active_payee {
                 "(active)"
@@ -129,18 +129,7 @@ fn show(_verbosity: &u8) -> Result<()> {
         } else {
             ""
         };
-
-        let payment_methods_tag = if !payee.payment_methods()?.is_empty() {
-            format!("- {} payment methods", payee.payment_methods()?.len())
-        } else {
-            "".to_string()
-        };
-        println!(
-            "{name} {active} {payment_methods}",
-            name = name,
-            active = active_status_tag,
-            payment_methods = payment_methods_tag
-        );
+        println!("{name} {active}", name = name, active = active_status_tag);
     }
     Ok(())
 }
