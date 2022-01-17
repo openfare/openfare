@@ -46,6 +46,19 @@ pub struct Price {
     pub currency: Currency,
 }
 
+impl std::convert::TryFrom<&str> for Price {
+    type Error = anyhow::Error;
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        #[derive(Eq, PartialEq, serde::Deserialize)]
+        struct Result {
+            price: Price,
+        }
+        let result: Result =
+            serde_json::from_str(format!("{{\"price\": \"{}\"}}", value).as_str())?;
+        Ok(result.price)
+    }
+}
+
 struct Visitor {
     marker: std::marker::PhantomData<fn() -> Price>,
 }
@@ -69,7 +82,7 @@ impl<'de> serde::de::Visitor<'de> for Visitor {
     where
         E: serde::de::Error,
     {
-        let re = regex::Regex::new(r"([0-9]+) ([A-Z]+)").map_err(|_| {
+        let re = regex::Regex::new(r"([0-9]+)\s*([a-zA-Z]+)").map_err(|_| {
             serde::de::Error::custom(serde::de::Unexpected::Other("Code error: invalid regex."))
         })?;
         let captures =
@@ -114,7 +127,7 @@ fn parse_currency(regex_capture: &Option<regex::Match>) -> Result<Currency> {
     let error_message = "Failed to parse currency";
     let currency = regex_capture.ok_or(format_err!(error_message))?.as_str();
 
-    let currency = match currency {
+    let currency = match currency.to_uppercase().as_str() {
         "USD" => Currency::USD,
         "BTC" => Currency::BTC,
         _ => {
@@ -136,6 +149,17 @@ fn test_price_correctly_parsed() -> anyhow::Result<()> {
             quantity: 50,
             currency: Currency::USD,
         },
+    };
+    assert!(result == expected);
+    Ok(())
+}
+
+#[test]
+fn test_str_price_correctly_parsed() -> anyhow::Result<()> {
+    let result = Price::try_from("50   usd")?;
+    let expected = Price {
+        quantity: 50,
+        currency: Currency::USD,
     };
     assert!(result == expected);
     Ok(())
