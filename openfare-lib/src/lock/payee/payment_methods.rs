@@ -11,8 +11,11 @@ pub trait PaymentMethod {
 #[derive(Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PayPal {
     /// PayPal ID.
+    #[serde(skip_serializing_if = "Option::is_none")]
     id: Option<String>,
+
     /// Payee email.
+    #[serde(skip_serializing_if = "Option::is_none")]
     email: Option<String>,
 }
 
