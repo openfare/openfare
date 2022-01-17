@@ -11,13 +11,13 @@ type Method = openfare_lib::lock::payee::payment_methods::BtcLightningKeysend;
     no_version,
     global_settings = &[structopt::clap::AppSettings::DisableVersion]
 )]
-pub struct SetArguments {
+pub struct AddArguments {
     /// Public key destination
     #[structopt(name = "public-key")]
     pub public_key: String,
 }
 
-pub fn set(args: &SetArguments) -> Result<()> {
+pub fn add(args: &AddArguments) -> Result<()> {
     let payment_method = Method::new(&args.public_key)?;
     let mut payees = crate::common::config::Payees::load()?;
     if let Some((_payee_name, payee)) = payees.active_mut()? {

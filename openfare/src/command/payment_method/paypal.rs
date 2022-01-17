@@ -11,7 +11,7 @@ type Method = openfare_lib::lock::payee::payment_methods::PayPal;
     no_version,
     global_settings = &[structopt::clap::AppSettings::DisableVersion]
 )]
-pub struct SetArguments {
+pub struct AddArguments {
     /// PayPal ID.
     #[structopt(long = "id")]
     pub id: Option<String>,
@@ -21,7 +21,7 @@ pub struct SetArguments {
     pub email: Option<String>,
 }
 
-pub fn set(args: &SetArguments) -> Result<()> {
+pub fn add(args: &AddArguments) -> Result<()> {
     let payment_method = Method::new(&args.id, &args.email)?;
     let mut payees = crate::common::config::Payees::load()?;
     if let Some((_payee_name, payee)) = payees.active_mut()? {

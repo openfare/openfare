@@ -16,8 +16,8 @@ pub struct Arguments {
 
 #[derive(Debug, StructOpt, Clone)]
 enum Subcommands {
-    /// Set payment method.
-    Set(SetSubcommands),
+    /// Add payment method.
+    Add(AddSubcommands),
 
     /// Remove payment method.
     Remove(RemoveSubcommands),
@@ -26,8 +26,8 @@ enum Subcommands {
 pub fn run_command(args: &Arguments) -> Result<()> {
     if let Some(subcommand) = &args.commands {
         match subcommand {
-            Subcommands::Set(args) => {
-                set(&args)?;
+            Subcommands::Add(args) => {
+                add(&args)?;
             }
             Subcommands::Remove(args) => {
                 remove(&args)?;
@@ -40,23 +40,23 @@ pub fn run_command(args: &Arguments) -> Result<()> {
 }
 
 #[derive(Debug, StructOpt, Clone)]
-pub enum SetSubcommands {
+pub enum AddSubcommands {
     /// Set PayPal payment method.
     #[structopt(name = "paypal")]
-    PayPal(paypal::SetArguments),
+    PayPal(paypal::AddArguments),
 
     /// Set BTC lightning keysend payment method.
     #[structopt(name = "btc-lightning-keysend")]
-    BtcLightningKeysend(btc_lightning_keysend::SetArguments),
+    BtcLightningKeysend(btc_lightning_keysend::AddArguments),
 }
 
-fn set(subcommand: &SetSubcommands) -> Result<()> {
+fn add(subcommand: &AddSubcommands) -> Result<()> {
     match subcommand {
-        SetSubcommands::PayPal(args) => {
-            paypal::set(&args)?;
+        AddSubcommands::PayPal(args) => {
+            paypal::add(&args)?;
         }
-        SetSubcommands::BtcLightningKeysend(args) => {
-            btc_lightning_keysend::set(&args)?;
+        AddSubcommands::BtcLightningKeysend(args) => {
+            btc_lightning_keysend::add(&args)?;
         }
     }
     Ok(())
