@@ -28,41 +28,38 @@ OpenFare reveals the demand for funding across the entire software dependency tr
 
 Setting up a project to receive donations is easy. Simply use the `openfare` tool to generate a `OPENFARE.lock` file in the project's top level directory.
 
-In this example `OPENFARE.lock` file Steve and John split their donations 60/40. John can be paid via PayPal or lightning keysend. Steve can only be paid via PayPal:
+In this example `OPENFARE.lock` file Steve and John split their donations 10/4. John can be paid via PayPal or lightning keysend. Steve can only be paid via PayPal:
 
 ```json
 {
-    "plans": [
-        {
-            "id": 0,
+    "plans": {
+        "0": {
+            "type": "voluntary",
             "payments": {
-                "split": {
-                    "steve": "60%",
-                    "john": "40%"
+                "shares": {
+                    "steve": "100",
+                    "john": "40"
                 }
             }
         }
-    ],
+    },
     "payees": {
         "john": {
-            "payment-methods": [
-                {
-                    "name": "paypal",
+            "payment-methods": {
+                "paypal": {
                     "email": "john@example.com"
                 },
-                {
-                    "name": "btc-lightning-keysend",
+                "btc-lightning-keysend": {
                     "public-key": "03488242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7dd5"
                 }
-            ]
+            }
         },
         "steve": {
-            "payment-methods": [
-                {
-                    "name": "paypal",
+            "payment-methods": {
+                "paypal": {
                     "email": "steve@example.com"
                 }
-            ]
+            }
         }
     }
 }
@@ -85,46 +82,43 @@ The OpenFare Commercial License is a lot like the MIT License. The code can be m
 
 The `OPENFARE.lock` file defines commercial payment plans for a software package. It is created using the `openfare` tool and is always located next to the project OpenFare Commercial `LICENSE` file (usually in the top level directory).
 
-The following example describes a single payment plan. The plan is applicable to commercial organizations with more than 100 developers. It stipulates that this version of the software necessitates a one off payment totalling 20 USD, 40% of which goes to John and 60% to Steve. John can be paid via PayPal or lightning keysend. Steve can only be paid via PayPal.
+The following example describes a single payment plan. The plan is applicable to commercial organizations which use the software before 2022-12-19 and which have more than 100 employees. It stipulates that this version of the software necessitates a one off payment totalling 20.00 USD. The payment is split 10/4 between Steve and John. John can be paid via PayPal or lightning keysend. Steve can only be paid via PayPal.
 
 ```json
 {
-    "plans": [
-        {
-            "id": 0,
+    "plans": {
+        "0": {
+            "type": "compulsory",
             "conditions": {
                 "employees-count": "> 100",
-                "current-time": "< 2022-12-19T00:00:00-00:00"
+                "current-time": "< 2022-12-19"
             },
             "payments": {
-                "total": "20 USD",
-                "split": {
-                    "steve": "60%",
-                    "john": "40%"
+                "total": "20.00 USD",
+                "shares": {
+                    "steve": 100,
+                    "john": 40
                 }
             }
         }
-    ],
+    },
     "payees": {
         "john": {
-            "payment-methods": [
-                {
-                    "name": "paypal",
+            "payment-methods": {
+                "paypal": {
                     "email": "john@example.com"
                 },
-                {
-                    "name": "btc-lightning-keysend",
+                "btc-lightning-keysend": {
                     "public-key": "03488242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7dd5"
                 }
-            ]
+            }
         },
         "steve": {
-            "payment-methods": [
-                {
-                    "name": "paypal",
+            "payment-methods": {
+                "paypal": {
                     "email": "steve@example.com"
                 }
-            ]
+            }
         }
     }
 }
