@@ -72,15 +72,15 @@ OpenFare can manage payment obligations across thousands of software dependencie
 The system:
 
 * payment plans defined in code
-* the OpenFare Commercial License
+* the OpenFare License
 * a tool for managing payments across thousands of software dependencies.
 
-The OpenFare Commercial License is a lot like the MIT License. The code can be modified, forked, reproduced, executed, and compiled without restriction by anyone. With two exceptions:
+The OpenFare License is a lot like the MIT License. The code can be modified, forked, reproduced, executed, and compiled without restriction by anyone. With two exceptions:
 
 1. Commercial users are subject to payment plans defined in code.
 2. The license and payment plans can only be modified by the license copyright holder.
 
-The `OPENFARE.lock` file defines commercial payment plans for a software package. It is created using the `openfare` tool and is always located next to the project OpenFare Commercial `LICENSE` file (usually in the top level directory).
+The `OPENFARE.lock` file defines commercial payment plans for a software package. It is created using the `openfare` tool and is always located next to the project OpenFare `LICENSE` file (usually in the top level directory).
 
 The following example describes a single payment plan. The plan is applicable to commercial organizations which use the software before 2022-12-19 and which have more than 100 employees. It stipulates that this version of the software necessitates a one off payment totalling 20.00 USD. The payment is split 10/4 between Steve and John. John can be paid via PayPal or lightning keysend. Steve can only be paid via PayPal.
 
