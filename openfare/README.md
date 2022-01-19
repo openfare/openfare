@@ -93,12 +93,11 @@ The following example describes a single payment plan. The plan is applicable to
         {
             "id": 0,
             "conditions": {
-                "developers-count": "> 100",
+                "employees-count": "> 100",
                 "current-time": "< 2022-12-19T00:00:00-00:00"
             },
             "payments": {
                 "total": "20 USD",
-                "frequency": "once",
                 "split": {
                     "steve": "60%",
                     "john": "40%"

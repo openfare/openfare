@@ -54,6 +54,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23b62fc65de8e4e7f52534fb52b0f3ed04746ae267519eef2a83941e8085068b"
 
 [[package]]
+name = "arrayvec"
+version = "0.7.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8da52d66c7071e2e3fa2a1e5c6d088fec47b593032b254f5e980de8ea54454d6"
+
+[[package]]
 name = "atty"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1497,6 +1503,7 @@ dependencies = [
  "regex",
  "reqwest 0.11.7",
  "rusqlite",
+ "rust_decimal",
  "serde",
  "serde_json",
  "shellexpand",
@@ -1544,10 +1551,12 @@ dependencies = [
  "log",
  "regex",
  "reqwest 0.11.7",
+ "rust_decimal",
  "serde",
  "serde_json",
  "structopt",
  "url",
+ "uuid",
 ]
 
 [[package]]
@@ -2083,6 +2092,17 @@ dependencies = [
  "blake2b_simd",
  "constant_time_eq",
  "crossbeam-utils",
+]
+
+[[package]]
+name = "rust_decimal"
+version = "1.20.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e0593ce4677e3800ddafb3de917e8397b1348e06e688128ade722d88fbe11ebf"
+dependencies = [
+ "arrayvec 0.7.2",
+ "num-traits",
+ "serde",
 ]
 
 [[package]]
@@ -2770,6 +2790,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bc5cf98d8186244414c848017f0e2676b3fcb46807f6668a97dfe67359a3c4b7"
 dependencies = [
  "getrandom 0.2.3",
+ "serde",
 ]
 
 [[package]]

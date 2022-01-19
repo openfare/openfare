@@ -1,6 +1,6 @@
 use anyhow::{format_err, Result};
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum Operator {
     GreaterThanEqual,
     GreaterThan,
@@ -9,6 +9,19 @@ pub enum Operator {
     LessThan,
 
     Equal,
+}
+
+impl std::string::ToString for Operator {
+    fn to_string(&self) -> String {
+        match self {
+            Self::GreaterThanEqual => ">=",
+            Self::GreaterThan => ">",
+            Self::LessThanEqual => "<=",
+            Self::LessThan => "<",
+            Self::Equal => "=",
+        }
+        .to_string()
+    }
 }
 
 impl std::convert::TryFrom<&str> for Operator {

@@ -33,13 +33,13 @@ pub fn generate(
 
     let total_price = package_reports
         .iter()
-        .map(|r| r.price_quantity.unwrap_or(0))
-        .sum::<u64>();
+        .map(|r| r.price_quantity.unwrap_or(rust_decimal::Decimal::from(0)))
+        .sum::<rust_decimal::Decimal>();
 
     let price_report = PriceReport {
         package_reports: package_reports,
         price: openfare_lib::lock::plan::price::Price {
-            quantity: total_price,
+            quantity: rust_decimal::Decimal::from(total_price),
             currency: config.core.preferred_currency.clone(),
         },
     };
@@ -79,22 +79,27 @@ pub fn get_package_price_report(
     let applicable_plans: Vec<_> = package_lock
         .plans
         .iter()
-        .filter(|plan| {
+        .filter(|(_id, plan)| {
             plan.is_applicable(&config.metrics)
                 .expect("plan applicable check")
+                && plan.r#type == openfare_lib::lock::plan::PlanType::Compulsory
         })
         .collect();
 
     Ok(if let Some(preferred_plan) = applicable_plans.first() {
         PackagePriceReport {
             package: package.clone(),
-            price_quantity: Some(preferred_plan.payments.total.quantity),
+            price_quantity: Some(if let Some(total) = &preferred_plan.1.payments.total {
+                total.quantity
+            } else {
+                rust_decimal::Decimal::from(0)
+            }),
             notes: vec![],
         }
     } else {
         PackagePriceReport {
             package: package.clone(),
-            price_quantity: Some(0),
+            price_quantity: Some(rust_decimal::Decimal::from(0)),
             notes: vec![],
         }
     })

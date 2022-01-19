@@ -3,6 +3,7 @@ use structopt::{self, StructOpt};
 
 mod config;
 mod extension;
+mod lock;
 mod payee;
 mod payment_method;
 mod price;
@@ -19,6 +20,9 @@ pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()>
         }
         Command::PaymentMethod(args) => {
             payment_method::run_command(&args)?;
+        }
+        Command::Lock(args) => {
+            lock::run_command(&args)?;
         }
         Command::Config(args) => {
             config::run_command(&args)?;
@@ -43,6 +47,10 @@ pub enum Command {
     /// Manage payee payment methods.
     #[structopt(name = "payment-method")]
     PaymentMethod(payment_method::Arguments),
+
+    /// Manage lock file.
+    #[structopt(name = "lock")]
+    Lock(lock::Arguments),
 
     /// Configure settings.
     #[structopt(name = "config")]

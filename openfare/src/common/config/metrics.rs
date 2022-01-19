@@ -22,8 +22,8 @@ pub fn set(metrics: &mut Metrics, name: &str, value: &str) -> Result<()> {
         .as_str();
 
     match field {
-        "developers-count" => {
-            metrics.developers_count = Some(value.parse::<u64>()?);
+        "employees-count" => {
+            metrics.employees_count = Some(value.parse::<usize>()?);
             Ok(())
         }
         _ => Err(format_err!(name_error_message.clone())),
@@ -42,8 +42,8 @@ pub fn get(metrics: &Metrics, name: &str) -> Result<String> {
         .as_str();
 
     match field {
-        "developers-count" => Ok(if let Some(developers_count) = metrics.developers_count {
-            developers_count.to_string()
+        "employees-count" => Ok(if let Some(employees_count) = metrics.employees_count {
+            employees_count.to_string()
         } else {
             "".to_string()
         }),

@@ -1,4 +1,5 @@
 use anyhow::{format_err, Result};
+use std::str::FromStr;
 
 #[derive(
     Debug, Clone, Hash, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize,
@@ -6,6 +7,15 @@ use anyhow::{format_err, Result};
 pub enum Currency {
     USD,
     BTC,
+}
+
+impl Currency {
+    pub fn decimal_points(&self) -> u32 {
+        match self {
+            Self::USD => 2,
+            Self::BTC => 8,
+        }
+    }
 }
 
 impl std::default::Default for Currency {
@@ -38,9 +48,9 @@ impl std::string::ToString for Currency {
     }
 }
 
-pub type Quantity = u64;
+pub type Quantity = rust_decimal::Decimal;
 
-#[derive(Debug, Clone, Hash, Ord, PartialOrd, Eq, PartialEq, serde::Serialize)]
+#[derive(Debug, Clone, Hash, Ord, PartialOrd, Eq, PartialEq)]
 pub struct Price {
     pub quantity: Quantity,
     pub currency: Currency,
@@ -55,7 +65,29 @@ impl std::convert::TryFrom<&str> for Price {
         }
         let result: Result =
             serde_json::from_str(format!("{{\"price\": \"{}\"}}", value).as_str())?;
-        Ok(result.price)
+        let mut price = result.price;
+        price.quantity = price.quantity.round_dp_with_strategy(
+            price.currency.decimal_points(),
+            rust_decimal::prelude::RoundingStrategy::AwayFromZero,
+        );
+        Ok(price)
+    }
+}
+
+impl serde::Serialize for Price {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(
+            format!(
+                "{:.1$} {currency}",
+                self.quantity,
+                self.currency.decimal_points() as usize,
+                currency = self.currency.to_string(),
+            )
+            .as_str(),
+        )
     }
 }
 
@@ -82,7 +114,7 @@ impl<'de> serde::de::Visitor<'de> for Visitor {
     where
         E: serde::de::Error,
     {
-        let re = regex::Regex::new(r"([0-9]+)\s*([a-zA-Z]+)").map_err(|_| {
+        let re = regex::Regex::new(r"([0-9]+[\.]?[0-9]*)\s*([a-zA-Z]+)").map_err(|_| {
             serde::de::Error::custom(serde::de::Unexpected::Other("Code error: invalid regex."))
         })?;
         let captures =
@@ -115,11 +147,11 @@ impl<'de> serde::Deserialize<'de> for Price {
     }
 }
 
-fn parse_quantity(regex_capture: &Option<regex::Match>) -> Result<u64> {
+fn parse_quantity(regex_capture: &Option<regex::Match>) -> Result<rust_decimal::Decimal> {
     let quantity = regex_capture
         .ok_or(format_err!("Failed to parse quantity"))?
         .as_str();
-    let quantity = quantity.parse::<u64>()?;
+    let quantity = rust_decimal::Decimal::from_str(quantity)?;
     Ok(quantity)
 }
 
@@ -138,18 +170,32 @@ fn parse_currency(regex_capture: &Option<regex::Match>) -> Result<Currency> {
 }
 
 #[test]
-fn test_price_correctly_parsed() -> anyhow::Result<()> {
-    #[derive(Eq, PartialEq, serde::Deserialize)]
-    struct Result {
+fn test_serialize_usd() -> anyhow::Result<()> {
+    #[derive(serde::Serialize)]
+    struct Tmp {
         price: Price,
     }
-    let result: Result = serde_json::from_str("{\"price\": \"50 USD\"}")?;
-    let expected = Result {
-        price: Price {
-            quantity: 50,
-            currency: Currency::USD,
-        },
+    let t = Tmp {
+        price: Price::try_from("50   usd")?,
     };
+    let result = serde_json::to_string(&t)?;
+    let expected = "{\"price\":\"50.00 USD\"}".to_string();
+    assert!(result == expected);
+    Ok(())
+}
+
+#[test]
+fn test_serialize_btc() -> anyhow::Result<()> {
+    #[derive(serde::Serialize)]
+    struct Tmp {
+        price: Price,
+    }
+    let t = Tmp {
+        price: Price::try_from("50   btc")?,
+    };
+    let result = serde_json::to_string(&t)?;
+    let expected = "{\"price\":\"50.00000000 BTC\"}".to_string();
+    println!("{}", result);
     assert!(result == expected);
     Ok(())
 }
@@ -158,7 +204,18 @@ fn test_price_correctly_parsed() -> anyhow::Result<()> {
 fn test_str_price_correctly_parsed() -> anyhow::Result<()> {
     let result = Price::try_from("50   usd")?;
     let expected = Price {
-        quantity: 50,
+        quantity: rust_decimal::Decimal::from(50),
+        currency: Currency::USD,
+    };
+    assert!(result == expected);
+    Ok(())
+}
+
+#[test]
+fn test_decimal_price_correctly_parsed() -> anyhow::Result<()> {
+    let result = Price::try_from("50.02   usd")?;
+    let expected = Price {
+        quantity: rust_decimal::Decimal::from_str("50.02")?,
         currency: Currency::USD,
     };
     assert!(result == expected);
