@@ -3,3 +3,6 @@ members = [
 	"openfare",
 	"openfare-lib",
 ]
+
+[patch.crates-io]
+openfare-lib = { path = './openfare-lib' }
