@@ -61,7 +61,7 @@ impl std::fmt::Display for Config {
         write!(
             f,
             "{}",
-            serde_json::to_string(&self).map_err(|_| std::fmt::Error::default())?
+            serde_json::to_string_pretty(&self).map_err(|_| std::fmt::Error::default())?
         )
     }
 }
