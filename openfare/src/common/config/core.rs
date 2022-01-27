@@ -30,7 +30,12 @@ pub fn set(core: &mut Core, name: &str, value: &str) -> Result<()> {
 
     match field {
         "preferred-currency" => {
-            core.preferred_currency = value.try_into()?;
+            // TODO: support alternative preferred currency
+            // core.preferred_currency = value.try_into()?;
+            return Err(format_err!(
+                "'preferred-currency' is not currently modifiable."
+            ));
+            // core.preferred_currency = value.try_into()?;
         }
         _ => {
             return Err(format_err!(name_error_message.clone()));
