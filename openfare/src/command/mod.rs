@@ -7,32 +7,7 @@ mod lock;
 mod payee;
 mod payment_method;
 mod price;
-
-pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()> {
-    crate::setup::ensure()?;
-    log::info!("Running command: {:?}", command);
-    match command {
-        Command::Price(args) => {
-            price::run_command(&args, &extension_args)?;
-        }
-        Command::Payee(args) => {
-            payee::run_command(&args)?;
-        }
-        Command::PaymentMethod(args) => {
-            payment_method::run_command(&args)?;
-        }
-        Command::Lock(args) => {
-            lock::run_command(&args)?;
-        }
-        Command::Config(args) => {
-            config::run_command(&args)?;
-        }
-        Command::Extension(args) => {
-            extension::run_command(&args)?;
-        }
-    }
-    Ok(())
-}
+mod pay;
 
 #[derive(Debug, StructOpt, Clone)]
 pub enum Command {
@@ -59,6 +34,32 @@ pub enum Command {
     /// Manage extensions.
     #[structopt(name = "extension")]
     Extension(extension::Arguments),
+}
+
+pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()> {
+    crate::setup::ensure()?;
+    log::info!("Running command: {:?}", command);
+    match command {
+        Command::Price(args) => {
+            price::run_command(&args, &extension_args)?;
+        }
+        Command::Payee(args) => {
+            payee::run_command(&args)?;
+        }
+        Command::PaymentMethod(args) => {
+            payment_method::run_command(&args)?;
+        }
+        Command::Lock(args) => {
+            lock::run_command(&args)?;
+        }
+        Command::Config(args) => {
+            config::run_command(&args)?;
+        }
+        Command::Extension(args) => {
+            extension::run_command(&args)?;
+        }
+    }
+    Ok(())
 }
 
 #[derive(Debug, StructOpt, Clone)]
