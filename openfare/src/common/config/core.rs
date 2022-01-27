@@ -7,6 +7,31 @@ use std::convert::TryInto;
 pub struct Core {
     #[serde(rename = "preferred-currency")]
     pub preferred_currency: openfare_lib::lock::plan::price::Currency,
+    pub portal: Portal,
+}
+
+#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct Portal {
+    pub url: String,
+    #[serde(rename = "api-key")]
+    pub api_key: openfare_lib::portal::api::common::ApiKey,
+    pub email: Option<String>,
+}
+
+impl std::default::Default for Portal {
+    fn default() -> Self {
+        let api_key = {
+            let uuid = uuid::Uuid::new_v4();
+            let mut encode_buffer = uuid::Uuid::encode_buffer();
+            let uuid = uuid.to_hyphenated().encode_lower(&mut encode_buffer);
+            uuid.to_string()
+        };
+        Self {
+            url: "https://openfare.dev/portal".to_string(),
+            api_key,
+            email: None,
+        }
+    }
 }
 
 fn get_regex() -> Result<regex::Regex> {
@@ -35,7 +60,15 @@ pub fn set(core: &mut Core, name: &str, value: &str) -> Result<()> {
             return Err(format_err!(
                 "'preferred-currency' is not currently modifiable."
             ));
-            // core.preferred_currency = value.try_into()?;
+        }
+        "portal.url" => {
+            core.portal.url = value.try_into()?;
+        }
+        "portal.api-key" => {
+            core.portal.api_key = value.try_into()?;
+        }
+        "portal.email" => {
+            core.portal.email = Some(value.try_into()?);
         }
         _ => {
             return Err(format_err!(name_error_message.clone()));
@@ -57,6 +90,9 @@ pub fn get(core: &Core, name: &str) -> Result<String> {
 
     Ok(match field {
         "preferred-currency" => core.preferred_currency.to_string(),
+        "portal.url" => core.portal.url.to_string(),
+        "portal.api-key" => core.portal.api_key.to_string(),
+        "portal.email" => core.portal.email.clone().unwrap_or_default().to_string(),
         _ => {
             return Err(format_err!(name_error_message.clone()));
         }
