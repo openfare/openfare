@@ -60,7 +60,7 @@ pub struct PackagePriceReport {
 }
 
 /// Given a package's OpenFare lock, create a corresponding price report.
-pub fn get_package_price_report(
+fn get_package_price_report(
     package: &openfare_lib::package::Package,
     package_lock: &Option<openfare_lib::lock::Lock>,
     config: &crate::common::config::Config,

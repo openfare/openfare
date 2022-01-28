@@ -8,7 +8,6 @@ use crate::extension;
 mod format;
 mod fs;
 mod package;
-mod report;
 
 #[derive(Debug, StructOpt, Clone)]
 #[structopt(

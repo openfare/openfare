@@ -4,6 +4,7 @@ use structopt::StructOpt;
 mod command;
 mod common;
 mod extension;
+mod price;
 mod setup;
 
 fn main() {

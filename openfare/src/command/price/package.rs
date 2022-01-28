@@ -4,7 +4,6 @@ use crate::common;
 use crate::extension;
 
 use super::format;
-use super::report;
 
 /// Prints a price report for a specific package and its dependencies.
 pub fn price(
@@ -43,7 +42,9 @@ pub fn price(
         };
 
         locks_found |= extension_result.package_locks.has_locks();
-        if let Some(price_report) = report::generate(&extension_result.package_locks, &config)? {
+        if let Some(price_report) =
+            crate::price::generate(&extension_result.package_locks, &config)?
+        {
             println!(
                 "Registry: {name}",
                 name = extension_result.registry_host_name

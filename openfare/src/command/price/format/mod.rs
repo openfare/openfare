@@ -1,4 +1,3 @@
-use super::report;
 use anyhow::Result;
 mod table;
 
@@ -7,7 +6,7 @@ pub enum Format {
 }
 
 pub fn print(
-    report: &report::PriceReport,
+    report: &crate::price::PriceReport,
     format: &Format,
     first_row_separate: bool,
 ) -> Result<()> {
