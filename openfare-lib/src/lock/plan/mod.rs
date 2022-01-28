@@ -57,7 +57,7 @@ impl PaymentPlan {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Payments {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub total: Option<price::Price>,

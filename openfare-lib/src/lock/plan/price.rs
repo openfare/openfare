@@ -50,7 +50,7 @@ impl std::string::ToString for Currency {
 
 pub type Quantity = rust_decimal::Decimal;
 
-#[derive(Debug, Clone, Hash, Ord, PartialOrd, Eq, PartialEq)]
+#[derive(Debug, Default, Clone, Hash, Ord, PartialOrd, Eq, PartialEq)]
 pub struct Price {
     pub quantity: Quantity,
     pub currency: Currency,

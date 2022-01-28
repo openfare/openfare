@@ -88,24 +88,56 @@ fn get_package_price_report(
         })
         .collect();
 
-    // TODO: Select max price plan if multiple applicable.
-    Ok(if let Some((plan_id, plan)) = applicable_plans.first() {
-        PackagePriceReport {
-            package: package.clone(),
-            plan_id: Some((*plan_id).clone()),
-            price_quantity: Some(if let Some(total) = &plan.payments.total {
+    Ok(
+        if let Some((plan_id, plan)) = select_plan(&applicable_plans) {
+            PackagePriceReport {
+                package: package.clone(),
+                plan_id: Some((*plan_id).clone()),
+                price_quantity: Some(if let Some(total) = &plan.payments.total {
+                    total.quantity
+                } else {
+                    rust_decimal::Decimal::from(0)
+                }),
+                notes: vec![],
+            }
+        } else {
+            PackagePriceReport {
+                package: package.clone(),
+                plan_id: None,
+                price_quantity: Some(rust_decimal::Decimal::from(0)),
+                notes: vec![],
+            }
+        },
+    )
+}
+
+fn select_plan<'a>(
+    applicable_plans: &'a Vec<(
+        &openfare_lib::lock::plan::Id,
+        &openfare_lib::lock::plan::PaymentPlan,
+    )>,
+) -> Option<&'a (
+    &'a openfare_lib::lock::plan::Id,
+    &'a openfare_lib::lock::plan::PaymentPlan,
+)> {
+    let max_price: rust_decimal::Decimal = applicable_plans
+        .iter()
+        .map(|(_, plan)| {
+            if let Some(total) = &plan.payments.total {
                 total.quantity
             } else {
                 rust_decimal::Decimal::from(0)
-            }),
-            notes: vec![],
-        }
-    } else {
-        PackagePriceReport {
-            package: package.clone(),
-            plan_id: None,
-            price_quantity: Some(rust_decimal::Decimal::from(0)),
-            notes: vec![],
-        }
-    })
+            }
+        })
+        .sum();
+    applicable_plans
+        .iter()
+        .filter(|(_, plan)| {
+            if let Some(total) = &plan.payments.total {
+                total.quantity == max_price
+            } else {
+                false
+            }
+        })
+        .next()
 }
