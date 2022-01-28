@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-pub fn generate(
+pub fn get_report(
     package_locks: &openfare_lib::package::PackageLocks,
     config: &crate::common::config::Config,
 ) -> Result<Option<PriceReport>> {

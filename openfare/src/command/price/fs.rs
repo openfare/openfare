@@ -40,7 +40,7 @@ pub fn price(
 
         locks_found |= extension_result.package_locks.has_locks();
         if let Some(price_report) =
-            crate::price::generate(&extension_result.package_locks, &config)?
+            crate::price::get_report(&extension_result.package_locks, &config)?
         {
             println!(
                 "Project: {path}",
