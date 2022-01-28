@@ -3,6 +3,7 @@ use crate::lock;
 /// A software package's name and version.
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Package {
+    pub registry: String,
     pub name: String,
     pub version: String,
 }
