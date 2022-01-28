@@ -1482,7 +1482,7 @@ checksum = "2839e79665f131bdb5782e51f2c6c9599c133c6098982a54c794358bf432529c"
 
 [[package]]
 name = "openfare"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "anyhow",
  "bincode",
@@ -1519,9 +1519,9 @@ dependencies = [
 
 [[package]]
 name = "openfare-js"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d49118720e745df4568f28a41a90b462b5fd5b66a54b47441f6ef97c8cae3f1"
+checksum = "e7b63f97ae7f05e9c37579777a15be0fdf25103bbf1f058ef341a9877e2d2145"
 dependencies = [
  "anyhow",
  "env_logger",

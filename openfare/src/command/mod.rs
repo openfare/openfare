@@ -4,16 +4,20 @@ use structopt::{self, StructOpt};
 mod config;
 mod extension;
 mod lock;
+mod pay;
 mod payee;
 mod payment_method;
 mod price;
-mod pay;
 
 #[derive(Debug, StructOpt, Clone)]
 pub enum Command {
     /// Price a package and its dependencies.
     #[structopt(name = "price")]
     Price(price::Arguments),
+
+    /// Pay project dependencies.
+    #[structopt(name = "pay")]
+    Pay(pay::Arguments),
 
     /// Manage payee profiles.
     #[structopt(name = "payee")]
@@ -42,6 +46,9 @@ pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()>
     match command {
         Command::Price(args) => {
             price::run_command(&args, &extension_args)?;
+        }
+        Command::Pay(args) => {
+            pay::run_command(&args, &extension_args)?;
         }
         Command::Payee(args) => {
             payee::run_command(&args)?;
