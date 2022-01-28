@@ -24,7 +24,7 @@ pub fn get_report(
     }
 
     log::info!(
-        "Number of price reports generated: {}",
+        "Number of package price reports generated: {}",
         package_reports.len()
     );
     if package_reports.is_empty() {
@@ -55,6 +55,7 @@ pub struct PriceReport {
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct PackagePriceReport {
     pub package: openfare_lib::package::Package,
+    pub plan_id: Option<openfare_lib::lock::plan::Id>,
     pub price_quantity: Option<openfare_lib::lock::plan::price::Quantity>,
     pub notes: Vec<String>,
 }
@@ -70,6 +71,7 @@ fn get_package_price_report(
         None => {
             return Ok(PackagePriceReport {
                 package: package.clone(),
+                plan_id: None,
                 price_quantity: None,
                 notes: vec![],
             });
@@ -86,10 +88,12 @@ fn get_package_price_report(
         })
         .collect();
 
-    Ok(if let Some(preferred_plan) = applicable_plans.first() {
+    // TODO: Select max price plan if multiple applicable.
+    Ok(if let Some((plan_id, plan)) = applicable_plans.first() {
         PackagePriceReport {
             package: package.clone(),
-            price_quantity: Some(if let Some(total) = &preferred_plan.1.payments.total {
+            plan_id: Some((*plan_id).clone()),
+            price_quantity: Some(if let Some(total) = &plan.payments.total {
                 total.quantity
             } else {
                 rust_decimal::Decimal::from(0)
@@ -99,6 +103,7 @@ fn get_package_price_report(
     } else {
         PackagePriceReport {
             package: package.clone(),
+            plan_id: None,
             price_quantity: Some(rust_decimal::Decimal::from(0)),
             notes: vec![],
         }
