@@ -20,7 +20,7 @@ impl std::convert::TryFrom<&str> for EmployeesCount {
 impl EmployeesCount {
     pub fn evaluate(&self, config: &crate::config::Config) -> Result<bool> {
         let employees_count = config.employees_count.ok_or(format_err!(
-            "Attempting to evaluate condition but the `employees-count` metric is unset."
+            "Attempting to evaluate plan conditions using unset parameter `employees-count`."
         ))?;
         let result =
             common::evaluate_operator::<usize>(&employees_count, &self.operator, &self.count);
