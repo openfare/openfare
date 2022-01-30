@@ -143,5 +143,7 @@ fn remove(subcommand: &RemoveSubcommands) -> Result<()> {
 }
 
 fn show(_verbosity: u8) -> Result<()> {
+    let lock_handle = common::LockFileHandle::load(&None)?;
+    println!("{}", serde_json::to_string_pretty(&lock_handle.lock)?);
     Ok(())
 }
