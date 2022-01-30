@@ -70,7 +70,7 @@ pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()>
 }
 
 #[derive(Debug, StructOpt, Clone)]
-#[structopt(about = "Monetize software with one commit.")]
+#[structopt(about = "Micropayment funded software.")]
 #[structopt(global_setting = structopt::clap::AppSettings::ColoredHelp)]
 #[structopt(global_setting = structopt::clap::AppSettings::DeriveDisplayOrder)]
 pub struct Opts {
