@@ -112,24 +112,28 @@ fn activate(args: &ActivateArguments) -> Result<()> {
 )]
 pub struct ShowArguments {}
 
-fn show(_verbosity: &u8) -> Result<()> {
+fn show(verbosity: &u8) -> Result<()> {
     let payees = common::config::Payees::load()?;
-    let active_payee = if let Some((active_payee, _)) = payees.active()? {
-        Some(active_payee)
+    if *verbosity > 0 {
+        println!("{}", serde_json::to_string_pretty(&payees)?);
     } else {
-        None
-    };
-    for (name, _payee) in payees.payees().iter() {
-        let active_status_tag = if let Some(active_payee) = active_payee {
-            if name == active_payee {
-                "(active)"
+        let active_payee = if let Some((active_payee, _)) = payees.active()? {
+            Some(active_payee)
+        } else {
+            None
+        };
+        for (name, _payee) in payees.payees().iter() {
+            let active_status_tag = if let Some(active_payee) = active_payee {
+                if name == active_payee {
+                    "(active)"
+                } else {
+                    ""
+                }
             } else {
                 ""
-            }
-        } else {
-            ""
-        };
-        println!("{name} {active}", name = name, active = active_status_tag);
+            };
+            println!("{name} {active}", name = name, active = active_status_tag);
+        }
     }
     Ok(())
 }
