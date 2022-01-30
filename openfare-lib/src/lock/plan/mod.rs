@@ -44,6 +44,7 @@ impl std::str::FromStr for PlanType {
     }
 }
 
+// TODO: Rename to 'Plan'.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct PaymentPlan {
     pub r#type: PlanType,
@@ -53,8 +54,33 @@ pub struct PaymentPlan {
 
 impl PaymentPlan {
     pub fn is_applicable(&self, config: &crate::config::Config) -> Result<bool> {
-        Ok(self.conditions.evaluate(&config)?)
+        Ok(match self.r#type {
+            PlanType::Voluntary => {
+                // Voluntary plans are subject to conditions.
+                config.include_voluntary_plans && self.conditions.evaluate(&config)?
+            }
+            PlanType::Compulsory => {
+                // Non-commercial not subject to compulsory plans.
+                if !config.commercial {
+                    false
+                } else {
+                    // Commercial are subject to compulsory plans based on conditions.
+                    self.conditions.evaluate(&config)?
+                }
+            }
+        })
     }
+}
+
+/// Filter for applicable plans.
+pub fn filter_applicable(plans: &Plans, config: &crate::config::Config) -> Result<Plans> {
+    let mut applicable_plans = Plans::new();
+    for (plan_id, plan) in plans {
+        if plan.is_applicable(&config)? {
+            applicable_plans.insert(plan_id.clone(), plan.clone());
+        }
+    }
+    Ok(applicable_plans)
 }
 
 #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize)]

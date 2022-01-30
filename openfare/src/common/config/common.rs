@@ -17,6 +17,7 @@ pub trait FilePath {
     fn file_path() -> Result<std::path::PathBuf>;
 }
 
+// TODO: dump on drop?
 pub trait FileStore: FilePath {
     fn load() -> Result<Self>
     where

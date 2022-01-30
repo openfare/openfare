@@ -2,6 +2,7 @@ use anyhow::{format_err, Result};
 pub mod payment_methods;
 
 pub type Name = String;
+pub type Payees = std::collections::BTreeMap<Name, Payee>;
 pub type PaymentMethodName = String;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]

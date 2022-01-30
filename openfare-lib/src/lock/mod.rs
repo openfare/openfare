@@ -10,7 +10,7 @@ pub struct Lock {
     #[serde(rename = "scheme-version")]
     pub scheme_version: String,
     pub plans: plan::Plans,
-    pub payees: std::collections::BTreeMap<payee::Name, payee::Payee>,
+    pub payees: payee::Payees,
 }
 
 impl std::default::Default for Lock {
@@ -18,7 +18,7 @@ impl std::default::Default for Lock {
         Self {
             scheme_version: SCHEME_VERSION.to_string(),
             plans: plan::Plans::new(),
-            payees: std::collections::BTreeMap::<payee::Name, payee::Payee>::new(),
+            payees: payee::Payees::new(),
         }
     }
 }

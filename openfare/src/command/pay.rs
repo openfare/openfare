@@ -25,14 +25,37 @@ pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()>
     let extension_names =
         extension::manage::handle_extension_names_arg(&args.extension_names, &config)?;
 
+    let all_extension_dependency_locks =
+        get_dependencies_locks(&extension_names, &extension_args, &config)?;
+
+    let mut order_items = std::collections::BTreeMap::<_, _>::new();
+    for extension_dependency_locks in all_extension_dependency_locks {
+        let packages_plans =
+            get_packages_plans(&extension_dependency_locks.package_locks, &config)?;
+        order_items.insert(extension_dependency_locks.extension_name, packages_plans);
+    }
+
+    let order = openfare_lib::api::portal::checkout::Order {
+        items: order_items,
+        api_key: config.core.portal.api_key.clone(),
+    };
+    let checkout_url = submit_order(&order, &config)?;
+    println!("Checkout via URL:\n{}", checkout_url);
     Ok(())
 }
 
-fn foo(
+struct ExtensionDependenciesLocks {
+    pub extension_name: String,
+    pub package_locks:
+        std::collections::BTreeMap<openfare_lib::package::Package, openfare_lib::lock::Lock>,
+}
+
+/// Get dependencies locks from all extensions.
+fn get_dependencies_locks(
     extension_names: &std::collections::BTreeSet<String>,
     extension_args: &Vec<String>,
     config: &common::config::Config,
-) -> Result<()> {
+) -> Result<Vec<ExtensionDependenciesLocks>> {
     let working_directory = std::env::current_dir()?;
     log::debug!("Current working directory: {}", working_directory.display());
 
@@ -40,7 +63,7 @@ fn foo(
     let extensions_results =
         extension::fs_defined_dependencies_locks(&working_directory, &extensions, &extension_args)?;
 
-    let all_extension_results: Vec<_> = extensions
+    let extension_dependencies_locks: Vec<_> = extensions
         .iter()
         .zip(extensions_results.iter())
         .filter_map(|(extension, extension_result)| {
@@ -49,8 +72,8 @@ fn foo(
                 extension.name()
             );
 
-            let extension_result = match extension_result {
-                Ok(d) => d,
+            let locks = match extension_result {
+                Ok(locks) => locks,
                 Err(error) => {
                     log::error!(
                         "Extension {name} error: {error}",
@@ -60,9 +83,68 @@ fn foo(
                     return None;
                 }
             };
+            let dependencies_locks: std::collections::BTreeMap<_, _> = locks
+                .package_locks
+                .dependencies_locks
+                .iter()
+                .filter_map(|(name, lock)| {
+                    if let Some(lock) = lock {
+                        Some((name.clone(), lock.clone()))
+                    } else {
+                        None
+                    }
+                })
+                .collect();
 
-            Some(extension_result)
+            Some(ExtensionDependenciesLocks {
+                extension_name: extension.name(),
+                package_locks: dependencies_locks,
+            })
         })
         .collect();
-    Ok(())
+    Ok(extension_dependencies_locks)
+}
+
+/// Get applicable payment plans from packages.
+fn get_packages_plans(
+    package_locks: &std::collections::BTreeMap<
+        openfare_lib::package::Package,
+        openfare_lib::lock::Lock,
+    >,
+    config: &common::config::Config,
+) -> Result<Vec<openfare_lib::api::portal::checkout::PackagePlans>> {
+    let mut packages_plans: Vec<_> = vec![];
+    for (package, lock) in package_locks {
+        let plans = openfare_lib::lock::plan::filter_applicable(&lock.plans, &config.metrics)?;
+
+        let plans: Vec<_> = plans
+            .into_iter()
+            .map(|(plan_id, plan)| openfare_lib::api::portal::checkout::Plan { plan_id, plan })
+            .collect();
+
+        let order_item = openfare_lib::api::portal::checkout::PackagePlans {
+            package: package.clone(),
+            plans,
+            payees: lock.payees.clone(),
+        };
+        packages_plans.push(order_item);
+    }
+    Ok(packages_plans)
+}
+
+fn submit_order(
+    order: &openfare_lib::api::portal::checkout::Order,
+    config: &common::config::Config,
+) -> Result<url::Url> {
+    let client = reqwest::blocking::Client::new();
+    let url = config
+        .core
+        .portal
+        .url
+        .join(&openfare_lib::api::portal::checkout::ROUTE)?;
+
+    log::debug!("HTTP POST orders to endpoint: {}", url);
+    let response = client.post(url).json(&order).send()?;
+    let response: openfare_lib::api::portal::checkout::Response = response.json()?;
+    Ok(response.checkout_url)
 }

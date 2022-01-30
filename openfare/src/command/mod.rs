@@ -15,7 +15,7 @@ pub enum Command {
     #[structopt(name = "price")]
     Price(price::Arguments),
 
-    /// Pay project dependencies.
+    /// Pay fees or donations to project dependencies.
     #[structopt(name = "pay")]
     Pay(pay::Arguments),
 
@@ -53,6 +53,7 @@ pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()>
         Command::Payee(args) => {
             payee::run_command(&args)?;
         }
+        // TODO: Make payment-method a sub command of payee.
         Command::PaymentMethod(args) => {
             payment_method::run_command(&args)?;
         }

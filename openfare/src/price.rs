@@ -78,15 +78,8 @@ fn get_package_price_report(
         }
     };
 
-    let applicable_plans: Vec<_> = package_lock
-        .plans
-        .iter()
-        .filter(|(_id, plan)| {
-            plan.is_applicable(&config.metrics)
-                .expect("plan applicable check")
-                && plan.r#type == openfare_lib::lock::plan::PlanType::Compulsory
-        })
-        .collect();
+    let applicable_plans =
+        openfare_lib::lock::plan::filter_applicable(&package_lock.plans, &config.metrics)?;
 
     Ok(
         if let Some((plan_id, plan)) = select_plan(&applicable_plans) {
@@ -112,11 +105,8 @@ fn get_package_price_report(
 }
 
 fn select_plan<'a>(
-    applicable_plans: &'a Vec<(
-        &openfare_lib::lock::plan::Id,
-        &openfare_lib::lock::plan::PaymentPlan,
-    )>,
-) -> Option<&'a (
+    applicable_plans: &'a openfare_lib::lock::plan::Plans,
+) -> Option<(
     &'a openfare_lib::lock::plan::Id,
     &'a openfare_lib::lock::plan::PaymentPlan,
 )> {

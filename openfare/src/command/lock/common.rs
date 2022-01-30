@@ -77,6 +77,7 @@ impl LockFileHandle {
 
 impl Drop for LockFileHandle {
     fn drop(&mut self) {
+        // TODO: Check if lock has been modified using hashes. Don't write unmodified.
         if self.path.is_file() {
             std::fs::remove_file(&self.path).unwrap_or_default();
         }
