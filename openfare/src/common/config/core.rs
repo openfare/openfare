@@ -12,7 +12,7 @@ pub struct Core {
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Portal {
-    pub url: String,
+    pub url: url::Url,
     #[serde(rename = "api-key")]
     pub api_key: openfare_lib::portal::api::common::ApiKey,
     pub email: Option<String>,
@@ -27,7 +27,7 @@ impl std::default::Default for Portal {
             uuid.to_string()
         };
         Self {
-            url: "https://openfare.dev/portal".to_string(),
+            url: url::Url::parse("https://openfare.dev/portal").unwrap(),
             api_key,
             email: None,
         }
