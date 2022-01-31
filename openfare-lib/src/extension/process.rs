@@ -105,7 +105,7 @@ impl common::Extension for ProcessExtension {
             args.push("--extension-args");
             args.push(extension_arg);
         }
-        // TODO: handle vec conversion
+
         let output: Box<commands::fs_defined_dependencies_locks::FsDefinedDependenciesLocks> =
             run_process(&self.process_path_, &args)?;
         Ok(*output)
