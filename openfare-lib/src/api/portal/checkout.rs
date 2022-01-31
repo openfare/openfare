@@ -12,6 +12,17 @@ pub struct Order {
     pub api_key: common::ApiKey,
 }
 
+impl Order {
+    /// Order is empty if it does not include and payment plans.
+    pub fn is_empty(&self) -> bool {
+        self.items.iter().all(|(_, all_package_plans)| {
+            all_package_plans
+                .iter()
+                .all(|package_plans| package_plans.plans.is_empty())
+        })
+    }
+}
+
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
 pub struct PackagePlans {
     pub package: crate::package::Package,

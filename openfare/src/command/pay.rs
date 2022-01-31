@@ -39,6 +39,12 @@ pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()>
         items: order_items,
         api_key: config.core.portal.api_key.clone(),
     };
+
+    if order.is_empty() {
+        println!("No applicable payment plans found.");
+        return Ok(());
+    }
+
     let checkout_url = submit_order(&order, &config)?;
     println!("Checkout via URL:\n{}", checkout_url);
     Ok(())
@@ -116,6 +122,10 @@ fn get_packages_plans(
     let mut packages_plans: Vec<_> = vec![];
     for (package, lock) in package_locks {
         let plans = openfare_lib::lock::plan::filter_applicable(&lock.plans, &config.profile)?;
+        if plans.is_empty() {
+            // Skip package if no applicable plans found.
+            continue;
+        }
 
         let plans: Vec<_> = plans
             .into_iter()
@@ -143,6 +153,7 @@ fn submit_order(
         .url
         .join(&openfare_lib::api::portal::checkout::ROUTE)?;
 
+    log::debug!("Submitting orders: {:?}", order);
     log::debug!("HTTP POST orders to endpoint: {}", url);
     let response = client.post(url.clone()).json(&order).send()?;
     if response.status() != 200 {
