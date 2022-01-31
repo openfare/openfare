@@ -7,7 +7,7 @@ mod metrics;
 mod payees;
 
 pub use common::FileStore;
-pub use metrics::Metrics;
+pub use metrics::Parameters;
 pub use payees::Payees;
 
 #[derive(
@@ -15,7 +15,7 @@ pub use payees::Payees;
 )]
 pub struct Config {
     pub core: core::Core,
-    pub metrics: metrics::Metrics,
+    pub metrics: metrics::Parameters,
     pub extensions: extensions::Extensions,
 }
 

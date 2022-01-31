@@ -53,19 +53,22 @@ pub struct PaymentPlan {
 }
 
 impl PaymentPlan {
-    pub fn is_applicable(&self, config: &crate::config::Config) -> Result<bool> {
+    pub fn is_applicable(
+        &self,
+        parameters: &crate::lock::plan::conditions::Parameters,
+    ) -> Result<bool> {
         Ok(match self.r#type {
             PlanType::Voluntary => {
                 // Voluntary plans are subject to conditions.
-                config.include_voluntary_plans && self.conditions.evaluate(&config)?
+                parameters.include_voluntary_plans && self.conditions.evaluate(&parameters)?
             }
             PlanType::Compulsory => {
                 // Non-commercial not subject to compulsory plans.
-                if !config.commercial {
+                if !parameters.commercial {
                     false
                 } else {
                     // Commercial are subject to compulsory plans based on conditions.
-                    self.conditions.evaluate(&config)?
+                    self.conditions.evaluate(&parameters)?
                 }
             }
         })
@@ -73,10 +76,13 @@ impl PaymentPlan {
 }
 
 /// Filter for applicable plans.
-pub fn filter_applicable(plans: &Plans, config: &crate::config::Config) -> Result<Plans> {
+pub fn filter_applicable(
+    plans: &Plans,
+    parameters: &crate::lock::plan::conditions::Parameters,
+) -> Result<Plans> {
     let mut applicable_plans = Plans::new();
     for (plan_id, plan) in plans {
-        if plan.is_applicable(&config)? {
+        if plan.is_applicable(&parameters)? {
             applicable_plans.insert(plan_id.clone(), plan.clone());
         }
     }

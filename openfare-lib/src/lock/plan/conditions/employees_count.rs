@@ -18,8 +18,8 @@ impl std::convert::TryFrom<&str> for EmployeesCount {
 }
 
 impl EmployeesCount {
-    pub fn evaluate(&self, config: &crate::config::Config) -> Result<bool> {
-        let employees_count = config.employees_count.ok_or(format_err!(
+    pub fn evaluate(&self, parameters: &crate::lock::plan::conditions::Parameters) -> Result<bool> {
+        let employees_count = parameters.employees_count.ok_or(format_err!(
             "Attempting to evaluate plan conditions using unset parameter `employees-count`."
         ))?;
         let result =
@@ -97,10 +97,10 @@ fn parse_value(value: &str) -> Result<(common::Operator, usize)> {
 
 #[test]
 fn test_from_str() -> Result<()> {
-    let mut config = crate::config::Config::default();
-    config.employees_count = Some(99);
+    let mut parameters = crate::lock::plan::conditions::Parameters::default();
+    parameters.employees_count = Some(99);
 
     let employees_count = EmployeesCount::try_from("<= 99")?;
-    assert!(employees_count.evaluate(&config)?);
+    assert!(employees_count.evaluate(&parameters)?);
     Ok(())
 }
