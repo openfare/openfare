@@ -37,7 +37,7 @@ pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()>
 
     let order = openfare_lib::api::portal::checkout::Order {
         items: order_items,
-        api_key: config.core.portal.api_key.clone(),
+        api_key: config.portal.api_key.clone(),
     };
 
     if order.is_empty() {
@@ -148,7 +148,6 @@ fn submit_order(
 ) -> Result<url::Url> {
     let client = reqwest::blocking::Client::new();
     let url = config
-        .core
         .portal
         .url
         .join(&openfare_lib::api::portal::checkout::ROUTE)?;

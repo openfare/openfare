@@ -4,6 +4,7 @@ mod common;
 mod core;
 mod extensions;
 mod payees;
+mod portal;
 mod profile;
 
 pub use common::FileStore;
@@ -14,6 +15,7 @@ pub use payees::Payees;
 )]
 pub struct Config {
     pub core: core::Core,
+    pub portal: portal::Portal,
     pub profile: profile::Parameters,
     pub extensions: extensions::Extensions,
 }
@@ -24,6 +26,8 @@ impl Config {
 
         return if core::is_match(name)? {
             Ok(core::set(&mut self.core, &name, &value)?)
+        } else if portal::is_match(name)? {
+            Ok(portal::set(&mut self.portal, &name, &value)?)
         } else if extensions::is_match(name)? {
             Ok(extensions::set(&mut self.extensions, &name, &value)?)
         } else if profile::is_match(name)? {
@@ -38,6 +42,8 @@ impl Config {
 
         return if core::is_match(name)? {
             Ok(core::get(&self.core, &name)?)
+        } else if portal::is_match(name)? {
+            Ok(portal::get(&self.portal, &name)?)
         } else if extensions::is_match(name)? {
             Ok(extensions::get(&self.extensions, &name)?)
         } else if profile::is_match(name)? {
