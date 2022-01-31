@@ -1,6 +1,6 @@
 [package]
 name = "openfare"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["rndhouse <rndhouse@protonmail.com>"]
 edition = "2021"
 repository = "https://github.com/openfare/openfare"
@@ -9,7 +9,7 @@ default-run = "openfare"
 description = "Micropayment funded software."
 
 [dependencies]
-openfare-lib = "0.3.0"
+openfare-lib = "0.3.1"
 openfare-js = "0.3.0"
 
 anyhow = "1.0.31"
