@@ -3,7 +3,7 @@ use anyhow::{format_err, Result};
 pub use openfare_lib::lock::plan::conditions::Parameters;
 
 fn get_regex() -> Result<regex::Regex> {
-    Ok(regex::Regex::new(r"metrics\.(.*)")?)
+    Ok(regex::Regex::new(r"profile\.(.*)")?)
 }
 
 pub fn is_match(name: &str) -> Result<bool> {

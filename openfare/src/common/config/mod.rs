@@ -3,11 +3,10 @@ use anyhow::{format_err, Result};
 mod common;
 mod core;
 mod extensions;
-mod metrics;
 mod payees;
+mod profile;
 
 pub use common::FileStore;
-pub use metrics::Parameters;
 pub use payees::Payees;
 
 #[derive(
@@ -15,7 +14,7 @@ pub use payees::Payees;
 )]
 pub struct Config {
     pub core: core::Core,
-    pub metrics: metrics::Parameters,
+    pub profile: profile::Parameters,
     pub extensions: extensions::Extensions,
 }
 
@@ -27,8 +26,8 @@ impl Config {
             Ok(core::set(&mut self.core, &name, &value)?)
         } else if extensions::is_match(name)? {
             Ok(extensions::set(&mut self.extensions, &name, &value)?)
-        } else if metrics::is_match(name)? {
-            Ok(metrics::set(&mut self.metrics, &name, &value)?)
+        } else if profile::is_match(name)? {
+            Ok(profile::set(&mut self.profile, &name, &value)?)
         } else {
             Err(format_err!(name_error_message.clone()))
         };
@@ -41,8 +40,8 @@ impl Config {
             Ok(core::get(&self.core, &name)?)
         } else if extensions::is_match(name)? {
             Ok(extensions::get(&self.extensions, &name)?)
-        } else if metrics::is_match(name)? {
-            Ok(metrics::get(&self.metrics, &name)?)
+        } else if profile::is_match(name)? {
+            Ok(profile::get(&self.profile, &name)?)
         } else {
             Err(format_err!(name_error_message.clone()))
         };
