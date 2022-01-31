@@ -144,7 +144,15 @@ fn submit_order(
         .join(&openfare_lib::api::portal::checkout::ROUTE)?;
 
     log::debug!("HTTP POST orders to endpoint: {}", url);
-    let response = client.post(url).json(&order).send()?;
+    let response = client.post(url.clone()).json(&order).send()?;
+    if response.status() != 200 {
+        return Err(anyhow::format_err!(
+            "Portal response error ({status}):\n{url}",
+            status = response.status(),
+            url = url.to_string()
+        ));
+    }
+
     let response: openfare_lib::api::portal::checkout::Response = response.json()?;
     Ok(response.checkout_url)
 }
