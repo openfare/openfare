@@ -6,7 +6,6 @@ mod extension;
 mod lock;
 mod pay;
 mod payee;
-mod payment_method;
 mod price;
 
 #[derive(Debug, StructOpt, Clone)]
@@ -22,10 +21,6 @@ pub enum Command {
     /// Manage payee profiles.
     #[structopt(name = "payee")]
     Payee(payee::Arguments),
-
-    /// Manage payee payment methods.
-    #[structopt(name = "payment-method")]
-    PaymentMethod(payment_method::Arguments),
 
     /// Manage lock file.
     #[structopt(name = "lock")]
@@ -52,10 +47,6 @@ pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()>
         }
         Command::Payee(args) => {
             payee::run_command(&args)?;
-        }
-        // TODO: Make payment-method a sub command of payee.
-        Command::PaymentMethod(args) => {
-            payment_method::run_command(&args)?;
         }
         Command::Lock(args) => {
             lock::run_command(&args)?;

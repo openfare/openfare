@@ -2,6 +2,7 @@ use crate::common::config::FileStore;
 use anyhow::Result;
 use structopt::{self, StructOpt};
 
+mod payment_method;
 use crate::common;
 
 #[derive(Debug, Clone, StructOpt)]
@@ -16,7 +17,10 @@ pub struct Arguments {
 
 #[derive(Debug, StructOpt, Clone)]
 enum Subcommands {
-    /// Add new payee.
+    /// New payee.
+    New(NewArguments),
+
+    /// Add payment method, etc.
     Add(AddArguments),
 
     /// Set active payee.
@@ -25,13 +29,17 @@ enum Subcommands {
     /// Rename payee.
     Rename(RenameArguments),
 
-    /// Remove payee.
+    /// Remove payee, payment method, etc.
     Remove(RemoveArguments),
 }
 
 pub fn run_command(args: &Arguments) -> Result<()> {
     if let Some(subcommand) = &args.commands {
         match subcommand {
+            Subcommands::New(args) => {
+                log::info!("Running command: payee new");
+                new(&args)?;
+            }
             Subcommands::Add(args) => {
                 log::info!("Running command: payee add");
                 add(&args)?;
@@ -61,7 +69,7 @@ pub fn run_command(args: &Arguments) -> Result<()> {
     no_version,
     global_settings = &[structopt::clap::AppSettings::DisableVersion]
 )]
-pub struct AddArguments {
+pub struct NewArguments {
     /// Payee name label.
     pub name: String,
 
@@ -70,7 +78,7 @@ pub struct AddArguments {
     pub skip_activate: bool,
 }
 
-fn add(args: &AddArguments) -> Result<()> {
+fn new(args: &NewArguments) -> Result<()> {
     log::debug!("Adding new payee profile.");
     let mut payees = common::config::Payees::load()?;
     payees.add(&args.name)?;
@@ -83,6 +91,22 @@ fn add(args: &AddArguments) -> Result<()> {
     }
 
     payees.dump()?;
+    Ok(())
+}
+
+#[derive(Debug, StructOpt, Clone)]
+pub enum AddArguments {
+    /// Add payment method.
+    #[structopt(name = "payment-method")]
+    PaymentMethod(payment_method::AddSubcommands),
+}
+
+fn add(args: &AddArguments) -> Result<()> {
+    match &args {
+        AddArguments::PaymentMethod(args) => {
+            payment_method::add(&args)?;
+        }
+    }
     Ok(())
 }
 
@@ -169,12 +193,35 @@ fn rename(args: &RenameArguments) -> Result<()> {
 )]
 pub struct RemoveArguments {
     /// Payee name label.
-    pub name: String,
+    #[structopt(short, long)]
+    pub name: Option<String>,
+
+    // SUBCOMMANDS
+    #[structopt(subcommand)]
+    commands: Option<RemoveSubcommands>,
+}
+
+#[derive(Debug, StructOpt, Clone)]
+enum RemoveSubcommands {
+    /// Remove payment method.
+    #[structopt(name = "payment-method")]
+    PaymentMethod(payment_method::RemoveSubcommands),
 }
 
 fn remove(args: &RemoveArguments) -> Result<()> {
-    let mut payees = common::config::Payees::load()?;
-    payees.remove(&args.name)?;
-    payees.dump()?;
+    if let Some(subcommand) = &args.commands {
+        match subcommand {
+            RemoveSubcommands::PaymentMethod(args) => {
+                payment_method::remove(&args)?;
+            }
+        }
+    } else {
+        let name = args.name.clone().ok_or(anyhow::format_err!(
+            "If subcommand not given, payee name must be specified."
+        ))?;
+        let mut payees = common::config::Payees::load()?;
+        payees.remove(&name)?;
+        payees.dump()?;
+    }
     Ok(())
 }
