@@ -1498,7 +1498,7 @@ dependencies = [
  "log",
  "maplit",
  "openfare-js",
- "openfare-lib 0.3.0",
+ "openfare-lib",
  "prettytable-rs",
  "regex",
  "reqwest 0.11.7",
@@ -1519,16 +1519,16 @@ dependencies = [
 
 [[package]]
 name = "openfare-js"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7b63f97ae7f05e9c37579777a15be0fdf25103bbf1f058ef341a9877e2d2145"
+checksum = "649b2b6c26235d16f48ad7d4cc97381f1de2146eddab67d57c04b0c90a36d162"
 dependencies = [
  "anyhow",
  "env_logger",
  "handlebars",
  "log",
  "maplit",
- "openfare-lib 0.2.1",
+ "openfare-lib",
  "reqwest 0.10.10",
  "serde",
  "serde_json",
@@ -1537,30 +1537,6 @@ dependencies = [
  "strum_macros",
  "tempdir",
  "url",
-]
-
-[[package]]
-name = "openfare-lib"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e41a05f0803e726c1363f9cef6c86b9e97c530ced73867dfbbc1d0f15a78b45"
-dependencies = [
- "anyhow",
- "bincode",
- "chrono",
- "env_logger",
- "hex",
- "lazy-regex",
- "lazy_static",
- "log",
- "regex",
- "reqwest 0.11.7",
- "rust_decimal",
- "serde",
- "serde_json",
- "structopt",
- "url",
- "uuid",
 ]
 
 [[package]]
