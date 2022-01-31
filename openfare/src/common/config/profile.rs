@@ -26,6 +26,14 @@ pub fn set(parameters: &mut Parameters, name: &str, value: &str) -> Result<()> {
             parameters.employees_count = Some(value.parse::<usize>()?);
             Ok(())
         }
+        "commercial" => {
+            parameters.commercial = value.parse::<bool>()?;
+            Ok(())
+        }
+        "include-voluntary-plans" => {
+            parameters.include_voluntary_plans = value.parse::<bool>()?;
+            Ok(())
+        }
         _ => Err(format_err!(name_error_message.clone())),
     }
 }
@@ -41,12 +49,16 @@ pub fn get(parameters: &Parameters, name: &str) -> Result<String> {
         .ok_or(format_err!(name_error_message.clone()))?
         .as_str();
 
-    match field {
-        "employees-count" => Ok(if let Some(employees_count) = parameters.employees_count {
-            employees_count.to_string()
-        } else {
-            "".to_string()
-        }),
-        _ => Err(format_err!(name_error_message.clone())),
-    }
+    Ok(match field {
+        "employees-count" => {
+            if let Some(employees_count) = parameters.employees_count {
+                employees_count.to_string()
+            } else {
+                "".to_string()
+            }
+        }
+        "commercial" => parameters.commercial.to_string(),
+        "include-voluntary-plans" => parameters.include_voluntary_plans.to_string(),
+        _ => return Err(format_err!(name_error_message.clone())),
+    })
 }
