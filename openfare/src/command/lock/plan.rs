@@ -48,7 +48,7 @@ pub fn add_compulsory(args: &AddCompulsoryArguments) -> Result<()> {
 
     let conditions = args.conditions.clone().try_into()?;
 
-    let plan = openfare_lib::lock::plan::PaymentPlan {
+    let plan = openfare_lib::lock::plan::Plan {
         r#type: openfare_lib::lock::plan::PlanType::Compulsory,
         conditions,
         payments: openfare_lib::lock::plan::Payments {
@@ -82,7 +82,7 @@ pub struct AddVoluntaryArguments {
 pub fn add_voluntary(args: &AddVoluntaryArguments) -> Result<()> {
     let mut lock_handle = common::LockFileHandle::load(&args.lock_file_args.path)?;
     let id = openfare_lib::lock::plan::next_id(&lock_handle.lock.plans)?;
-    let plan = openfare_lib::lock::plan::PaymentPlan {
+    let plan = openfare_lib::lock::plan::Plan {
         r#type: openfare_lib::lock::plan::PlanType::Voluntary,
         conditions: openfare_lib::lock::plan::conditions::Conditions::default(),
         payments: openfare_lib::lock::plan::Payments {

@@ -6,7 +6,7 @@ pub mod price;
 use super::payee;
 
 pub type Id = String;
-pub type Plans = std::collections::BTreeMap<Id, PaymentPlan>;
+pub type Plans = std::collections::BTreeMap<Id, Plan>;
 pub type SplitPercent = String;
 
 pub fn next_id(plans: &Plans) -> Result<Id> {
@@ -44,15 +44,14 @@ impl std::str::FromStr for PlanType {
     }
 }
 
-// TODO: Rename to 'Plan'.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct PaymentPlan {
+pub struct Plan {
     pub r#type: PlanType,
     pub conditions: conditions::Conditions,
     pub payments: Payments,
 }
 
-impl PaymentPlan {
+impl Plan {
     pub fn is_applicable(
         &self,
         parameters: &crate::lock::plan::conditions::Parameters,

@@ -108,7 +108,7 @@ fn select_plan<'a>(
     applicable_plans: &'a openfare_lib::lock::plan::Plans,
 ) -> Option<(
     &'a openfare_lib::lock::plan::Id,
-    &'a openfare_lib::lock::plan::PaymentPlan,
+    &'a openfare_lib::lock::plan::Plan,
 )> {
     let max_price: rust_decimal::Decimal = applicable_plans
         .iter()

@@ -22,7 +22,7 @@ pub struct PackagePlans {
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
 pub struct Plan {
     pub plan_id: String,
-    pub plan: crate::lock::plan::PaymentPlan,
+    pub plan: crate::lock::plan::Plan,
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
