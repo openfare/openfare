@@ -6,6 +6,7 @@ use structopt::{self, StructOpt};
 #[derive(Debug)]
 pub struct LockFileHandle {
     pub lock: openfare_lib::lock::Lock,
+    lock_hash: blake3::Hash,
     path: std::path::PathBuf,
 }
 
@@ -25,8 +26,12 @@ impl LockFileHandle {
             ));
         }
 
+        let lock = openfare_lib::lock::Lock::default();
+        let lock_hash = Self::get_lock_hash(&lock)?;
+
         Ok(Self {
-            lock: openfare_lib::lock::Lock::default(),
+            lock,
+            lock_hash,
             path,
         })
     }
@@ -37,8 +42,11 @@ impl LockFileHandle {
         } else {
             // No user path given, search for lock file.
             if let Some(path) = find_lock_file()? {
+                let lock = from_file(&path)?;
+                let lock_hash = Self::get_lock_hash(&lock)?;
                 Self {
-                    lock: from_file(&path)?,
+                    lock,
+                    lock_hash,
                     path,
                 }
             } else {
@@ -54,10 +62,18 @@ impl LockFileHandle {
         &self.path
     }
 
+    fn get_lock_hash(lock: &openfare_lib::lock::Lock) -> Result<blake3::Hash> {
+        let serialized_lock = bincode::serialize(&lock)?;
+        Ok(blake3::hash(&serialized_lock))
+    }
+
     fn get_lock_from_user_provided_path(path: &std::path::PathBuf) -> Result<Self> {
         Ok(if path.is_file() {
+            let lock = from_file(&path)?;
+            let lock_hash = Self::get_lock_hash(&lock)?;
             Self {
-                lock: from_file(&path)?,
+                lock,
+                lock_hash,
                 path: path.clone(),
             }
         } else if path.exists() {
@@ -67,8 +83,11 @@ impl LockFileHandle {
             ));
         } else {
             // User provided path does not exist.
+            let lock = openfare_lib::lock::Lock::default();
+            let lock_hash = Self::get_lock_hash(&lock)?;
             Self {
-                lock: openfare_lib::lock::Lock::default(),
+                lock,
+                lock_hash,
                 path: path.clone(),
             }
         })
@@ -77,7 +96,12 @@ impl LockFileHandle {
 
 impl Drop for LockFileHandle {
     fn drop(&mut self) {
-        // TODO: Check if lock has been modified using hashes. Don't write unmodified.
+        // Skip writing lock if unchanged.
+        let current_lock_hash = Self::get_lock_hash(&self.lock).expect("current lock hash");
+        if current_lock_hash == self.lock_hash {
+            return ();
+        }
+
         if self.path.is_file() {
             std::fs::remove_file(&self.path).unwrap_or_default();
         }
@@ -102,9 +126,6 @@ impl Drop for LockFileHandle {
 
         file.write_all(lock_json.as_bytes())
             .expect("Unable to write data");
-
-        // let writer = std::io::BufWriter::new(file);
-        // serde_json::to_writer_pretty(writer, &self.lock).unwrap();
     }
 }
 
