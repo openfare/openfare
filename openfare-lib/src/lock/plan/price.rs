@@ -38,13 +38,13 @@ impl std::convert::TryFrom<&str> for Currency {
     }
 }
 
-impl std::string::ToString for Currency {
-    fn to_string(&self) -> String {
-        match self {
+impl std::fmt::Display for Currency {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let currency = match self {
             Self::USD => "USD",
             Self::BTC => "BTC",
-        }
-        .to_string()
+        };
+        write!(formatter, "{}", currency)
     }
 }
 
@@ -71,6 +71,12 @@ impl std::convert::TryFrom<&str> for Price {
             rust_decimal::prelude::RoundingStrategy::AwayFromZero,
         );
         Ok(price)
+    }
+}
+
+impl std::fmt::Display for Price {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(formatter, "{} {}", self.quantity, self.currency)
     }
 }
 

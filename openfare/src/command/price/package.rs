@@ -45,10 +45,8 @@ pub fn price(
         if let Some(price_report) =
             crate::price::get_report(&extension_result.package_locks, &config)?
         {
-            println!(
-                "Registry: {name}",
-                name = extension_result.registry_host_name
-            );
+            println!("Registry: {}", extension_result.registry_host_name);
+            println!("Total: {}", price_report.price);
             format::print(&price_report, &format::Format::Table, true)?;
             println!("");
         }
