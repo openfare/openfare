@@ -46,6 +46,7 @@ pub fn price(
                 "Project: {path}",
                 path = extension_result.project_path.display()
             );
+            println!("Total: {}", price_report.price);
             format::print(&price_report, &format::Format::Table, true)?;
             println!("");
         }
