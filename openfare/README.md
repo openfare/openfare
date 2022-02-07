@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://openfare.dev">
-    <img align="center" src="../assets/logo_circle.svg" alt="OpenFare Logo" title="OpenFare" align="right" width="100" />
+    <img align="center" src="assets/logo_circle.svg" alt="OpenFare Logo" title="OpenFare" align="right" width="100" />
   </a>
   <h1 align="center">OpenFare</h1>
 </p>
