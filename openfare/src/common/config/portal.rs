@@ -39,7 +39,7 @@ impl std::fmt::Display for Portal {
 }
 
 pub fn set(portal: &mut Portal, name: &str, value: &str) -> Result<()> {
-    let error_message = format!("Unknown setting field name: {}", name);
+    let error_message = format!("Unknown setter field name: {}", name);
     let field = common::get_field(&name, &COMMAND, &error_message)?;
 
     match field.as_str() {
