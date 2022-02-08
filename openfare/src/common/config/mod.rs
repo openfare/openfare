@@ -28,7 +28,7 @@ impl Config {
             Ok(core::set(&mut self.core, &name, &value)?)
         } else if common::is_match(name, portal::COMMAND)? {
             Ok(portal::set(&mut self.portal, &name, &value)?)
-        } else if extensions::is_match(name)? {
+        } else if common::is_match(name, extensions::COMMAND)? {
             Ok(extensions::set(&mut self.extensions, &name, &value)?)
         } else if common::is_match(name, profile::COMMAND)? {
             Ok(profile::set(&mut self.profile, &name, &value)?)
@@ -44,7 +44,7 @@ impl Config {
             Ok(core::get(&self.core, &name)?)
         } else if common::is_match(name, portal::COMMAND)? {
             Ok(portal::get(&self.portal, &name)?)
-        } else if extensions::is_match(name)? {
+        } else if common::is_match(name, extensions::COMMAND)? {
             Ok(extensions::get(&self.extensions, &name)?)
         } else if common::is_match(name, profile::COMMAND)? {
             Ok(profile::get(&self.profile, &name)?)
