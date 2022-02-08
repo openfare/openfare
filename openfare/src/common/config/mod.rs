@@ -22,7 +22,7 @@ pub struct Config {
 
 impl Config {
     pub fn set(&mut self, name: &str, value: &str) -> Result<()> {
-        let name_error_message = format!("Unknown settings field: {}", name);
+        let name_error_message = format!("Unknown setter field: {}", name);
 
         return if core::is_match(name)? {
             Ok(core::set(&mut self.core, &name, &value)?)
@@ -30,7 +30,7 @@ impl Config {
             Ok(portal::set(&mut self.portal, &name, &value)?)
         } else if extensions::is_match(name)? {
             Ok(extensions::set(&mut self.extensions, &name, &value)?)
-        } else if profile::is_match(name)? {
+        } else if common::is_match(name, profile::COMMAND)? {
             Ok(profile::set(&mut self.profile, &name, &value)?)
         } else {
             Err(format_err!(name_error_message.clone()))
@@ -38,7 +38,7 @@ impl Config {
     }
 
     pub fn get(&self, name: &str) -> Result<String> {
-        let name_error_message = format!("Unknown settings field: {}", name);
+        let name_error_message = format!("Unknown getter field: {}", name);
 
         return if core::is_match(name)? {
             Ok(core::get(&self.core, &name)?)
@@ -46,7 +46,7 @@ impl Config {
             Ok(portal::get(&self.portal, &name)?)
         } else if extensions::is_match(name)? {
             Ok(extensions::get(&self.extensions, &name)?)
-        } else if profile::is_match(name)? {
+        } else if common::is_match(name, profile::COMMAND)? {
             Ok(profile::get(&self.profile, &name)?)
         } else {
             Err(format_err!(name_error_message.clone()))
