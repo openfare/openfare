@@ -1,4 +1,4 @@
-pub mod checkout;
+pub mod basket;
 pub mod common;
 
 lazy_static! {

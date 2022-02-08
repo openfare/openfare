@@ -1,7 +1,7 @@
 use super::common;
 
 lazy_static! {
-    pub static ref ROUTE: String = format!("{}/checkout", super::ROUTE.as_str());
+    pub static ref ROUTE: String = format!("{}/basket", super::ROUTE.as_str());
 }
 
 pub type ExtensionName = String;

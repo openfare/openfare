@@ -35,7 +35,7 @@ pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()>
         order_items.insert(extension_dependency_locks.extension_name, packages_plans);
     }
 
-    let order = openfare_lib::api::portal::checkout::Order {
+    let order = openfare_lib::api::portal::basket::Order {
         items: order_items,
         api_key: config.portal.api_key.clone(),
     };
@@ -118,7 +118,7 @@ fn get_packages_plans(
         openfare_lib::lock::Lock,
     >,
     config: &common::config::Config,
-) -> Result<Vec<openfare_lib::api::portal::checkout::PackagePlans>> {
+) -> Result<Vec<openfare_lib::api::portal::basket::PackagePlans>> {
     let mut packages_plans: Vec<_> = vec![];
     for (package, lock) in package_locks {
         let plans = openfare_lib::lock::plan::filter_applicable(&lock.plans, &config.profile)?;
@@ -129,10 +129,10 @@ fn get_packages_plans(
 
         let plans: Vec<_> = plans
             .into_iter()
-            .map(|(plan_id, plan)| openfare_lib::api::portal::checkout::Plan { plan_id, plan })
+            .map(|(plan_id, plan)| openfare_lib::api::portal::basket::Plan { plan_id, plan })
             .collect();
 
-        let order_item = openfare_lib::api::portal::checkout::PackagePlans {
+        let order_item = openfare_lib::api::portal::basket::PackagePlans {
             package: package.clone(),
             plans,
             payees: lock.payees.clone(),
@@ -143,14 +143,14 @@ fn get_packages_plans(
 }
 
 fn submit_order(
-    order: &openfare_lib::api::portal::checkout::Order,
+    order: &openfare_lib::api::portal::basket::Order,
     config: &common::config::Config,
 ) -> Result<url::Url> {
     let client = reqwest::blocking::Client::new();
     let url = config
         .portal
         .url
-        .join(&openfare_lib::api::portal::checkout::ROUTE)?;
+        .join(&openfare_lib::api::portal::basket::ROUTE)?;
 
     log::debug!("Submitting orders: {:?}", order);
     log::debug!("HTTP POST orders to endpoint: {}", url);
@@ -163,6 +163,6 @@ fn submit_order(
         ));
     }
 
-    let response: openfare_lib::api::portal::checkout::Response = response.json()?;
+    let response: openfare_lib::api::portal::basket::Response = response.json()?;
     Ok(response.checkout_url)
 }
