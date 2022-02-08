@@ -1,4 +1,7 @@
+use super::common;
 use anyhow::{format_err, Result};
+
+pub const COMMAND: &'static str = "core";
 
 #[derive(
     Debug, Clone, Default, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize,
@@ -8,26 +11,21 @@ pub struct Core {
     pub preferred_currency: openfare_lib::lock::plan::price::Currency,
 }
 
-fn get_regex() -> Result<regex::Regex> {
-    Ok(regex::Regex::new(r"core\.(.*)")?)
-}
-
-pub fn is_match(name: &str) -> Result<bool> {
-    Ok(get_regex()?.is_match(name))
+impl std::fmt::Display for Core {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            serde_json::to_string_pretty(&self).map_err(|_| std::fmt::Error::default())?
+        )
+    }
 }
 
 pub fn set(_core: &mut Core, name: &str, _value: &str) -> Result<()> {
-    let name_error_message = format!("Unknown setting field name: {}", name);
+    let error_message = format!("Unknown setter field name: {}", name);
+    let field = common::get_field(&name, &COMMAND, &error_message)?;
 
-    let captures = get_regex()?
-        .captures(name)
-        .ok_or(format_err!(name_error_message.clone()))?;
-    let field = captures
-        .get(1)
-        .ok_or(format_err!(name_error_message.clone()))?
-        .as_str();
-
-    match field {
+    match field.as_str() {
         "preferred-currency" => {
             // TODO: support alternative preferred currency
             // core.preferred_currency = value.try_into()?;
@@ -36,26 +34,20 @@ pub fn set(_core: &mut Core, name: &str, _value: &str) -> Result<()> {
             ));
         }
         _ => {
-            return Err(format_err!(name_error_message.clone()));
+            return Err(format_err!(error_message.clone()));
         }
     }
 }
 
 pub fn get(core: &Core, name: &str) -> Result<String> {
-    let name_error_message = format!("Unknown setting field name: {}", name);
+    let error_message = format!("Unknown getter field name: {}", name);
+    let field = common::get_field(&name, &COMMAND, &error_message)?;
 
-    let captures = get_regex()?
-        .captures(name)
-        .ok_or(format_err!(name_error_message.clone()))?;
-    let field = captures
-        .get(1)
-        .ok_or(format_err!(name_error_message.clone()))?
-        .as_str();
-
-    Ok(match field {
+    Ok(match field.as_str() {
+        COMMAND => core.to_string(),
         "preferred-currency" => core.preferred_currency.to_string(),
         _ => {
-            return Err(format_err!(name_error_message.clone()));
+            return Err(format_err!(error_message.clone()));
         }
     })
 }

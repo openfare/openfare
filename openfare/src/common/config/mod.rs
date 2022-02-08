@@ -24,7 +24,7 @@ impl Config {
     pub fn set(&mut self, name: &str, value: &str) -> Result<()> {
         let name_error_message = format!("Unknown setter field: {}", name);
 
-        return if core::is_match(name)? {
+        return if common::is_match(name, core::COMMAND)? {
             Ok(core::set(&mut self.core, &name, &value)?)
         } else if common::is_match(name, portal::COMMAND)? {
             Ok(portal::set(&mut self.portal, &name, &value)?)
@@ -40,7 +40,7 @@ impl Config {
     pub fn get(&self, name: &str) -> Result<String> {
         let name_error_message = format!("Unknown getter field: {}", name);
 
-        return if core::is_match(name)? {
+        return if common::is_match(name, core::COMMAND)? {
             Ok(core::get(&self.core, &name)?)
         } else if common::is_match(name, portal::COMMAND)? {
             Ok(portal::get(&self.portal, &name)?)
