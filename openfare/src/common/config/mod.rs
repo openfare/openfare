@@ -22,7 +22,7 @@ pub struct Config {
 
 impl Config {
     pub fn set(&mut self, name: &str, value: &str) -> Result<()> {
-        let name_error_message = format!("Unknown setter field: {}", name);
+        let error_message = format!("Unknown setter field: {}", name);
 
         return if common::is_match(name, core::COMMAND)? {
             Ok(core::set(&mut self.core, &name, &value)?)
@@ -33,12 +33,12 @@ impl Config {
         } else if common::is_match(name, profile::COMMAND)? {
             Ok(profile::set(&mut self.profile, &name, &value)?)
         } else {
-            Err(format_err!(name_error_message.clone()))
+            Err(format_err!(error_message.clone()))
         };
     }
 
     pub fn get(&self, name: &str) -> Result<String> {
-        let name_error_message = format!("Unknown getter field: {}", name);
+        let error_message = format!("Unknown getter field: {}", name);
 
         return if common::is_match(name, core::COMMAND)? {
             Ok(core::get(&self.core, &name)?)
@@ -49,7 +49,7 @@ impl Config {
         } else if common::is_match(name, profile::COMMAND)? {
             Ok(profile::get(&self.profile, &name)?)
         } else {
-            Err(format_err!(name_error_message.clone()))
+            Err(format_err!(error_message.clone()))
         };
     }
 }
