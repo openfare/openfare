@@ -152,14 +152,3 @@ where
         Err(format_err!("Failed to find ok or err result from process."))
     }
 }
-
-#[test]
-fn test_deserialize() -> Result<()> {
-    let stdout = "0109000000000000006e706d6a732e636f6d01070000000000000069732d6576656e0500000000000000312e302e30000400000000000000090000000000000069732d6275666665720500000000000000312e312e3600090000000000000069732d6e756d6265720500000000000000332e302e3000060000000000000069732d6f64640500000000000000302e312e320007000000000000006b696e642d6f660500000000000000332e322e320000";
-    let result = hex::decode(&stdout)?.clone();
-    let process_result: ProcessResult<
-        crate::extension::commands::package_dependencies_locks::PackageDependenciesLocks,
-    > = bincode::deserialize(&result).expect("deserialize result with bincode");
-    println!("process_result: {:?}", process_result);
-    Ok(())
-}
