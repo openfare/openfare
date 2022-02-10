@@ -28,15 +28,18 @@ pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()>
     let all_extension_dependency_locks =
         get_dependencies_locks(&extension_names, &extension_args, &config)?;
 
-    let mut order_items = std::collections::BTreeMap::<_, _>::new();
+    let mut items = Vec::<_>::new();
     for extension_dependency_locks in all_extension_dependency_locks {
-        let packages_plans =
-            get_packages_plans(&extension_dependency_locks.package_locks, &config)?;
-        order_items.insert(extension_dependency_locks.extension_name, packages_plans);
+        let packages_plans = get_packages_plans(
+            &extension_dependency_locks.extension_name,
+            &extension_dependency_locks.package_locks,
+            &config,
+        )?;
+        items.extend(packages_plans);
     }
 
     let order = openfare_lib::api::portal::basket::Order {
-        items: order_items,
+        items,
         api_key: config.portal.api_key.clone(),
     };
 
@@ -113,12 +116,13 @@ fn get_dependencies_locks(
 
 /// Get applicable payment plans from packages.
 fn get_packages_plans(
+    extension_name: &str,
     package_locks: &std::collections::BTreeMap<
         openfare_lib::package::Package,
         openfare_lib::lock::Lock,
     >,
     config: &common::config::Config,
-) -> Result<Vec<openfare_lib::api::portal::basket::PackagePlans>> {
+) -> Result<Vec<openfare_lib::api::portal::basket::Item>> {
     let mut packages_plans: Vec<_> = vec![];
     for (package, lock) in package_locks {
         let plans = openfare_lib::lock::plan::filter_applicable(&lock.plans, &config.profile)?;
@@ -132,9 +136,16 @@ fn get_packages_plans(
             .map(|(plan_id, plan)| openfare_lib::api::portal::basket::Plan { plan_id, plan })
             .collect();
 
-        let order_item = openfare_lib::api::portal::basket::PackagePlans {
+        let total_price = plans
+            .iter()
+            .map(|p| p.plan.payments.total.clone().unwrap_or_default())
+            .sum();
+
+        let order_item = openfare_lib::api::portal::basket::Item {
             package: package.clone(),
+            extension_name: extension_name.to_string(),
             plans,
+            total_price,
             payees: lock.payees.clone(),
         };
         packages_plans.push(order_item);

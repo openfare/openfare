@@ -8,25 +8,23 @@ pub type ExtensionName = String;
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
 pub struct Order {
-    pub items: std::collections::BTreeMap<ExtensionName, Vec<PackagePlans>>,
+    pub items: Vec<Item>,
     pub api_key: common::ApiKey,
 }
 
 impl Order {
-    /// Order is empty if it does not include and payment plans.
+    /// Order is empty if no plan in any item.
     pub fn is_empty(&self) -> bool {
-        self.items.iter().all(|(_, all_package_plans)| {
-            all_package_plans
-                .iter()
-                .all(|package_plans| package_plans.plans.is_empty())
-        })
+        self.items.iter().all(|item| item.plans.is_empty())
     }
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
-pub struct PackagePlans {
+pub struct Item {
     pub package: crate::package::Package,
+    pub extension_name: ExtensionName,
     pub plans: Vec<Plan>,
+    pub total_price: crate::lock::plan::price::Price,
     pub payees: crate::lock::payee::Payees,
 }
 

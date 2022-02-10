@@ -56,6 +56,24 @@ pub struct Price {
     pub currency: Currency,
 }
 
+impl std::iter::Sum for Price {
+    fn sum<I>(iter: I) -> Self
+    where
+        I: Iterator<Item = Self>,
+    {
+        let mut currency = None;
+        let mut quantity = Quantity::from(0 as i64);
+        for price in iter {
+            quantity += price.quantity;
+            currency = Some(price.currency);
+        }
+        Self {
+            quantity,
+            currency: currency.unwrap_or_default(),
+        }
+    }
+}
+
 impl std::convert::TryFrom<&str> for Price {
     type Error = anyhow::Error;
     fn try_from(value: &str) -> Result<Self, Self::Error> {
