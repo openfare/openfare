@@ -6,7 +6,7 @@ lazy_static! {
 
 pub type ExtensionName = String;
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct Order {
     pub items: Vec<Item>,
     pub api_key: common::ApiKey,
@@ -19,7 +19,7 @@ impl Order {
     }
 }
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct Item {
     pub package: crate::package::Package,
     pub extension_name: ExtensionName,
@@ -28,13 +28,13 @@ pub struct Item {
     pub payees: crate::lock::payee::Payees,
 }
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct Plan {
     pub plan_id: String,
     pub plan: crate::lock::plan::Plan,
 }
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct Response {
     pub checkout_url: url::Url,
 }
