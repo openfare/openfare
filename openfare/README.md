@@ -128,15 +128,3 @@ The following example describes a single payment plan. The plan is applicable to
     }
 }
 ```
-
-## Motivation
-
-<p align="center">
-    <a align="center" href="https://twitter.com/FiloSottile/status/1469441477642178561">
-    <img src="assets/filippo_tweet.png" alt="Filippo Tweet" width="477" height="515" />
-    </a>
-</p>
-
-The public software ecosystem has a maintenance problem. Thousands of critical software dependencies are maintained on the good will of casual volunteers. This fragile state means that critical software is abandoned or maintained with a passing interest. A security and stability nightmare.
-
-Most sponsorship and donation schemes have largely failed. They do not reach critical software dependencies which are outside of the limelight. The solution is to programmatically distribute funds to public software contributors with micropayments at scale.
