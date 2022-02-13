@@ -13,11 +13,11 @@ type Method = openfare_lib::lock::payee::payment_methods::PayPal;
 )]
 pub struct AddArguments {
     /// PayPal ID.
-    #[structopt(long = "id")]
+    #[structopt(long)]
     pub id: Option<String>,
 
     /// Email.
-    #[structopt(long = "email", required_unless = "id")]
+    #[structopt(long, required_unless = "id")]
     pub email: Option<String>,
 }
 

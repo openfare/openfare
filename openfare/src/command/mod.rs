@@ -11,26 +11,21 @@ mod profile;
 #[derive(Debug, StructOpt, Clone)]
 pub enum Command {
     /// Price a package and its dependencies.
-    #[structopt(name = "price")]
     Price(price::Arguments),
 
     /// Pay fees or donations to project dependencies.
-    #[structopt(name = "pay")]
     Pay(pay::Arguments),
 
     /// Manage profile.
     Profile(profile::Arguments),
 
     /// Manage lock file.
-    #[structopt(name = "lock")]
     Lock(lock::Arguments),
 
     /// Configure settings.
-    #[structopt(name = "config")]
     Config(config::Arguments),
 
     /// Manage extensions.
-    #[structopt(name = "extension")]
     Extension(extension::Arguments),
 }
 

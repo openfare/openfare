@@ -70,19 +70,15 @@ fn new(args: &NewArguments) -> Result<()> {
 #[derive(Debug, StructOpt, Clone)]
 pub enum AddArguments {
     /// Add plan.
-    #[structopt(name = "plan")]
     Plan(plan::AddArguments),
 
     /// Add payee profile to payment plan(s).
-    #[structopt(name = "payee")]
     Payee(payee::AddArguments),
 
     /// Add payment parameters.
-    #[structopt(name = "payment")]
     Payment(payment::AddArguments),
 
     /// Add condition(s) to plan(s).
-    #[structopt(name = "condition")]
     Condition(condition::AddArguments),
 }
 
@@ -108,19 +104,15 @@ fn add(args: &AddArguments) -> Result<()> {
 #[derive(Debug, StructOpt, Clone)]
 pub enum RemoveSubcommands {
     /// Remove plan.
-    #[structopt(name = "plan")]
     Plan(plan::RemoveArguments),
 
     /// Remove payee profile from payment plan(s).
-    #[structopt(name = "payee")]
     Payee(payee::RemoveArguments),
 
     /// Remove payment parameters from payment plan(s).
-    #[structopt(name = "payment")]
     Payment(payment::RemoveArguments),
 
     /// Remove condition(s) from payment plan(s).
-    #[structopt(name = "condition")]
     Condition(condition::RemoveArguments),
 }
 
