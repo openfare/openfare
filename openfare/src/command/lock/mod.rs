@@ -3,9 +3,9 @@ use structopt::{self, StructOpt};
 
 mod common;
 mod condition;
-mod payee;
 mod payment;
 mod plan;
+mod profile;
 
 #[derive(Debug, Clone, StructOpt)]
 pub struct Arguments {
@@ -21,9 +21,9 @@ pub struct Arguments {
 enum Subcommands {
     /// New lock file.
     New(NewArguments),
-    /// Add plan, payee, etc.
+    /// Add plan, profile, etc.
     Add(AddArguments),
-    /// Remove plan, payee, payment, condition, etc.
+    /// Remove plan, profile, payment, condition, etc.
     Remove(RemoveSubcommands),
 }
 
@@ -73,7 +73,7 @@ pub enum AddArguments {
     Plan(plan::AddArguments),
 
     /// Add payee profile to payment plan(s).
-    Payee(payee::AddArguments),
+    Profile(profile::AddArguments),
 
     /// Add payment parameters.
     Payment(payment::AddArguments),
@@ -87,8 +87,8 @@ fn add(args: &AddArguments) -> Result<()> {
         AddArguments::Plan(args) => {
             plan::add(&args)?;
         }
-        AddArguments::Payee(args) => {
-            payee::add(&args)?;
+        AddArguments::Profile(args) => {
+            profile::add(&args)?;
         }
         AddArguments::Payment(args) => {
             payment::add(&args)?;
@@ -107,7 +107,7 @@ pub enum RemoveSubcommands {
     Plan(plan::RemoveArguments),
 
     /// Remove payee profile from payment plan(s).
-    Payee(payee::RemoveArguments),
+    Profile(profile::RemoveArguments),
 
     /// Remove payment parameters from payment plan(s).
     Payment(payment::RemoveArguments),
@@ -121,8 +121,8 @@ fn remove(subcommand: &RemoveSubcommands) -> Result<()> {
         RemoveSubcommands::Plan(args) => {
             plan::remove(&args)?;
         }
-        RemoveSubcommands::Payee(args) => {
-            payee::remove(&args)?;
+        RemoveSubcommands::Profile(args) => {
+            profile::remove(&args)?;
         }
         RemoveSubcommands::Payment(args) => {
             payment::remove(&args)?;
