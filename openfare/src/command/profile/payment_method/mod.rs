@@ -6,6 +6,7 @@ mod paypal;
 #[derive(Debug, StructOpt, Clone)]
 pub enum AddSubcommands {
     /// Set PayPal payment method.
+    #[structopt(name = "paypal")]
     PayPal(paypal::AddArguments),
 
     /// Set BTC lightning keysend payment method.
