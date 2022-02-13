@@ -7,8 +7,10 @@ pub type PaymentMethodName = String;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Payee {
+    pub label: Name,
+    pub url: String,
     #[serde(rename = "unique-id")]
-    unique_id: uuid::Uuid,
+    pub unique_id: uuid::Uuid,
     #[serde(rename = "payment-methods")]
     payment_methods: std::collections::BTreeMap<PaymentMethodName, serde_json::Value>,
 }
@@ -53,6 +55,8 @@ impl Payee {
 impl std::default::Default for Payee {
     fn default() -> Self {
         Self {
+            label: "".to_string(),
+            url: "".to_string(),
             unique_id: uuid::Uuid::new_v4(),
             payment_methods: std::collections::BTreeMap::<_, _>::new(),
         }

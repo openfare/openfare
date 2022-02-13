@@ -36,29 +36,25 @@ pub fn add(args: &AddArguments) -> Result<()> {
         .map(|id| id.to_string())
         .collect::<std::collections::BTreeSet<_>>();
 
-    let payees = crate::common::config::Payees::load()?;
-    if let Some((payee_name, payee)) = payees.active()? {
-        if let Some((name, _payee)) =
-            openfare_lib::lock::payee::get_lock_payee(payee, &lock_handle.lock.payees)
-        {
-            add_shares_to_plans(&name, args.shares, &plan_ids, &mut lock_handle);
-        } else {
-            // Add payee to lock.
-            let name = if lock_handle.lock.payees.contains_key(payee_name) {
-                openfare_lib::lock::payee::unique_name(&payee_name, &payee)
-            } else {
-                payee_name.clone()
-            };
-            lock_handle.lock.payees.insert(name.clone(), payee.clone());
-
-            add_shares_to_plans(&name, args.shares, &plan_ids, &mut lock_handle);
-        }
+    let payee = crate::common::config::Payee::load()?;
+    if let Some((name, _payee)) =
+        openfare_lib::lock::payee::get_lock_payee(&*payee, &lock_handle.lock.payees)
+    {
+        add_shares_to_plans(&name, args.shares, &plan_ids, &mut lock_handle);
     } else {
-        return Err(format_err!(
-            "Active payee not found. Create payee: openfare add payee"
-        ));
-    }
+        // Add payee to lock.
+        let name = if lock_handle.lock.payees.contains_key(&(*payee).label) {
+            openfare_lib::lock::payee::unique_name(&(*payee).label, &payee)
+        } else {
+            (*payee).label.clone()
+        };
+        lock_handle
+            .lock
+            .payees
+            .insert(name.clone(), (*payee).clone());
 
+        add_shares_to_plans(&name, args.shares, &plan_ids, &mut lock_handle);
+    }
     Ok(())
 }
 
@@ -93,7 +89,7 @@ pub struct RemoveArguments {
     #[structopt(long, short)]
     pub id: Vec<usize>,
 
-    /// Payee name label(s). Removes active payee only if unset.
+    /// Payee name label(s). Removes local payee only if unset.
     #[structopt(name = "name", long = "name", short)]
     pub names: Vec<String>,
 
@@ -111,7 +107,7 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
 
     // If no payee names given, use active payee name.
     let names = if args.names.is_empty() {
-        get_lock_active_payee_name(&lock_handle)?
+        get_lock_local_payee(&lock_handle)?
             .and_then(|name| Some(vec![name]))
             .unwrap_or_default()
     } else {
@@ -140,19 +136,16 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
     Ok(())
 }
 
-fn get_lock_active_payee_name(
+fn get_lock_local_payee(
     lock_handle: &common::LockFileHandle,
 ) -> Result<Option<openfare_lib::lock::payee::Name>> {
-    let payees = crate::common::config::Payees::load()?;
-    Ok(if let Some((_, active_payee)) = payees.active()? {
-        if let Some((name, _)) =
-            openfare_lib::lock::payee::get_lock_payee(active_payee, &lock_handle.lock.payees)
-        {
-            Some(name.clone())
-        } else {
-            None
-        }
+    let payee = crate::common::config::Payee::load()?;
+    let name = if let Some((name, _)) =
+        openfare_lib::lock::payee::get_lock_payee(&*payee, &lock_handle.lock.payees)
+    {
+        Some(name.clone())
     } else {
         None
-    })
+    };
+    Ok(name)
 }

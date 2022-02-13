@@ -18,7 +18,7 @@ pub enum Command {
     #[structopt(name = "pay")]
     Pay(pay::Arguments),
 
-    /// Manage payee profiles.
+    /// Manage payee.
     #[structopt(name = "payee")]
     Payee(payee::Arguments),
 

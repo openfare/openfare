@@ -3,12 +3,12 @@ use anyhow::{format_err, Result};
 mod common;
 mod core;
 mod extensions;
-mod payees;
+mod payee;
 mod portal;
 mod profile;
 
 pub use common::FileStore;
-pub use payees::Payees;
+pub use payee::Payee;
 
 #[derive(
     Debug, Clone, Default, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize,
