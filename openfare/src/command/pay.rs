@@ -77,8 +77,9 @@ fn get_dependencies_locks(
         .zip(extensions_results.iter())
         .filter_map(|(extension, extension_result)| {
             log::debug!(
-                "Inspecting package OpenFare locks found by extension: {}",
-                extension.name()
+                "Inspecting package OpenFare locks found by extension: {name} ({version})",
+                name = extension.name(),
+                version = extension.version()
             );
 
             let locks = match extension_result {

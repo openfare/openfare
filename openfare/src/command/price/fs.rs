@@ -22,8 +22,9 @@ pub fn price(
 
     for (extension, extension_result) in extensions.iter().zip(extensions_results.iter()) {
         log::debug!(
-            "Inspecting package OpenFare locks found by extension: {}",
-            extension.name()
+            "Inspecting package OpenFare locks found by extension: {name} ({version})",
+            name = extension.name(),
+            version = extension.version()
         );
 
         let extension_result = match extension_result {
