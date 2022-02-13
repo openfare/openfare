@@ -114,6 +114,9 @@ pub trait Extension: Send + Sync {
     // Returns supported registries host names.
     fn registries(&self) -> Vec<String>;
 
+    // Returns extension version.
+    fn version(&self) -> String;
+
     /// Returns OpenFare locks for a package and its dependencies.
     fn package_dependencies_locks(
         &self,

@@ -7,6 +7,7 @@ use super::common;
 pub struct StaticData {
     pub name: String,
     pub registry_host_names: Vec<String>,
+    pub version: String,
 }
 
 #[derive(Debug, Clone)]
@@ -14,6 +15,7 @@ pub struct ProcessExtension {
     process_path_: std::path::PathBuf,
     name_: String,
     registry_host_names_: Vec<String>,
+    version_: String,
 }
 
 impl common::FromProcess for ProcessExtension {
@@ -49,6 +51,7 @@ impl common::FromProcess for ProcessExtension {
             process_path_: process_path.clone(),
             name_: static_data.name,
             registry_host_names_: static_data.registry_host_names,
+            version_: static_data.version,
         })
     }
 }
@@ -60,6 +63,10 @@ impl common::Extension for ProcessExtension {
 
     fn registries(&self) -> Vec<String> {
         self.registry_host_names_.clone()
+    }
+
+    fn version(&self) -> String {
+        self.version_.clone()
     }
 
     fn package_dependencies_locks(

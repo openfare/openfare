@@ -6,6 +6,7 @@ pub fn run_command<T: Extension + std::fmt::Debug>(extension: &T) -> Result<()> 
     let data = Ok(crate::extension::process::StaticData {
         name: extension.name(),
         registry_host_names: extension.registries(),
+        version: extension.version(),
     });
     common::communicate_result(data)?;
     Ok(())
