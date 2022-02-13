@@ -56,7 +56,7 @@ fn set_directory_hidden_windows(_directory: &std::path::PathBuf) {}
 pub struct ConfigPaths {
     pub root_directory: std::path::PathBuf,
     pub config_file: std::path::PathBuf,
-    pub payee_file: std::path::PathBuf,
+    pub profile_file: std::path::PathBuf,
     pub extensions_directory: std::path::PathBuf,
 }
 
@@ -69,7 +69,7 @@ impl ConfigPaths {
         Ok(Self {
             root_directory: root_directory.into(),
             config_file: root_directory.join("config.json"),
-            payee_file: root_directory.join("payee.json"),
+            profile_file: root_directory.join("profile.json"),
             extensions_directory: root_directory.join("extensions"),
         })
     }

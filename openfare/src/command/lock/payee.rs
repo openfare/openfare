@@ -36,7 +36,7 @@ pub fn add(args: &AddArguments) -> Result<()> {
         .map(|id| id.to_string())
         .collect::<std::collections::BTreeSet<_>>();
 
-    let payee = crate::common::config::Payee::load()?;
+    let payee = crate::profile::Profile::load()?;
     if let Some((name, _payee)) =
         openfare_lib::lock::payee::get_lock_payee(&*payee, &lock_handle.lock.payees)
     {
@@ -139,7 +139,7 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
 fn get_lock_local_payee(
     lock_handle: &common::LockFileHandle,
 ) -> Result<Option<openfare_lib::lock::payee::Name>> {
-    let payee = crate::common::config::Payee::load()?;
+    let payee = crate::profile::Profile::load()?;
     let name = if let Some((name, _)) =
         openfare_lib::lock::payee::get_lock_payee(&*payee, &lock_handle.lock.payees)
     {

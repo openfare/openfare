@@ -1,14 +1,12 @@
 use anyhow::{format_err, Result};
 
-mod common;
+pub mod common;
 mod core;
 mod extensions;
-mod payee;
 mod portal;
 mod profile;
 
-pub use common::FileStore;
-pub use payee::Payee;
+pub use common::{FilePath, FileStore};
 
 #[derive(
     Debug, Clone, Default, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize,

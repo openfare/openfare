@@ -5,14 +5,14 @@ use crate::common::config::FileStore;
 
 #[derive(Debug, StructOpt, Clone)]
 pub struct AddArguments {
-    /// Payee URL.
+    /// Profile URL.
     url: String,
 }
 
 pub fn add(args: &AddArguments) -> Result<()> {
-    let mut payee = crate::common::config::Payee::load()?;
-    (*payee).url = args.url.clone();
-    payee.dump()?;
+    let mut profile = crate::profile::Profile::load()?;
+    (*profile).url = args.url.clone();
+    profile.dump()?;
     Ok(())
 }
 
@@ -20,8 +20,8 @@ pub fn add(args: &AddArguments) -> Result<()> {
 pub struct RemoveArguments {}
 
 pub fn remove(_args: &RemoveArguments) -> Result<()> {
-    let mut payee = crate::common::config::Payee::load()?;
-    (*payee).url = "".to_string();
-    payee.dump()?;
+    let mut profile = crate::profile::Profile::load()?;
+    (*profile).url = "".to_string();
+    profile.dump()?;
     Ok(())
 }

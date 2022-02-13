@@ -5,8 +5,8 @@ mod config;
 mod extension;
 mod lock;
 mod pay;
-mod payee;
 mod price;
+mod profile;
 
 #[derive(Debug, StructOpt, Clone)]
 pub enum Command {
@@ -18,9 +18,8 @@ pub enum Command {
     #[structopt(name = "pay")]
     Pay(pay::Arguments),
 
-    /// Manage payee.
-    #[structopt(name = "payee")]
-    Payee(payee::Arguments),
+    /// Manage profile.
+    Profile(profile::Arguments),
 
     /// Manage lock file.
     #[structopt(name = "lock")]
@@ -45,8 +44,8 @@ pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()>
         Command::Pay(args) => {
             pay::run_command(&args, &extension_args)?;
         }
-        Command::Payee(args) => {
-            payee::run_command(&args)?;
+        Command::Profile(args) => {
+            profile::run_command(&args)?;
         }
         Command::Lock(args) => {
             lock::run_command(&args)?;

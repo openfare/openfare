@@ -5,7 +5,6 @@ use structopt::{self, StructOpt};
 mod label;
 mod payment_method;
 mod url;
-use crate::common;
 
 #[derive(Debug, Clone, StructOpt)]
 pub struct Arguments {
@@ -27,11 +26,11 @@ pub fn run_command(args: &Arguments) -> Result<()> {
     if let Some(subcommand) = &args.commands {
         match subcommand {
             Subcommands::Add(args) => {
-                log::info!("Running command: payee add");
+                log::info!("Running command: profile add");
                 add(&args)?;
             }
             Subcommands::Remove(args) => {
-                log::info!("Running command: payee remove");
+                log::info!("Running command: profile remove");
                 remove(&args)?;
             }
         }
@@ -106,7 +105,7 @@ fn remove(args: &RemoveArguments) -> Result<()> {
 pub struct ShowArguments {}
 
 fn show() -> Result<()> {
-    let payee = common::config::Payee::load()?;
-    println!("{}", serde_json::to_string_pretty(&payee)?);
+    let profile = crate::profile::Profile::load()?;
+    println!("{}", serde_json::to_string_pretty(&profile)?);
     Ok(())
 }

@@ -73,7 +73,7 @@ pub enum AddArguments {
     #[structopt(name = "plan")]
     Plan(plan::AddArguments),
 
-    /// Add payee to payment plan(s).
+    /// Add payee profile to payment plan(s).
     #[structopt(name = "payee")]
     Payee(payee::AddArguments),
 
@@ -111,7 +111,7 @@ pub enum RemoveSubcommands {
     #[structopt(name = "plan")]
     Plan(plan::RemoveArguments),
 
-    /// Remove payee from payment plan(s).
+    /// Remove payee profile from payment plan(s).
     #[structopt(name = "payee")]
     Payee(payee::RemoveArguments),
 

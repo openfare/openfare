@@ -19,12 +19,12 @@ pub struct AddArguments {
 
 pub fn add(args: &AddArguments) -> Result<()> {
     let payment_method = Method::new(&args.public_key)?;
-    let mut payee = crate::common::config::Payee::load()?;
-    (*payee).set_payment_method(
+    let mut profile = crate::profile::Profile::load()?;
+    (*profile).set_payment_method(
         &(Box::new(payment_method)
             as Box<dyn openfare_lib::lock::payee::payment_methods::PaymentMethod>),
     )?;
-    payee.dump()?;
+    profile.dump()?;
     Ok(())
 }
 
@@ -37,8 +37,8 @@ pub fn add(args: &AddArguments) -> Result<()> {
 pub struct RemoveArguments {}
 
 pub fn remove(_args: &RemoveArguments) -> Result<()> {
-    let mut payee = crate::common::config::Payee::load()?;
-    (*payee).remove_payment_method(&Method::associated_name())?;
-    payee.dump()?;
+    let mut profile = crate::profile::Profile::load()?;
+    (*profile).remove_payment_method(&Method::associated_name())?;
+    profile.dump()?;
     Ok(())
 }
