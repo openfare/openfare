@@ -31,9 +31,9 @@ OpenFare can be used as a funding mechanism for FOSS. It is compatible with the 
 
 OpenFare reveals the demand for funding across the entire software dependency tree. Donations made using OpenFare reach the roots. It brings to the surface critical software dependencies which are not in the limelight.
 
-Setting up a project to receive donations is easy. Simply use the `openfare` tool to generate a `OPENFARE.lock` file in the project's top level directory.
+Setting up a project to receive donations is easy. Simply use the `openfare` tool to generate a `OpenFare.lock` file in the project's top level directory.
 
-In this example `OPENFARE.lock` file Steve and John split their donations 10/4. John can be paid via PayPal or lightning keysend. Steve can only be paid via PayPal:
+In this example `OpenFare.lock` file Steve and John split their donations 10/4. John can be paid via PayPal or lightning keysend. Steve can only be paid via PayPal:
 
 ```json
 {
@@ -85,7 +85,7 @@ The OpenFare License is a lot like the MIT License. The code can be modified, fo
 1. Commercial users are subject to payment plans defined in code.
 2. The license and payment plans can only be modified by the license copyright holder.
 
-The `OPENFARE.lock` file defines commercial payment plans for a software package. It is created using the `openfare` tool and is always located next to the project OpenFare `LICENSE` file (usually in the top level directory).
+The `OpenFare.lock` file defines commercial payment plans for a software package. It is created using the `openfare` tool and is always located next to the project OpenFare `LICENSE` file (usually in the top level directory).
 
 The following example describes a single payment plan. The plan is applicable to commercial organizations which use the software before 2022-12-19 and which have more than 100 employees. It stipulates that this version of the software necessitates a one off payment totalling 20.00 USD. The payment is split 10/4 between Steve and John. John can be paid via PayPal or lightning keysend. Steve can only be paid via PayPal.
 
@@ -127,4 +127,52 @@ The following example describes a single payment plan. The plan is applicable to
         }
     }
 }
+```
+
+## Get Started
+
+### Profile
+
+Your OpenFare profile describes how you can receive funds.
+
+Add payment methods to your profile:
+
+```bash
+openfare profile add payment-method btc-ln-keysend <public-key>
+```
+
+```bash
+openfare profile add payment-method paypal --email john@example.com
+```
+
+Share your profile:
+
+```bash
+openfare profile push https://github.com/john/john
+```
+
+### Lock
+
+A project `OpenFare.lock` file describes how funds are distributed between contributors.
+
+Create a lock file in your project's top level directory:
+
+```bash
+openfare lock new
+```
+
+Add a payment plan (donation or fee funded):
+
+```bash
+openfare lock add plan compulsory --fee "2 USD"
+```
+
+Add a profiles to the plan:
+
+```bash
+openfare lock add profile --shares 1000
+```
+
+```bash
+openfare lock add profile --url https://github.com/steve/steve --shares 1000
 ```
