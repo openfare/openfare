@@ -6,7 +6,6 @@ use structopt::{self, StructOpt};
 #[derive(Debug, StructOpt, Clone)]
 pub struct Arguments {
     /// Git repository URL. If unset, uses current profile URL.
-    #[structopt(long, short)]
     url: Option<String>,
 }
 
