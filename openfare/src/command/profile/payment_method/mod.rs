@@ -10,7 +10,7 @@ pub enum AddSubcommands {
     PayPal(paypal::AddArguments),
 
     /// Set BTC lightning keysend payment method.
-    #[structopt(name = "btc-lightning-keysend")]
+    #[structopt(name = "btc-ln-keysend")]
     BtcLightningKeysend(btc_lightning_keysend::AddArguments),
 }
 
@@ -33,7 +33,7 @@ pub enum RemoveSubcommands {
     PayPal(paypal::RemoveArguments),
 
     /// Remove BTC lightning keysend payment method.
-    #[structopt(name = "btc-lightning-keysend")]
+    #[structopt(name = "btc-ln-keysend")]
     BtcLightningKeysend(btc_lightning_keysend::RemoveArguments),
 }
 
