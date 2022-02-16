@@ -171,7 +171,7 @@ openfare lock add plan compulsory --fee "2 USD"
 openfare lock add plan voluntary
 ```
 
-Add a profiles to the plan:
+Add contributor profiles to the plan:
 
 ```bash
 openfare lock add profile --shares 1000
