@@ -167,6 +167,10 @@ Add a payment plan (donation or fee funded):
 openfare lock add plan compulsory --fee "2 USD"
 ```
 
+```bash
+openfare lock add plan voluntary
+```
+
 Add a profiles to the plan:
 
 ```bash
