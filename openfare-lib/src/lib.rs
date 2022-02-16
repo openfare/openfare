@@ -5,3 +5,4 @@ pub mod api;
 pub mod extension;
 pub mod lock;
 pub mod package;
+pub mod profile;

@@ -2,9 +2,8 @@ use crate::common::config::FileStore;
 use anyhow::Result;
 use structopt::{self, StructOpt};
 
-mod label;
 mod payment_method;
-mod url;
+mod push;
 
 #[derive(Debug, Clone, StructOpt)]
 pub struct Arguments {
@@ -15,11 +14,14 @@ pub struct Arguments {
 
 #[derive(Debug, StructOpt, Clone)]
 enum Subcommands {
-    /// Add payment method, label, URL, etc.
+    /// Add payment method, etc.
     Add(AddArguments),
 
-    /// Remove payment method, label, URL, etc.
+    /// Remove payment method, etc.
     Remove(RemoveArguments),
+
+    /// Push profile to git repository URL.
+    Push(push::Arguments),
 }
 
 pub fn run_command(args: &Arguments) -> Result<()> {
@@ -33,6 +35,10 @@ pub fn run_command(args: &Arguments) -> Result<()> {
                 log::info!("Running command: profile remove");
                 remove(&args)?;
             }
+            Subcommands::Push(args) => {
+                log::info!("Running command: profile push");
+                push::push(&args)?;
+            }
         }
     } else {
         show()?;
@@ -45,24 +51,12 @@ pub enum AddArguments {
     /// Add payment method.
     #[structopt(name = "payment-method")]
     PaymentMethod(payment_method::AddSubcommands),
-
-    /// Add label.
-    Label(label::AddArguments),
-
-    /// Add URL.
-    Url(url::AddArguments),
 }
 
 fn add(args: &AddArguments) -> Result<()> {
     match &args {
         AddArguments::PaymentMethod(args) => {
             payment_method::add(&args)?;
-        }
-        AddArguments::Label(args) => {
-            label::add(&args)?;
-        }
-        AddArguments::Url(args) => {
-            url::add(&args)?;
         }
     }
     Ok(())
@@ -73,24 +67,12 @@ enum RemoveArguments {
     /// Remove payment method.
     #[structopt(name = "payment-method")]
     PaymentMethod(payment_method::RemoveSubcommands),
-
-    /// Remove label.
-    Label(label::RemoveArguments),
-
-    /// Remove URL.
-    Url(url::RemoveArguments),
 }
 
 fn remove(args: &RemoveArguments) -> Result<()> {
     match args {
         RemoveArguments::PaymentMethod(args) => {
             payment_method::remove(&args)?;
-        }
-        RemoveArguments::Label(args) => {
-            label::remove(&args)?;
-        }
-        RemoveArguments::Url(args) => {
-            url::remove(&args)?;
         }
     }
     Ok(())

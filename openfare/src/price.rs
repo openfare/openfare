@@ -78,8 +78,10 @@ fn get_package_price_report(
         }
     };
 
-    let applicable_plans =
-        openfare_lib::lock::plan::filter_applicable(&package_lock.plans, &config.profile)?;
+    let applicable_plans = openfare_lib::lock::plan::filter_applicable(
+        &package_lock.plans,
+        &config.profile.parameters,
+    )?;
 
     Ok(
         if let Some((plan_id, plan)) = select_plan(&applicable_plans) {

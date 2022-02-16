@@ -2,18 +2,18 @@ use crate::common;
 use anyhow::Result;
 
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct Profile(openfare_lib::lock::payee::Payee);
+pub struct Profile(openfare_lib::profile::Profile);
 
 impl std::ops::Deref for Profile {
-    type Target = openfare_lib::lock::payee::Payee;
+    type Target = openfare_lib::profile::Profile;
 
-    fn deref(&self) -> &openfare_lib::lock::payee::Payee {
+    fn deref(&self) -> &openfare_lib::profile::Profile {
         &self.0
     }
 }
 
 impl std::ops::DerefMut for Profile {
-    fn deref_mut(&mut self) -> &mut openfare_lib::lock::payee::Payee {
+    fn deref_mut(&mut self) -> &mut openfare_lib::profile::Profile {
         &mut self.0
     }
 }

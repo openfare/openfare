@@ -126,7 +126,8 @@ fn get_packages_plans(
 ) -> Result<Vec<openfare_lib::api::portal::basket::Item>> {
     let mut packages_plans: Vec<_> = vec![];
     for (package, lock) in package_locks {
-        let plans = openfare_lib::lock::plan::filter_applicable(&lock.plans, &config.profile)?;
+        let plans =
+            openfare_lib::lock::plan::filter_applicable(&lock.plans, &config.profile.parameters)?;
         if plans.is_empty() {
             // Skip package if no applicable plans found.
             continue;

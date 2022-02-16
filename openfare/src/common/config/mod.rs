@@ -14,7 +14,7 @@ pub use common::{FilePath, FileStore};
 pub struct Config {
     pub core: core::Core,
     pub portal: portal::Portal,
-    pub profile: profile::Parameters,
+    pub profile: profile::Profile,
     pub extensions: extensions::Extensions,
 }
 
