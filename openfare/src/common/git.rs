@@ -77,7 +77,7 @@ impl std::str::FromStr for GitUrl {
 
 fn parse_https_url(url: &str) -> Result<GitUrl> {
     let re = regex::Regex::new(
-        r"http(|s)://(?P<hostname>.*)/(?P<username>.*)/(?P<repository>[^\.]*)(\.git)?$",
+        r"(http(|s)://)?(?P<hostname>[^/]*)/(?P<username>[^/]*)(/(?P<repository>[^\.]*)(\.git)?)?$",
     )?;
     let captures = re
         .captures(url)
@@ -87,6 +87,13 @@ fn parse_https_url(url: &str) -> Result<GitUrl> {
     let repository = captures
         .name("repository")
         .map_or(None, |m| Some(m.as_str()));
+
+    // For GitHub or GitLab, if repository not given, assume same as username.
+    let repository = if hostname == Some("github.com") || hostname == Some("gitlab.com") {
+        repository.or(username)
+    } else {
+        repository
+    };
 
     Ok(GitUrl::new(url, hostname, username, repository))
 }
@@ -124,7 +131,7 @@ mod tests {
         let cases = vec![
             "https://github.com/rndhouse/rndhouse_repo.git",
             "http://gitlab.com/rndhouse/rndhouse_repo.git",
-            "http://github.com/rndhouse/rndhouse_repo",
+            "github.com/rndhouse/rndhouse_repo",
         ];
         let expected = vec![
             GitUrl::new(
@@ -140,10 +147,36 @@ mod tests {
                 Some("rndhouse_repo"),
             ),
             GitUrl::new(
-                "http://github.com/rndhouse/rndhouse_repo",
+                "github.com/rndhouse/rndhouse_repo",
                 Some("github.com"),
                 Some("rndhouse"),
                 Some("rndhouse_repo"),
+            ),
+        ];
+
+        for (case, expect) in cases.iter().zip(expected.iter()) {
+            let result = GitUrl::from_str(case)?;
+            assert_eq!(&result, expect);
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_parse_github_gitlab_user_https_url() -> Result<()> {
+        let cases = vec!["https://github.com/rndhouse", "http://gitlab.com/rndhouse"];
+        let expected = vec![
+            GitUrl::new(
+                "https://github.com/rndhouse",
+                Some("github.com"),
+                Some("rndhouse"),
+                Some("rndhouse"),
+            ),
+            GitUrl::new(
+                "http://gitlab.com/rndhouse",
+                Some("gitlab.com"),
+                Some("rndhouse"),
+                Some("rndhouse"),
             ),
         ];
 
