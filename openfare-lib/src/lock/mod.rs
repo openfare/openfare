@@ -1,10 +1,10 @@
 pub mod payee;
 pub mod plan;
 
-pub static FILE_NAME: &str = "OPENFARE.lock";
+pub static FILE_NAME: &str = "OpenFare.lock";
 pub static SCHEME_VERSION: &str = "1";
 
-/// A software package's OpenFare lock file (OPENFARE.lock).
+/// A software package's OpenFare lock file (OpenFare.lock).
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Lock {
     #[serde(rename = "scheme-version")]
