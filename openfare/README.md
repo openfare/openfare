@@ -148,7 +148,7 @@ openfare profile add payment-method paypal --email john@example.com
 Share your profile:
 
 ```bash
-openfare profile push https://github.com/john/john
+openfare profile push github.com/john
 ```
 
 ### Lock
@@ -178,5 +178,5 @@ openfare lock add profile --shares 1000
 ```
 
 ```bash
-openfare lock add profile --url https://github.com/steve/steve --shares 1000
+openfare lock add profile --url github.com/steve --shares 1000
 ```
