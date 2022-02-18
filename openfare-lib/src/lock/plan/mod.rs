@@ -93,5 +93,5 @@ pub struct Payments {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub total: Option<price::Price>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub shares: Option<std::collections::BTreeMap<payee::Name, u64>>,
+    pub shares: Option<std::collections::BTreeMap<payee::Label, u64>>,
 }

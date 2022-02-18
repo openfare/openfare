@@ -144,7 +144,7 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
 
     if args.cleanup_payees {
         // Remove payees which are not present in plans.
-        let plan_payees_names: std::collections::BTreeSet<openfare_lib::lock::payee::Name> =
+        let plan_payees_names: std::collections::BTreeSet<openfare_lib::lock::payee::Label> =
             lock_handle
                 .lock
                 .plans
@@ -153,7 +153,7 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
                     if let Some(shares) = &plan.payments.shares {
                         Some(shares.iter()
                     .map(|(name, _share)| name.clone())
-                    .collect::<std::collections::BTreeSet<openfare_lib::lock::payee::Name>>())
+                    .collect::<std::collections::BTreeSet<openfare_lib::lock::payee::Label>>())
                     } else {
                         None
                     }
@@ -164,8 +164,8 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
             .lock
             .payees
             .iter()
-            .filter(|(payee_name, _)| plan_payees_names.contains(payee_name.as_str()))
-            .map(|(name, payee)| (name.clone(), payee.clone()))
+            .filter(|(payee_label, _)| plan_payees_names.contains(payee_label.as_str()))
+            .map(|(label, payee)| (label.clone(), payee.clone()))
             .collect();
     }
     Ok(())

@@ -60,7 +60,7 @@ pub fn add(args: &AddArguments) -> Result<()> {
     // Derive unique label.
     let label = get_label(&args.label, &profile)?;
     let label = if lock_handle.lock.payees.contains_key(&label) {
-        openfare_lib::lock::payee::unique_name(&label, &payee)
+        openfare_lib::lock::payee::unique_label(&label, &payee)
     } else {
         label.clone()
     };
@@ -128,7 +128,7 @@ fn get_label(label_arg: &Option<String>, profile: &crate::profile::Profile) -> R
 }
 
 fn add_shares_to_plans(
-    payee_name: &str,
+    payee_label: &str,
     payee_shares: u64,
     plan_ids: &std::collections::BTreeSet<String>,
     lock_handle: &mut common::LockFileHandle,
@@ -140,9 +140,9 @@ fn add_shares_to_plans(
         .filter(|(id, _plan)| plan_ids.contains(id.as_str()) || plan_ids.is_empty())
     {
         if let Some(shares) = &mut plan.payments.shares {
-            shares.insert(payee_name.to_string(), payee_shares);
+            shares.insert(payee_label.to_string(), payee_shares);
         } else {
-            plan.payments.shares = Some(maplit::btreemap! {payee_name.to_string() => payee_shares})
+            plan.payments.shares = Some(maplit::btreemap! {payee_label.to_string() => payee_shares})
         }
     }
 }
@@ -155,8 +155,8 @@ fn add_shares_to_plans(
 )]
 pub struct RemoveArguments {
     /// Payee profile label(s). If unset, removes payee corresponding to local profile only.
-    #[structopt(name = "name")]
-    pub names: Vec<String>,
+    #[structopt(name = "label")]
+    pub labels: Vec<String>,
 
     /// Payment plan ID(s). All plans included if unset.
     #[structopt(long, short)]
@@ -174,13 +174,13 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
         .collect::<std::collections::BTreeSet<_>>();
     let mut lock_handle = common::LockFileHandle::load(&args.lock_file_args.path)?;
 
-    // If no payee names given, use active payee name.
-    let names = if args.names.is_empty() {
+    // If no payee labels given, use local payee label.
+    let labels = if args.labels.is_empty() {
         get_lock_local_payee(&lock_handle)?
-            .and_then(|name| Some(vec![name]))
+            .and_then(|label| Some(vec![label]))
             .unwrap_or_default()
     } else {
-        args.names.clone()
+        args.labels.clone()
     };
 
     // Remove from plans.
@@ -190,16 +190,16 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
         .iter_mut()
         .filter(|(id, _plan)| plan_ids.contains(id.as_str()) || plan_ids.is_empty())
     {
-        for name in &names {
+        for label in &labels {
             if let Some(shares) = &mut plan.payments.shares {
-                shares.remove(name.as_str());
+                shares.remove(label.as_str());
             }
         }
     }
 
     // Remove from payees.
-    for name in names {
-        lock_handle.lock.payees.remove(&name);
+    for label in labels {
+        lock_handle.lock.payees.remove(&label);
     }
 
     Ok(())
@@ -207,14 +207,14 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
 
 fn get_lock_local_payee(
     lock_handle: &common::LockFileHandle,
-) -> Result<Option<openfare_lib::lock::payee::Name>> {
+) -> Result<Option<openfare_lib::lock::payee::Label>> {
     let payee = crate::profile::Profile::load()?;
-    let name = if let Some((name, _)) =
+    let label = if let Some((label, _)) =
         openfare_lib::lock::payee::get_lock_payee(&*payee, &lock_handle.lock.payees)
     {
-        Some(name.clone())
+        Some(label.clone())
     } else {
         None
     };
-    Ok(name)
+    Ok(label)
 }
