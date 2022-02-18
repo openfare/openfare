@@ -35,7 +35,7 @@ pub fn add(args: &AddArguments) -> Result<()> {
     let mut lock_handle = common::LockFileHandle::load(&args.lock_file_args.path)?;
     if lock_handle.lock.plans.is_empty() {
         return Err(format_err!(
-            "No payment plan found. Add plan: openfare lock add plan"
+            "No payment plan found. Add a plan first: openfare lock add plan"
         ));
     }
 
@@ -45,90 +45,76 @@ pub fn add(args: &AddArguments) -> Result<()> {
         .map(|id| id.to_string())
         .collect::<std::collections::BTreeSet<_>>();
 
-    let url = url(&args.url)?;
-    let profile = profile(&url)?;
+    let profile = get_profile(&args.url)?;
 
+    // Profile already included in lock as payee. Add shares only.
     if let Some((label, _payee)) =
-        openfare_lib::lock::payee::get_lock_payee(&profile, &lock_handle.lock.payees)
+        openfare_lib::lock::payee::get_lock_payee(&(*profile).clone(), &lock_handle.lock.payees)
     {
         add_shares_to_plans(&label, args.shares, &plan_ids, &mut lock_handle);
-    } else {
-        let url_str = if let Some(url) = url.clone() {
-            // Prefer HTTPS git URL in lock.
-            url.as_https_url().or(Some(url.original_url))
-        } else {
-            None
-        };
-        // Add payee to lock.
-        let payee = openfare_lib::lock::payee::Payee {
-            url: url_str,
-            profile,
-        };
-
-        // Derive unique label.
-        let label = label(&args.label, &url)?;
-        let label = if lock_handle.lock.payees.contains_key(&label) {
-            openfare_lib::lock::payee::unique_name(&label, &payee)
-        } else {
-            label.clone()
-        };
-
-        lock_handle.lock.payees.insert(label.clone(), payee);
-        add_shares_to_plans(&label, args.shares, &plan_ids, &mut lock_handle);
+        return Ok(());
     }
+
+    let payee = get_payee(&profile);
+
+    // Derive unique label.
+    let label = get_label(&args.label, &profile)?;
+    let label = if lock_handle.lock.payees.contains_key(&label) {
+        openfare_lib::lock::payee::unique_name(&label, &payee)
+    } else {
+        label.clone()
+    };
+
+    lock_handle.lock.payees.insert(label.clone(), payee);
+    add_shares_to_plans(&label, args.shares, &plan_ids, &mut lock_handle);
     Ok(())
 }
 
-/// Get profile from URL or locally.
-fn profile(url: &Option<crate::common::git::GitUrl>) -> Result<openfare_lib::profile::Profile> {
-    Ok(if let Some(url) = url {
-        let tmp_dir = tempdir::TempDir::new("openfare_lock_add_profile")?;
-        let tmp_directory_path = tmp_dir.path().to_path_buf();
-
-        let url = if let Some(url) = url.as_ssh_url() {
-            url
-        } else {
-            url.original_url.clone()
-        };
-        log::debug!("Attempting to clone repository using URL: {}", url);
-        let output = crate::common::git::run_command(
-            vec!["clone", "--depth", "1", url.as_str(), "."],
-            &tmp_directory_path,
-        )?;
-        log::debug!("Clone output: {:?}", output);
-        let path = tmp_directory_path.join(openfare_lib::profile::FILE_NAME);
-
-        if !path.exists() {
-            return Err(anyhow::format_err!(
-                "Failed to find profile JSON in repository: {}",
-                openfare_lib::profile::FILE_NAME
-            ));
+fn get_payee(profile: &crate::profile::Profile) -> openfare_lib::lock::payee::Payee {
+    let url = if let Some(from_url_status) = &profile.from_url_status {
+        match from_url_status.method {
+            crate::profile::FromUrlMethod::Git => {
+                // Prefer HTTPS git URL in lock.
+                from_url_status
+                    .url
+                    .git
+                    .as_https_url()
+                    .or(Some(from_url_status.url.original.clone()))
+            }
         }
-
-        let file = std::fs::File::open(&path)?;
-        let reader = std::io::BufReader::new(file);
-        serde_json::from_reader(reader)?
     } else {
-        let profile = crate::profile::Profile::load()?;
-        (*profile).clone()
+        None
+    };
+
+    openfare_lib::lock::payee::Payee {
+        url,
+        profile: (**profile).clone(),
+    }
+}
+
+fn get_profile(url: &Option<String>) -> Result<crate::profile::Profile> {
+    // Parse URL argument.
+    let url = if let Some(url) = &url {
+        Some(crate::common::url::Url::from_str(&url)?)
+    } else {
+        None
+    };
+    Ok(if let Some(url) = &url {
+        crate::profile::Profile::from_url(&url)?
+    } else {
+        crate::profile::Profile::load()?
     })
 }
 
-/// Returns config profile URL if url not given as argument.
-fn url(url_arg: &Option<String>) -> Result<Option<crate::common::git::GitUrl>> {
-    let config = crate::common::config::Config::load()?;
-    let url = url_arg.clone().or(config.profile.url).and_then(|url| {
-        match crate::common::git::GitUrl::from_str(&url) {
-            Ok(git_url) => Some(git_url),
-            Err(_) => None,
-        }
-    });
-    Ok(url)
-}
-
 /// Get payee label from label argument or URL.
-fn label(label_arg: &Option<String>, url: &Option<crate::common::git::GitUrl>) -> Result<String> {
-    let url_label = url.clone().and_then(|url| url.username);
+fn get_label(label_arg: &Option<String>, profile: &crate::profile::Profile) -> Result<String> {
+    let url_label = if let Some(from_url_status) = &profile.from_url_status {
+        match from_url_status.method {
+            crate::profile::FromUrlMethod::Git => from_url_status.url.git.username.clone(),
+        }
+    } else {
+        None
+    };
     let label = label_arg.clone().or(url_label);
     if let Some(label) = label {
         Ok(label)

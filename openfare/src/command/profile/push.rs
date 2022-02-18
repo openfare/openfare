@@ -12,14 +12,14 @@ pub struct Arguments {
 pub fn push(args: &Arguments) -> Result<()> {
     let mut config = crate::common::config::Config::load()?;
     let url = if let Some(url) = args.url.clone() {
-        let url = crate::common::git::GitUrl::from_str(&url)?;
+        let url = crate::common::url::Url::from_str(&url)?;
         if config.profile.url.is_none() {
-            config.profile.url = Some(url.original_url.clone());
+            config.profile.url = Some(url.original.clone());
         }
         url
     } else {
         if let Some(url) = config.profile.url.clone() {
-            crate::common::git::GitUrl::from_str(&url)?
+            crate::common::url::Url::from_str(&url)?
         } else {
             return Err(anyhow::format_err!("Failed to find URL. Not found in config profile and not given as argument.\nSet profile URL using: openfare config profile.url <url>"));
         }
@@ -42,13 +42,13 @@ pub fn push(args: &Arguments) -> Result<()> {
 }
 
 fn clone_repo(
-    url: &crate::common::git::GitUrl,
+    url: &crate::common::url::Url,
     tmp_directory_path: &std::path::PathBuf,
 ) -> Result<()> {
-    let url = if let Some(url) = url.as_ssh_url() {
+    let url = if let Some(url) = url.git.as_ssh_url() {
         url
     } else {
-        url.original_url.clone()
+        url.original.clone()
     };
     let output = crate::common::git::run_command(
         vec!["clone", "--depth", "1", url.as_str(), "."],

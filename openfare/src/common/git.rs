@@ -13,21 +13,14 @@ pub fn run_command(
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct GitUrl {
-    pub original_url: String,
     pub hostname: Option<String>,
     pub username: Option<String>,
     pub repository: Option<String>,
 }
 
 impl GitUrl {
-    pub fn new(
-        original_url_: &str,
-        hostname: Option<&str>,
-        username: Option<&str>,
-        repository: Option<&str>,
-    ) -> GitUrl {
+    pub fn new(hostname: Option<&str>, username: Option<&str>, repository: Option<&str>) -> GitUrl {
         Self {
-            original_url: original_url_.to_string(),
             hostname: hostname.map(String::from),
             username: username.map(String::from),
             repository: repository.map(String::from),
@@ -66,7 +59,6 @@ impl std::str::FromStr for GitUrl {
             parse_git_url(&url)
         } else {
             Ok(Self {
-                original_url: url.to_string(),
                 hostname: None,
                 username: None,
                 repository: None,
@@ -95,7 +87,7 @@ fn parse_https_url(url: &str) -> Result<GitUrl> {
         repository
     };
 
-    Ok(GitUrl::new(url, hostname, username, repository))
+    Ok(GitUrl::new(hostname, username, repository))
 }
 
 fn parse_git_url(url: &str) -> Result<GitUrl> {
@@ -111,7 +103,7 @@ fn parse_git_url(url: &str) -> Result<GitUrl> {
         .name("repository")
         .map_or(None, |m| Some(m.as_str()));
 
-    Ok(GitUrl::new(url, hostname, username, repository))
+    Ok(GitUrl::new(hostname, username, repository))
 }
 
 fn is_https_git_url(url: &str) -> bool {
