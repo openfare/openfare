@@ -6,6 +6,18 @@ pub type PaymentMethodName = String;
 pub const FILE_NAME: &'static str = "openfare-profile.json";
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct RemoteProfile {
+    #[serde(rename = "openfare-profile")]
+    pub profile: Profile,
+}
+
+impl std::convert::From<Profile> for RemoteProfile {
+    fn from(profile: Profile) -> Self {
+        Self { profile: profile }
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Profile {
     #[serde(rename = "unique-id")]
     pub unique_id: uuid::Uuid,
@@ -56,5 +68,11 @@ impl std::default::Default for Profile {
             unique_id: uuid::Uuid::new_v4(),
             payment_methods: std::collections::BTreeMap::<_, _>::new(),
         }
+    }
+}
+
+impl std::convert::From<RemoteProfile> for Profile {
+    fn from(remote_profile: RemoteProfile) -> Self {
+        remote_profile.profile.clone()
     }
 }

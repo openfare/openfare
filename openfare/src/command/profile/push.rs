@@ -25,15 +25,16 @@ pub fn push(args: &Arguments) -> Result<()> {
         }
     };
 
-    let profile = crate::profile::Profile::load()?;
-
     let tmp_dir = tempdir::TempDir::new("openfare_profile_push")?;
     let tmp_directory_path = tmp_dir.path().to_path_buf();
     log::debug!("Using temp directory: {}", tmp_directory_path.display());
 
     clone_repo(&url, &tmp_directory_path)?;
 
-    insert_profile(&profile, &tmp_directory_path)?;
+    let profile = crate::profile::Profile::load()?;
+    let remote_profile = (*profile).clone().into();
+
+    insert_profile(&remote_profile, &tmp_directory_path)?;
     push_repo(&tmp_directory_path)?;
 
     // Write updated config profile to disk only if all git operations succeed.
@@ -74,7 +75,7 @@ fn push_repo(tmp_directory_path: &std::path::PathBuf) -> Result<()> {
 }
 
 fn insert_profile(
-    profile: &crate::profile::Profile,
+    remote_profile: &openfare_lib::profile::RemoteProfile,
     directory_path: &std::path::PathBuf,
 ) -> Result<()> {
     let path = directory_path.join(openfare_lib::profile::FILE_NAME);
@@ -90,6 +91,6 @@ fn insert_profile(
         .expect(format!("Can't open/create file for writing: {}", path.display()).as_str());
 
     let writer = std::io::BufWriter::new(file);
-    serde_json::to_writer_pretty(writer, &*profile)?;
+    serde_json::to_writer_pretty(writer, &remote_profile)?;
     Ok(())
 }

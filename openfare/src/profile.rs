@@ -48,11 +48,11 @@ impl Profile {
 
         log::debug!("Sending HTTP GET request to endpoint: {}", url_str);
         let response = client.get(url_str).send()?;
-        let profile = response.json::<openfare_lib::profile::Profile>()?;
+        let remote_profile = response.json::<openfare_lib::profile::RemoteProfile>()?;
         log::debug!("Response received.");
 
         Ok(Self {
-            profile,
+            profile: remote_profile.profile,
             from_url_status: Some(FromUrlStatus {
                 url: url.clone(),
                 method: FromUrlMethod::HttpGetJson,
@@ -86,9 +86,9 @@ impl Profile {
 
         let file = std::fs::File::open(&path)?;
         let reader = std::io::BufReader::new(file);
-        let profile: openfare_lib::profile::Profile = serde_json::from_reader(reader)?;
+        let remote_profile: openfare_lib::profile::RemoteProfile = serde_json::from_reader(reader)?;
         Ok(Self {
-            profile,
+            profile: remote_profile.profile,
             from_url_status: Some(FromUrlStatus {
                 url: url.clone(),
                 method: FromUrlMethod::Git,
