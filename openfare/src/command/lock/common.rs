@@ -43,7 +43,6 @@ impl LockFileHandle {
                 lock_hash,
                 path,
             };
-            println!("load lock_handle: {:?}", lock_handle);
             Ok(lock_handle)
         } else {
             Err(format_err!(
@@ -65,10 +64,7 @@ impl LockFileHandle {
 impl Drop for LockFileHandle {
     fn drop(&mut self) {
         // Skip writing lock if unchanged.
-        println!("self.lock: {:?}", self.lock);
         let current_lock_hash = Self::get_lock_hash(&self.lock).expect("current lock hash");
-        println!("current_lock_hash: {:?}", current_lock_hash);
-        println!("self.lock_hash: {:?}", self.lock_hash);
         if let Some(lock_hash) = self.lock_hash {
             if current_lock_hash == lock_hash {
                 log::debug!("Lock file unchanged. Not writing to file.");

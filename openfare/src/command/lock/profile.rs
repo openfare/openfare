@@ -81,6 +81,7 @@ fn get_payee(profile: &crate::profile::Profile) -> openfare_lib::lock::payee::Pa
                     .as_https_url()
                     .or(Some(from_url_status.url.original.clone()))
             }
+            crate::profile::FromUrlMethod::HttpGetJson => Some(from_url_status.url.to_string()),
         }
     } else {
         None
@@ -111,6 +112,7 @@ fn get_label(label_arg: &Option<String>, profile: &crate::profile::Profile) -> R
     let url_label = if let Some(from_url_status) = &profile.from_url_status {
         match from_url_status.method {
             crate::profile::FromUrlMethod::Git => from_url_status.url.git.username.clone(),
+            crate::profile::FromUrlMethod::HttpGetJson => None,
         }
     } else {
         None

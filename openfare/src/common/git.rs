@@ -126,24 +126,9 @@ mod tests {
             "github.com/rndhouse/rndhouse_repo",
         ];
         let expected = vec![
-            GitUrl::new(
-                "https://github.com/rndhouse/rndhouse_repo.git",
-                Some("github.com"),
-                Some("rndhouse"),
-                Some("rndhouse_repo"),
-            ),
-            GitUrl::new(
-                "http://gitlab.com/rndhouse/rndhouse_repo.git",
-                Some("gitlab.com"),
-                Some("rndhouse"),
-                Some("rndhouse_repo"),
-            ),
-            GitUrl::new(
-                "github.com/rndhouse/rndhouse_repo",
-                Some("github.com"),
-                Some("rndhouse"),
-                Some("rndhouse_repo"),
-            ),
+            GitUrl::new(Some("github.com"), Some("rndhouse"), Some("rndhouse_repo")),
+            GitUrl::new(Some("gitlab.com"), Some("rndhouse"), Some("rndhouse_repo")),
+            GitUrl::new(Some("github.com"), Some("rndhouse"), Some("rndhouse_repo")),
         ];
 
         for (case, expect) in cases.iter().zip(expected.iter()) {
@@ -158,18 +143,8 @@ mod tests {
     fn test_parse_github_gitlab_user_https_url() -> Result<()> {
         let cases = vec!["https://github.com/rndhouse", "http://gitlab.com/rndhouse"];
         let expected = vec![
-            GitUrl::new(
-                "https://github.com/rndhouse",
-                Some("github.com"),
-                Some("rndhouse"),
-                Some("rndhouse"),
-            ),
-            GitUrl::new(
-                "http://gitlab.com/rndhouse",
-                Some("gitlab.com"),
-                Some("rndhouse"),
-                Some("rndhouse"),
-            ),
+            GitUrl::new(Some("github.com"), Some("rndhouse"), Some("rndhouse")),
+            GitUrl::new(Some("gitlab.com"), Some("rndhouse"), Some("rndhouse")),
         ];
 
         for (case, expect) in cases.iter().zip(expected.iter()) {
@@ -184,7 +159,6 @@ mod tests {
     fn test_parse_ssh_url() -> Result<()> {
         let cases = vec!["git@github.com:rndhouse/rndhouse_repo.git"];
         let expected = vec![GitUrl::new(
-            "git@github.com:rndhouse/rndhouse_repo.git",
             Some("github.com"),
             Some("rndhouse"),
             Some("rndhouse_repo"),

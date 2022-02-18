@@ -22,11 +22,44 @@ pub struct FromUrlStatus {
 #[derive(Debug, Clone)]
 pub enum FromUrlMethod {
     Git,
+    HttpGetJson,
 }
 
 impl Profile {
     pub fn from_url(url: &crate::common::url::Url) -> Result<Self> {
-        let tmp_dir = tempdir::TempDir::new("openfare_lock_add_profile")?;
+        match Self::from_http_get(&url) {
+            Ok(profile) => Ok(profile),
+            Err(_) => Self::from_git_url(&url),
+        }
+    }
+
+    fn from_http_get(url: &crate::common::url::Url) -> Result<Self> {
+        let client = reqwest::blocking::Client::new();
+
+        // Convert github.com to raw content form.
+        let url_str = url.to_string();
+        let url_str = if url_str.contains("github.com") {
+            url_str.replace("github.com", "raw.githubusercontent.com")
+        } else {
+            url_str
+        };
+
+        log::debug!("Sending HTTP GET request to endpoint: {}", url_str);
+        let response = client.get(url_str).send()?;
+        let profile = response.json::<openfare_lib::profile::Profile>()?;
+        log::debug!("Response received.");
+
+        Ok(Self {
+            profile,
+            from_url_status: Some(FromUrlStatus {
+                url: url.clone(),
+                method: FromUrlMethod::HttpGetJson,
+            }),
+        })
+    }
+
+    fn from_git_url(url: &crate::common::url::Url) -> Result<Self> {
+        let tmp_dir = tempdir::TempDir::new("openfare_profile_from_git_url")?;
         let tmp_directory_path = tmp_dir.path().to_path_buf();
 
         let clone_url = if let Some(url) = url.git.as_ssh_url() {
