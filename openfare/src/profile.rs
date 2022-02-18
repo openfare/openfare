@@ -39,7 +39,9 @@ impl Profile {
         // Convert github.com to raw content form.
         let url_str = url.to_string();
         let url_str = if url_str.contains("github.com") {
-            url_str.replace("github.com", "raw.githubusercontent.com")
+            url_str
+                .replace("github.com", "raw.githubusercontent.com")
+                .replace("/blob/", "/")
         } else {
             url_str
         };
