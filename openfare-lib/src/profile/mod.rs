@@ -1,7 +1,6 @@
-use anyhow::{format_err, Result};
+use anyhow::Result;
+use std::str::FromStr;
 pub mod payment_methods;
-
-pub type PaymentMethodName = String;
 
 pub const FILE_NAME: &'static str = "openfare-profile.json";
 
@@ -22,23 +21,29 @@ pub struct Profile {
     #[serde(rename = "unique-id")]
     pub unique_id: uuid::Uuid,
     #[serde(rename = "payment-methods")]
-    payment_methods: std::collections::BTreeMap<PaymentMethodName, serde_json::Value>,
+    payment_methods: std::collections::BTreeMap<payment_methods::Name, serde_json::Value>,
 }
 
 impl Profile {
+    pub fn check(&mut self) -> Result<()> {
+        payment_methods::check(&self.payment_methods)?;
+        Ok(())
+    }
+
     pub fn payment_methods(&self) -> Result<Vec<Box<dyn payment_methods::PaymentMethod>>> {
         let mut methods = Vec::<Box<dyn payment_methods::PaymentMethod>>::new();
         for (name, json_value) in &self.payment_methods {
-            let method = match name.as_str() {
-                "paypal" => Box::new(serde_json::value::from_value::<payment_methods::PayPal>(
-                    json_value.clone(),
-                )?) as Box<dyn payment_methods::PaymentMethod>,
-                "btc_lightning_keysend" => Box::new(serde_json::value::from_value::<
-                    payment_methods::BtcLightningKeysend,
-                >(json_value.clone())?)
-                    as Box<dyn payment_methods::PaymentMethod>,
-                _ => {
-                    return Err(format_err!("Unknown payment method: {}", name));
+            let method = match payment_methods::PaymentMethods::from_str(name.as_str())? {
+                payment_methods::PaymentMethods::PayPal => {
+                    let method =
+                        serde_json::from_value::<payment_methods::PayPal>(json_value.clone())?;
+                    Box::new(method) as Box<dyn payment_methods::PaymentMethod>
+                }
+                payment_methods::PaymentMethods::BtcLightningKeysend => {
+                    let method = serde_json::from_value::<payment_methods::BtcLightningKeysend>(
+                        json_value.clone(),
+                    )?;
+                    Box::new(method) as Box<dyn payment_methods::PaymentMethod>
                 }
             };
             methods.push(method);

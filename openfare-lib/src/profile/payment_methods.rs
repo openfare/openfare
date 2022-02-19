@@ -1,6 +1,30 @@
 use anyhow::{format_err, Result};
+use std::str::FromStr;
+
+pub type Name = String;
+
+#[derive(Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+pub enum PaymentMethods {
+    PayPal,
+    BtcLightningKeysend,
+}
+
+impl std::str::FromStr for PaymentMethods {
+    type Err = anyhow::Error;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(match s {
+            "paypal" => Self::PayPal,
+            // TODO: _ --> -
+            "btc_lightning_keysend" => Self::BtcLightningKeysend,
+            _ => {
+                return Err(anyhow::format_err!("Unknown payment method: {}", s));
+            }
+        })
+    }
+}
 
 pub trait PaymentMethod {
+    // TODO: remove associated_name method and name method?
     fn associated_name() -> String
     where
         Self: Sized;
@@ -41,8 +65,7 @@ impl PaymentMethod for PayPal {
     }
 
     fn to_serde_json_value(&self) -> Result<serde_json::Value> {
-        let s = serde_json::to_string(&self)?;
-        Ok(serde_json::from_str(&s)?)
+        Ok(serde_json::to_value(&self)?)
     }
 }
 
@@ -69,7 +92,29 @@ impl PaymentMethod for BtcLightningKeysend {
     }
 
     fn to_serde_json_value(&self) -> Result<serde_json::Value> {
-        let s = serde_json::to_string(&self)?;
-        Ok(serde_json::from_str(&s)?)
+        Ok(serde_json::to_value(&self)?)
     }
+}
+
+pub fn check(payment_methods: &std::collections::BTreeMap<Name, serde_json::Value>) -> Result<()> {
+    for (name, json_value) in payment_methods {
+        let clean_json_value = match PaymentMethods::from_str(name.as_str())? {
+            PaymentMethods::PayPal => {
+                let method = serde_json::from_value::<PayPal>(json_value.clone())?;
+                serde_json::to_value(&method)?
+            }
+            PaymentMethods::BtcLightningKeysend => {
+                let method = serde_json::from_value::<BtcLightningKeysend>(json_value.clone())?;
+                serde_json::to_value(&method)?
+            }
+        };
+
+        if json_value != &clean_json_value {
+            return Err(anyhow::format_err!(
+                "Found unexpected field(s): {}",
+                json_value
+            ));
+        }
+    }
+    Ok(())
 }

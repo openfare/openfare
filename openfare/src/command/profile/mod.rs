@@ -17,6 +17,9 @@ enum Subcommands {
     /// Add payment method, etc.
     Add(AddArguments),
 
+    /// Set payment method fields, etc.
+    Set(SetArguments),
+
     /// Remove payment method, etc.
     Remove(RemoveArguments),
 
@@ -30,6 +33,10 @@ pub fn run_command(args: &Arguments) -> Result<()> {
             Subcommands::Add(args) => {
                 log::info!("Running command: profile add");
                 add(&args)?;
+            }
+            Subcommands::Set(args) => {
+                log::info!("Running command: profile set");
+                set(&args)?;
             }
             Subcommands::Remove(args) => {
                 log::info!("Running command: profile remove");
@@ -59,6 +66,22 @@ fn add(args: &AddArguments) -> Result<()> {
             payment_method::add(&args)?;
         }
     }
+    Ok(())
+}
+
+#[derive(Debug, StructOpt, Clone)]
+pub struct SetArguments {
+    /// Field path.
+    pub path: String,
+
+    /// Field value.
+    pub value: String,
+}
+
+fn set(args: &SetArguments) -> Result<()> {
+    let mut profile = crate::profile::Profile::load()?;
+    profile.set(&args.path, &args.value)?;
+    profile.dump()?;
     Ok(())
 }
 
