@@ -1,5 +1,4 @@
 use anyhow::Result;
-use std::str::FromStr;
 pub mod payment_methods;
 
 pub const FILE_NAME: &'static str = "openfare-profile.json";

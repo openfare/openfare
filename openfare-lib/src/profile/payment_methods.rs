@@ -10,29 +10,6 @@ pub enum PaymentMethods {
     BtcLightningKeysend,
 }
 
-impl std::str::FromStr for PaymentMethods {
-    type Err = anyhow::Error;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(match s {
-            "paypal" => Self::PayPal,
-            "btc-lightning-keysend" => Self::BtcLightningKeysend,
-            _ => {
-                return Err(anyhow::format_err!("Unknown payment method: {}", s));
-            }
-        })
-    }
-}
-
-impl std::fmt::Display for PaymentMethods {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let s = match self {
-            Self::PayPal => "paypal",
-            Self::BtcLightningKeysend => "btc-lightning-keysend",
-        };
-        write!(f, "{}", s)
-    }
-}
-
 pub trait PaymentMethod {
     fn method_type(&self) -> PaymentMethods;
     fn to_serde_json_value(&self) -> Result<serde_json::Value>;
