@@ -1,5 +1,4 @@
 use anyhow::{format_err, Result};
-use std::str::FromStr;
 
 pub type Name = String;
 
@@ -7,7 +6,7 @@ pub type Name = String;
 pub enum PaymentMethods {
     #[serde(rename = "paypal")]
     PayPal,
-    #[serde(rename = "btc_lightning_keysend")]
+    #[serde(rename = "btc-lightning-keysend")]
     BtcLightningKeysend,
 }
 
@@ -16,8 +15,7 @@ impl std::str::FromStr for PaymentMethods {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(match s {
             "paypal" => Self::PayPal,
-            // TODO: _ --> -
-            "btc_lightning_keysend" => Self::BtcLightningKeysend,
+            "btc-lightning-keysend" => Self::BtcLightningKeysend,
             _ => {
                 return Err(anyhow::format_err!("Unknown payment method: {}", s));
             }
@@ -29,7 +27,7 @@ impl std::fmt::Display for PaymentMethods {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = match self {
             Self::PayPal => "paypal",
-            Self::BtcLightningKeysend => "btc_lightning_keysend",
+            Self::BtcLightningKeysend => "btc-lightning-keysend",
         };
         write!(f, "{}", s)
     }
