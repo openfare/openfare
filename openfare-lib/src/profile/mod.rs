@@ -20,7 +20,7 @@ pub struct Profile {
     #[serde(rename = "unique-id")]
     pub unique_id: uuid::Uuid,
     #[serde(rename = "payment-methods")]
-    payment_methods: std::collections::BTreeMap<payment_methods::PaymentMethods, serde_json::Value>,
+    payment_methods: std::collections::BTreeMap<payment_methods::Methods, serde_json::Value>,
 }
 
 impl Profile {
@@ -33,12 +33,12 @@ impl Profile {
         let mut methods = Vec::<Box<dyn payment_methods::PaymentMethod>>::new();
         for (method, json_value) in &self.payment_methods {
             let method = match method {
-                payment_methods::PaymentMethods::PayPal => {
+                payment_methods::Methods::PayPal => {
                     let method =
                         serde_json::from_value::<payment_methods::PayPal>(json_value.clone())?;
                     Box::new(method) as Box<dyn payment_methods::PaymentMethod>
                 }
-                payment_methods::PaymentMethods::BtcLightningKeysend => {
+                payment_methods::Methods::BtcLightningKeysend => {
                     let method = serde_json::from_value::<payment_methods::BtcLightningKeysend>(
                         json_value.clone(),
                     )?;
@@ -55,16 +55,13 @@ impl Profile {
         payment_method: &Box<dyn payment_methods::PaymentMethod>,
     ) -> Result<()> {
         self.payment_methods.insert(
-            payment_method.method_type(),
+            payment_method.method(),
             payment_method.to_serde_json_value()?,
         );
         Ok(())
     }
 
-    pub fn remove_payment_method(
-        &mut self,
-        method: &payment_methods::PaymentMethods,
-    ) -> Result<()> {
+    pub fn remove_payment_method(&mut self, method: &payment_methods::Methods) -> Result<()> {
         self.payment_methods.remove(method);
         Ok(())
     }

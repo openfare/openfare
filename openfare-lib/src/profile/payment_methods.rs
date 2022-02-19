@@ -3,16 +3,33 @@ use anyhow::{format_err, Result};
 pub type Name = String;
 
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, serde::Serialize, serde::Deserialize)]
-pub enum PaymentMethods {
+pub enum Methods {
     #[serde(rename = "paypal")]
     PayPal,
     #[serde(rename = "btc-lightning-keysend")]
     BtcLightningKeysend,
 }
 
+pub trait MethodType {
+    fn type_method() -> Methods;
+}
+
 pub trait PaymentMethod {
-    fn method_type(&self) -> PaymentMethods;
+    fn method(&self) -> Methods;
     fn to_serde_json_value(&self) -> Result<serde_json::Value>;
+}
+
+impl<'de, T> PaymentMethod for T
+where
+    T: MethodType + serde::de::DeserializeOwned + serde::Serialize,
+{
+    fn method(&self) -> Methods {
+        T::type_method()
+    }
+
+    fn to_serde_json_value(&self) -> Result<serde_json::Value> {
+        Ok(serde_json::to_value(&self)?)
+    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -38,13 +55,9 @@ impl PayPal {
     }
 }
 
-impl PaymentMethod for PayPal {
-    fn method_type(&self) -> PaymentMethods {
-        PaymentMethods::PayPal
-    }
-
-    fn to_serde_json_value(&self) -> Result<serde_json::Value> {
-        Ok(serde_json::to_value(&self)?)
+impl MethodType for PayPal {
+    fn type_method() -> Methods {
+        Methods::PayPal
     }
 }
 
@@ -61,26 +74,22 @@ impl BtcLightningKeysend {
     }
 }
 
-impl PaymentMethod for BtcLightningKeysend {
-    fn method_type(&self) -> PaymentMethods {
-        PaymentMethods::BtcLightningKeysend
-    }
-
-    fn to_serde_json_value(&self) -> Result<serde_json::Value> {
-        Ok(serde_json::to_value(&self)?)
+impl MethodType for BtcLightningKeysend {
+    fn type_method() -> Methods {
+        Methods::BtcLightningKeysend
     }
 }
 
 pub fn check(
-    payment_methods: &std::collections::BTreeMap<PaymentMethods, serde_json::Value>,
+    payment_methods: &std::collections::BTreeMap<Methods, serde_json::Value>,
 ) -> Result<()> {
     for (method, json_value) in payment_methods {
         let clean_json_value = match method {
-            PaymentMethods::PayPal => {
+            Methods::PayPal => {
                 let method = serde_json::from_value::<PayPal>(json_value.clone())?;
                 serde_json::to_value(&method)?
             }
-            PaymentMethods::BtcLightningKeysend => {
+            Methods::BtcLightningKeysend => {
                 let method = serde_json::from_value::<BtcLightningKeysend>(json_value.clone())?;
                 serde_json::to_value(&method)?
             }

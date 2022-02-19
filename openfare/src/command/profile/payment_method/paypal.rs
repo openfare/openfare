@@ -3,8 +3,8 @@ use anyhow::Result;
 use structopt::{self, StructOpt};
 
 type Method = openfare_lib::profile::payment_methods::PayPal;
-const METHOD_TYPE: openfare_lib::profile::payment_methods::PaymentMethods =
-    openfare_lib::profile::payment_methods::PaymentMethods::PayPal;
+const METHOD_TYPE: openfare_lib::profile::payment_methods::Methods =
+    openfare_lib::profile::payment_methods::Methods::PayPal;
 
 #[derive(Debug, StructOpt, Clone)]
 #[structopt(

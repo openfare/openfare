@@ -3,8 +3,8 @@ use anyhow::Result;
 use structopt::{self, StructOpt};
 
 type Method = openfare_lib::profile::payment_methods::BtcLightningKeysend;
-const METHOD_TYPE: openfare_lib::profile::payment_methods::PaymentMethods =
-    openfare_lib::profile::payment_methods::PaymentMethods::BtcLightningKeysend;
+const METHOD_TYPE: openfare_lib::profile::payment_methods::Methods =
+    openfare_lib::profile::payment_methods::Methods::BtcLightningKeysend;
 
 #[derive(Debug, StructOpt, Clone)]
 #[structopt(
