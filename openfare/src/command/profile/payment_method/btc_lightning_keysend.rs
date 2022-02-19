@@ -1,9 +1,10 @@
 use crate::common::config::FileStore;
 use anyhow::Result;
-use openfare_lib::profile::payment_methods::PaymentMethod;
 use structopt::{self, StructOpt};
 
 type Method = openfare_lib::profile::payment_methods::BtcLightningKeysend;
+const METHOD_TYPE: openfare_lib::profile::payment_methods::PaymentMethods =
+    openfare_lib::profile::payment_methods::PaymentMethods::BtcLightningKeysend;
 
 #[derive(Debug, StructOpt, Clone)]
 #[structopt(
@@ -38,7 +39,7 @@ pub struct RemoveArguments {}
 
 pub fn remove(_args: &RemoveArguments) -> Result<()> {
     let mut profile = crate::profile::Profile::load()?;
-    (*profile).remove_payment_method(&Method::associated_name())?;
+    (*profile).remove_payment_method(&METHOD_TYPE)?;
     profile.dump()?;
     Ok(())
 }

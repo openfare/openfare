@@ -3,9 +3,11 @@ use std::str::FromStr;
 
 pub type Name = String;
 
-#[derive(Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, serde::Serialize, serde::Deserialize)]
 pub enum PaymentMethods {
+    #[serde(rename = "paypal")]
     PayPal,
+    #[serde(rename = "btc_lightning_keysend")]
     BtcLightningKeysend,
 }
 
@@ -23,12 +25,19 @@ impl std::str::FromStr for PaymentMethods {
     }
 }
 
+impl std::fmt::Display for PaymentMethods {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Self::PayPal => "paypal",
+            Self::BtcLightningKeysend => "btc_lightning_keysend",
+        };
+        write!(f, "{}", s)
+    }
+}
+
 pub trait PaymentMethod {
     // TODO: remove associated_name method and name method?
-    fn associated_name() -> String
-    where
-        Self: Sized;
-    fn name(&self) -> String;
+    fn method_type(&self) -> PaymentMethods;
     fn to_serde_json_value(&self) -> Result<serde_json::Value>;
 }
 
@@ -56,12 +65,8 @@ impl PayPal {
 }
 
 impl PaymentMethod for PayPal {
-    fn associated_name() -> String {
-        "paypal".to_string()
-    }
-
-    fn name(&self) -> String {
-        Self::associated_name()
+    fn method_type(&self) -> PaymentMethods {
+        PaymentMethods::PayPal
     }
 
     fn to_serde_json_value(&self) -> Result<serde_json::Value> {
@@ -83,12 +88,8 @@ impl BtcLightningKeysend {
 }
 
 impl PaymentMethod for BtcLightningKeysend {
-    fn associated_name() -> String {
-        "btc_lightning_keysend".to_string()
-    }
-
-    fn name(&self) -> String {
-        Self::associated_name()
+    fn method_type(&self) -> PaymentMethods {
+        PaymentMethods::BtcLightningKeysend
     }
 
     fn to_serde_json_value(&self) -> Result<serde_json::Value> {
@@ -96,9 +97,11 @@ impl PaymentMethod for BtcLightningKeysend {
     }
 }
 
-pub fn check(payment_methods: &std::collections::BTreeMap<Name, serde_json::Value>) -> Result<()> {
-    for (name, json_value) in payment_methods {
-        let clean_json_value = match PaymentMethods::from_str(name.as_str())? {
+pub fn check(
+    payment_methods: &std::collections::BTreeMap<PaymentMethods, serde_json::Value>,
+) -> Result<()> {
+    for (method, json_value) in payment_methods {
+        let clean_json_value = match method {
             PaymentMethods::PayPal => {
                 let method = serde_json::from_value::<PayPal>(json_value.clone())?;
                 serde_json::to_value(&method)?
