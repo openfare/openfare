@@ -1,6 +1,7 @@
 use crate::common;
 use anyhow::Result;
 
+/// Profile structure which wraps core library Profile and adds managerial data fields.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct Profile {
     #[serde(flatten)]

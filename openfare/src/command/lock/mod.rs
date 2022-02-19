@@ -25,6 +25,8 @@ enum Subcommands {
     Add(AddArguments),
     /// Remove plan, profile, payment, condition, etc.
     Remove(RemoveSubcommands),
+    /// Update payee profiles.
+    Update(UpdateArguments),
 }
 
 pub fn run_command(args: &Arguments) -> Result<()> {
@@ -38,6 +40,9 @@ pub fn run_command(args: &Arguments) -> Result<()> {
             }
             Subcommands::Remove(args) => {
                 remove(&args)?;
+            }
+            Subcommands::Update(args) => {
+                update(&args)?;
             }
         }
     } else {
@@ -131,6 +136,17 @@ fn remove(subcommand: &RemoveSubcommands) -> Result<()> {
             condition::remove(&args)?;
         }
     }
+    Ok(())
+}
+
+#[derive(Debug, StructOpt, Clone)]
+pub struct UpdateArguments {
+    #[structopt(flatten)]
+    pub profile: profile::UpdateArguments,
+}
+
+fn update(args: &UpdateArguments) -> Result<()> {
+    profile::update(&args.profile)?;
     Ok(())
 }
 

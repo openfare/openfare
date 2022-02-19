@@ -205,12 +205,63 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
     Ok(())
 }
 
+#[derive(Debug, StructOpt, Clone)]
+#[structopt(
+    name = "no_version",
+    no_version,
+    global_settings = &[structopt::clap::AppSettings::DisableVersion]
+)]
+pub struct UpdateArguments {
+    /// Payee profile label(s). If unset, updates all payee profiles.
+    #[structopt(name = "label")]
+    pub labels: Vec<String>,
+
+    #[structopt(flatten)]
+    pub lock_file_args: common::LockFilePathArg,
+}
+
+pub fn update(args: &UpdateArguments) -> Result<()> {
+    let mut lock_handle = common::LockFileHandle::load(&args.lock_file_args.path)?;
+    let local_payee_label = get_lock_local_payee(&lock_handle)?;
+
+    for (label, payee) in &mut lock_handle.lock.payees {
+        // Skip label if labels given as argument and label wasn't given.
+        if !args.labels.is_empty() && !args.labels.contains(label) {
+            continue;
+        }
+
+        // Update local profile with local data rather than via URL.
+        if let Some(local_payee_label) = &local_payee_label {
+            if label == local_payee_label {
+                let profile = crate::profile::Profile::load()?;
+                let latest_profile = (*profile).clone();
+                if payee.profile != latest_profile {
+                    log::debug!("Updating local profile: {}", label);
+                    payee.profile = latest_profile;
+                }
+                continue;
+            }
+        }
+
+        if let Some(url) = &payee.url {
+            let url = crate::common::url::Url::from_str(&url)?;
+            let latest_profile = (*crate::profile::Profile::from_url(&url)?).clone();
+            if payee.profile != latest_profile {
+                log::debug!("Updating profile: {}", label);
+                payee.profile = latest_profile;
+            }
+        }
+    }
+    Ok(())
+}
+
+/// Returns the payee label associated with the local profile.
 fn get_lock_local_payee(
     lock_handle: &common::LockFileHandle,
 ) -> Result<Option<openfare_lib::lock::payee::Label>> {
-    let payee = crate::profile::Profile::load()?;
+    let profile = crate::profile::Profile::load()?;
     let label = if let Some((label, _)) =
-        openfare_lib::lock::payee::get_lock_payee(&*payee, &lock_handle.lock.payees)
+        openfare_lib::lock::payee::get_lock_payee(&*profile, &lock_handle.lock.payees)
     {
         Some(label.clone())
     } else {
