@@ -34,7 +34,6 @@ impl std::fmt::Display for PaymentMethods {
 }
 
 pub trait PaymentMethod {
-    // TODO: remove associated_name method and name method?
     fn method_type(&self) -> PaymentMethods;
     fn to_serde_json_value(&self) -> Result<serde_json::Value>;
 }
