@@ -1,3 +1,4 @@
+use crate::common::json::Get;
 use anyhow::Result;
 use structopt::{self, StructOpt};
 
@@ -9,12 +10,9 @@ mod profile;
 
 #[derive(Debug, Clone, StructOpt)]
 pub struct Arguments {
-    #[structopt(name = "verbosity", short, long, parse(from_occurrences))]
-    verbosity: u8,
-
     // SUBCOMMANDS
     #[structopt(subcommand)]
-    commands: Option<Subcommands>,
+    commands: Subcommands,
 }
 
 #[derive(Debug, StructOpt, Clone)]
@@ -27,26 +25,27 @@ enum Subcommands {
     Remove(RemoveSubcommands),
     /// Update payee profiles.
     Update(UpdateArguments),
+    /// Show lock fields.
+    Show(ShowArguments),
 }
 
 pub fn run_command(args: &Arguments) -> Result<()> {
-    if let Some(subcommand) = &args.commands {
-        match subcommand {
-            Subcommands::New(args) => {
-                new(&args)?;
-            }
-            Subcommands::Add(args) => {
-                add(&args)?;
-            }
-            Subcommands::Remove(args) => {
-                remove(&args)?;
-            }
-            Subcommands::Update(args) => {
-                update(&args)?;
-            }
+    match &args.commands {
+        Subcommands::New(args) => {
+            new(&args)?;
         }
-    } else {
-        show(args.verbosity)?;
+        Subcommands::Add(args) => {
+            add(&args)?;
+        }
+        Subcommands::Remove(args) => {
+            remove(&args)?;
+        }
+        Subcommands::Update(args) => {
+            update(&args)?;
+        }
+        Subcommands::Show(args) => {
+            show(&args)?;
+        }
     }
     Ok(())
 }
@@ -150,8 +149,16 @@ fn update(args: &UpdateArguments) -> Result<()> {
     Ok(())
 }
 
-fn show(_verbosity: u8) -> Result<()> {
+#[derive(Debug, StructOpt, Clone)]
+pub struct ShowArguments {
+    /// Field path.
+    #[structopt(name = "field-path")]
+    pub path: Option<String>,
+}
+
+fn show(args: &ShowArguments) -> Result<()> {
     let lock_handle = common::LockFileHandle::load(&None)?;
-    println!("{}", serde_json::to_string_pretty(&lock_handle.lock)?);
+    let value = lock_handle.get(&args.path)?;
+    println!("{}", serde_json::to_string_pretty(&value)?);
     Ok(())
 }

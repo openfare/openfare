@@ -1,9 +1,3 @@
-use super::common;
-use anyhow::{format_err, Result};
-use std::convert::TryInto;
-
-pub const COMMAND: &'static str = "portal";
-
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Portal {
     pub url: url::Url,
@@ -36,40 +30,4 @@ impl std::fmt::Display for Portal {
             serde_json::to_string_pretty(&self).map_err(|_| std::fmt::Error::default())?
         )
     }
-}
-
-pub fn set(portal: &mut Portal, name: &str, value: &str) -> Result<()> {
-    let error_message = format!("Unknown setter field name: {}", name);
-    let field = common::get_field(&name, &COMMAND, &error_message)?;
-
-    match field.as_str() {
-        "url" => {
-            portal.url = value.try_into()?;
-        }
-        "api-key" => {
-            portal.api_key = value.try_into()?;
-        }
-        "email" => {
-            portal.email = Some(value.try_into()?);
-        }
-        _ => {
-            return Err(format_err!(error_message.clone()));
-        }
-    }
-    Ok(())
-}
-
-pub fn get(portal: &Portal, name: &str) -> Result<String> {
-    let error_message = format!("Unknown getter field name: {}", name);
-    let field = common::get_field(&name, &COMMAND, &error_message)?;
-
-    Ok(match field.as_str() {
-        "url" => portal.url.to_string(),
-        "api-key" => portal.api_key.to_string(),
-        "email" => portal.email.clone().unwrap_or_default().to_string(),
-        COMMAND => portal.to_string(),
-        _ => {
-            return Err(format_err!(error_message.clone()));
-        }
-    })
 }

@@ -3,7 +3,7 @@ use serde::Serialize;
 use std::io::Write;
 use structopt::{self, StructOpt};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Default)]
 pub struct LockFileHandle {
     pub lock: openfare_lib::lock::Lock,
     lock_hash: Option<blake3::Hash>,
@@ -96,6 +96,15 @@ impl Drop for LockFileHandle {
 
         file.write_all(lock_json.as_bytes())
             .expect("Unable to write data");
+    }
+}
+
+impl crate::common::json::Subject<openfare_lib::lock::Lock> for LockFileHandle {
+    fn subject(&self) -> &openfare_lib::lock::Lock {
+        &self.lock
+    }
+    fn subject_mut(&mut self) -> &mut openfare_lib::lock::Lock {
+        &mut self.lock
     }
 }
 

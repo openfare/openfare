@@ -96,25 +96,14 @@ impl Profile {
             }),
         })
     }
+}
 
-    pub fn set(&mut self, field_path: &str, value: &str) -> Result<()> {
-        let mut json_value = serde_json::to_value(&self.profile)?;
-
-        let mut target = &mut json_value;
-        for field in field_path.split('.') {
-            target = target
-                .get_mut(field)
-                .ok_or(anyhow::format_err!("Failed to find field: {}", field))?;
-        }
-        let value = match serde_json::from_str(value) {
-            Ok(v) => v,
-            Err(_) => serde_json::json!(value),
-        };
-        *target = value;
-        self.profile = serde_json::from_value(json_value)?;
-
-        self.profile.check()?;
-        Ok(())
+impl crate::common::json::Subject<openfare_lib::profile::Profile> for Profile {
+    fn subject(&self) -> &openfare_lib::profile::Profile {
+        &self.profile
+    }
+    fn subject_mut(&mut self) -> &mut openfare_lib::profile::Profile {
+        &mut self.profile
     }
 }
 

@@ -1,4 +1,5 @@
 use crate::common::config::FileStore;
+use crate::common::json::{Get, Set};
 use anyhow::Result;
 use structopt::{self, StructOpt};
 
@@ -9,7 +10,7 @@ mod push;
 pub struct Arguments {
     // SUBCOMMANDS
     #[structopt(subcommand)]
-    commands: Option<Subcommands>,
+    commands: Subcommands,
 }
 
 #[derive(Debug, StructOpt, Clone)]
@@ -20,6 +21,9 @@ enum Subcommands {
     /// Set payment method fields, etc.
     Set(SetArguments),
 
+    /// Show profile fields.
+    Show(ShowArguments),
+
     /// Remove payment method, etc.
     Remove(RemoveArguments),
 
@@ -28,27 +32,27 @@ enum Subcommands {
 }
 
 pub fn run_command(args: &Arguments) -> Result<()> {
-    if let Some(subcommand) = &args.commands {
-        match subcommand {
-            Subcommands::Add(args) => {
-                log::info!("Running command: profile add");
-                add(&args)?;
-            }
-            Subcommands::Set(args) => {
-                log::info!("Running command: profile set");
-                set(&args)?;
-            }
-            Subcommands::Remove(args) => {
-                log::info!("Running command: profile remove");
-                remove(&args)?;
-            }
-            Subcommands::Push(args) => {
-                log::info!("Running command: profile push");
-                push::push(&args)?;
-            }
+    match &args.commands {
+        Subcommands::Add(args) => {
+            log::info!("Running command: profile add");
+            add(&args)?;
         }
-    } else {
-        show()?;
+        Subcommands::Set(args) => {
+            log::info!("Running command: profile set");
+            set(&args)?;
+        }
+        Subcommands::Show(args) => {
+            log::info!("Running command: profile show");
+            show(&args)?;
+        }
+        Subcommands::Remove(args) => {
+            log::info!("Running command: profile remove");
+            remove(&args)?;
+        }
+        Subcommands::Push(args) => {
+            log::info!("Running command: profile push");
+            push::push(&args)?;
+        }
     }
     Ok(())
 }
@@ -72,6 +76,7 @@ fn add(args: &AddArguments) -> Result<()> {
 #[derive(Debug, StructOpt, Clone)]
 pub struct SetArguments {
     /// Field path.
+    #[structopt(name = "field-path")]
     pub path: String,
 
     /// Field value.
@@ -102,15 +107,15 @@ fn remove(args: &RemoveArguments) -> Result<()> {
 }
 
 #[derive(Debug, StructOpt, Clone)]
-#[structopt(
-    name = "no_version",
-    no_version,
-    global_settings = &[structopt::clap::AppSettings::DisableVersion]
-)]
-pub struct ShowArguments {}
+pub struct ShowArguments {
+    /// Field path.
+    #[structopt(name = "field-path")]
+    pub path: Option<String>,
+}
 
-fn show() -> Result<()> {
+fn show(args: &ShowArguments) -> Result<()> {
     let profile = crate::profile::Profile::load()?;
-    println!("{}", serde_json::to_string_pretty(&profile)?);
+    let value = profile.get(&args.path)?;
+    println!("{}", serde_json::to_string_pretty(&value)?);
     Ok(())
 }
