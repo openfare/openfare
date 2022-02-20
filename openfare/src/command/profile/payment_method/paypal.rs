@@ -1,4 +1,4 @@
-use crate::common::config::FileStore;
+use crate::common::fs::FileStore;
 use anyhow::Result;
 use structopt::{self, StructOpt};
 

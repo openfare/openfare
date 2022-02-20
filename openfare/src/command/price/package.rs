@@ -1,9 +1,6 @@
-use anyhow::Result;
-
-use crate::common;
-use crate::extension;
-
 use super::format;
+use crate::extension;
+use anyhow::Result;
 
 /// Prints a price report for a specific package and its dependencies.
 pub fn price(
@@ -11,7 +8,7 @@ pub fn price(
     package_version: &Option<&str>,
     extension_names: &std::collections::BTreeSet<String>,
     extension_args: &Vec<String>,
-    config: &common::config::Config,
+    config: &crate::config::Config,
 ) -> Result<()> {
     let extensions = extension::manage::get_enabled(&extension_names, &config)?;
     let extensions_results = extension::package_dependencies_locks(

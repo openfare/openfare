@@ -3,6 +3,7 @@ use structopt::StructOpt;
 
 mod command;
 mod common;
+mod config;
 mod extension;
 mod handles;
 mod price;

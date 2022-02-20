@@ -1,15 +1,13 @@
 use anyhow::Result;
 
-use crate::common;
-use crate::extension;
-
 use super::format;
+use crate::extension;
 
 /// Returns price information for a project and its dependencies.
 pub fn price(
     extension_names: &std::collections::BTreeSet<String>,
     extension_args: &Vec<String>,
-    config: &common::config::Config,
+    config: &crate::config::Config,
 ) -> Result<()> {
     let working_directory = std::env::current_dir()?;
     log::debug!("Current working directory: {}", working_directory.display());

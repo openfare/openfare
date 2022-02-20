@@ -1,4 +1,4 @@
-use crate::common::config::FileStore;
+use crate::common::fs::FileStore;
 use crate::common::json::{Get, Set};
 use anyhow::Result;
 use structopt::{self, StructOpt};
@@ -44,7 +44,7 @@ pub struct SetArguments {
 }
 
 fn set(args: &SetArguments) -> Result<()> {
-    let mut config = crate::common::config::Config::load()?;
+    let mut config = crate::config::Config::load()?;
     config.set(&args.path, &args.value)?;
     config.dump()?;
     Ok(())
@@ -58,7 +58,7 @@ pub struct ShowArguments {
 }
 
 fn show(args: &ShowArguments) -> Result<()> {
-    let config = crate::common::config::Config::load()?;
+    let config = crate::config::Config::load()?;
     let value = config.get(&args.path)?;
     println!("{}", serde_json::to_string_pretty(&value)?);
     Ok(())

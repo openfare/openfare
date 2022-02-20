@@ -1,5 +1,5 @@
 use super::common;
-use crate::common::config::FileStore;
+use crate::common::fs::FileStore;
 use anyhow::{format_err, Result};
 use std::str::FromStr;
 use structopt::{self, StructOpt};

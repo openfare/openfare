@@ -1,8 +1,8 @@
-use crate::common::config::FileStore;
+use crate::common::fs::FileStore;
 use anyhow::{format_err, Result};
 use std::convert::TryFrom;
 
-use crate::common::config::Config;
+use crate::config::Config;
 use crate::extension::{common, process};
 mod github;
 

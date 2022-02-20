@@ -1,7 +1,7 @@
 use anyhow::{format_err, Result};
 use structopt::{self, StructOpt};
 
-use crate::common::config::FileStore;
+use crate::common::fs::FileStore;
 
 use crate::common;
 use crate::extension;
@@ -111,7 +111,7 @@ fn add(args: &AddArguments) -> Result<()> {
         extension::manage::add_from_url(&url, &bin_directory)?
     };
 
-    let mut config = common::config::Config::load()?;
+    let mut config = crate::config::Config::load()?;
     extension::manage::update_config(&mut config)?;
 
     println!("Added extension: {}", extension_name);
@@ -169,7 +169,7 @@ pub struct RemoveArguments {
 }
 
 fn remove(args: &RemoveArguments) -> Result<()> {
-    let mut config = common::config::Config::load()?;
+    let mut config = crate::config::Config::load()?;
     extension::manage::update_config(&mut config)?;
 
     let name = extension::manage::clean_name(&args.name);
@@ -190,7 +190,7 @@ pub struct EnableArguments {
 }
 
 fn enable(args: &EnableArguments) -> Result<()> {
-    let mut config = common::config::Config::load()?;
+    let mut config = crate::config::Config::load()?;
     extension::manage::update_config(&mut config)?;
 
     let name = extension::manage::clean_name(&args.name);
@@ -222,7 +222,7 @@ pub struct DisableArguments {
 }
 
 fn disable(args: &DisableArguments) -> Result<()> {
-    let mut config = common::config::Config::load()?;
+    let mut config = crate::config::Config::load()?;
     extension::manage::update_config(&mut config)?;
 
     let name = extension::manage::clean_name(&args.name);
@@ -243,7 +243,7 @@ fn disable(args: &DisableArguments) -> Result<()> {
 }
 
 fn show(_verbosity: u8) -> Result<()> {
-    let mut config = common::config::Config::load()?;
+    let mut config = crate::config::Config::load()?;
     extension::manage::update_config(&mut config)?;
     for name in extension::manage::get_all_names(&config)? {
         println!("{}", name);

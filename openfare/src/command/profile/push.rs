@@ -1,4 +1,4 @@
-use crate::common::config::FileStore;
+use crate::common::fs::FileStore;
 use anyhow::Result;
 use std::str::FromStr;
 use structopt::{self, StructOpt};
@@ -10,7 +10,7 @@ pub struct Arguments {
 }
 
 pub fn push(args: &Arguments) -> Result<()> {
-    let mut config = crate::common::config::Config::load()?;
+    let mut config = crate::config::Config::load()?;
     let url = if let Some(url) = args.url.clone() {
         let url = crate::common::url::Url::from_str(&url)?;
         if config.profile.url.is_none() {

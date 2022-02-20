@@ -2,7 +2,7 @@ use anyhow::Result;
 
 pub fn get_report(
     package_locks: &openfare_lib::package::PackageLocks,
-    config: &crate::common::config::Config,
+    config: &crate::config::Config,
 ) -> Result<Option<PriceReport>> {
     log::info!("Generating price report for package and it's dependencies.");
 
@@ -64,7 +64,7 @@ pub struct PackagePriceReport {
 fn get_package_price_report(
     package: &openfare_lib::package::Package,
     package_lock: &Option<openfare_lib::lock::Lock>,
-    config: &crate::common::config::Config,
+    config: &crate::config::Config,
 ) -> Result<PackagePriceReport> {
     let package_lock = match package_lock {
         Some(c) => c,

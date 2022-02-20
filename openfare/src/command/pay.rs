@@ -1,8 +1,7 @@
-use crate::common::config::FileStore;
+use crate::common::fs::FileStore;
 use anyhow::Result;
 use structopt::{self, StructOpt};
 
-use crate::common;
 use crate::extension;
 
 #[derive(Debug, StructOpt, Clone)]
@@ -19,7 +18,7 @@ pub struct Arguments {
 }
 
 pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()> {
-    let mut config = common::config::Config::load()?;
+    let mut config = crate::config::Config::load()?;
     extension::manage::update_config(&mut config)?;
     let config = config;
     let extension_names =
@@ -63,7 +62,7 @@ struct ExtensionDependenciesLocks {
 fn get_dependencies_locks(
     extension_names: &std::collections::BTreeSet<String>,
     extension_args: &Vec<String>,
-    config: &common::config::Config,
+    config: &crate::config::Config,
 ) -> Result<Vec<ExtensionDependenciesLocks>> {
     let working_directory = std::env::current_dir()?;
     log::debug!("Current working directory: {}", working_directory.display());
@@ -122,7 +121,7 @@ fn get_packages_plans(
         openfare_lib::package::Package,
         openfare_lib::lock::Lock,
     >,
-    config: &common::config::Config,
+    config: &crate::config::Config,
 ) -> Result<Vec<openfare_lib::api::portal::basket::Item>> {
     let mut packages_plans: Vec<_> = vec![];
     for (package, lock) in package_locks {
@@ -157,7 +156,7 @@ fn get_packages_plans(
 
 fn submit_order(
     order: &openfare_lib::api::portal::basket::Order,
-    config: &common::config::Config,
+    config: &crate::config::Config,
 ) -> Result<url::Url> {
     let client = reqwest::blocking::Client::new();
     let url = config

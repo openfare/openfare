@@ -1,12 +1,12 @@
 use anyhow::Result;
 
-pub mod common;
 mod core;
 mod extensions;
+mod paths;
 mod portal;
 mod profile;
 
-pub use common::{FilePath, FileStore};
+pub use paths::Paths;
 
 #[derive(
     Debug, Clone, Default, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize,
@@ -27,9 +27,9 @@ impl crate::common::json::Subject<Config> for Config {
     }
 }
 
-impl common::FilePath for Config {
+impl crate::common::fs::FilePath for Config {
     fn file_path() -> Result<std::path::PathBuf> {
-        let paths = super::fs::ConfigPaths::new()?;
+        let paths = paths::Paths::new()?;
         Ok(paths.config_file)
     }
 }

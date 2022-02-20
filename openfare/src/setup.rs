@@ -1,4 +1,3 @@
-use crate::common;
 use anyhow::Result;
 
 /// Ensure setup is complete.
@@ -12,13 +11,13 @@ pub fn ensure() -> Result<()> {
 /// Setup config directory.
 ///
 /// If config file exists and force is false, file will not be modified.
-fn setup_config(paths: &common::fs::ConfigPaths, force: bool) -> Result<()> {
+fn setup_config(paths: &crate::config::Paths, force: bool) -> Result<()> {
     std::fs::create_dir_all(&paths.root_directory)?;
     std::fs::create_dir_all(&paths.extensions_directory)?;
 
     if force || !paths.config_file.is_file() {
         log::debug!("Generating config file: {}", paths.config_file.display());
-        let mut config = crate::common::config::Config::default();
+        let mut config = crate::config::Config::default();
         crate::extension::manage::update_config(&mut config)?;
     } else {
         log::debug!(
@@ -31,7 +30,7 @@ fn setup_config(paths: &common::fs::ConfigPaths, force: bool) -> Result<()> {
 }
 
 pub fn setup(force: bool) -> Result<()> {
-    let config_paths = common::fs::ConfigPaths::new()?;
+    let config_paths = crate::config::Paths::new()?;
     log::debug!("Using config paths: {:#?}", config_paths);
     setup_config(&config_paths, force)?;
     log::debug!("Config setup complete.");
@@ -42,6 +41,6 @@ pub fn setup(force: bool) -> Result<()> {
 ///
 /// Checks for existence of config file.
 pub fn is_complete() -> Result<bool> {
-    let config_paths = common::fs::ConfigPaths::new()?;
+    let config_paths = crate::config::Paths::new()?;
     Ok(config_paths.config_file.is_file())
 }

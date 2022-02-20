@@ -1,6 +1,4 @@
-use anyhow::{format_err, Result};
-use directories;
-
+use anyhow::{Context, Result};
 pub mod archive;
 
 pub fn ensure_extensions_bin_directory() -> Result<Option<std::path::PathBuf>> {
@@ -51,26 +49,49 @@ fn set_directory_hidden_windows(directory: &std::path::PathBuf) {
 #[cfg(not(windows))]
 fn set_directory_hidden_windows(_directory: &std::path::PathBuf) {}
 
-/// Filesystem config directory absolute paths.
-#[derive(Debug)]
-pub struct ConfigPaths {
-    pub root_directory: std::path::PathBuf,
-    pub config_file: std::path::PathBuf,
-    pub profile_file: std::path::PathBuf,
-    pub extensions_directory: std::path::PathBuf,
+pub trait FilePath {
+    fn file_path() -> Result<std::path::PathBuf>;
 }
 
-impl ConfigPaths {
-    pub fn new() -> Result<Self> {
-        let user_directories = directories::ProjectDirs::from("", "", "openfare").ok_or(
-            format_err!("Failed to obtain a handle on the local user directory."),
-        )?;
-        let root_directory = user_directories.config_dir();
-        Ok(Self {
-            root_directory: root_directory.into(),
-            config_file: root_directory.join("config.json"),
-            profile_file: root_directory.join("profile.json"),
-            extensions_directory: root_directory.join("extensions"),
-        })
+pub trait FileStore: FilePath {
+    fn load() -> Result<Self>
+    where
+        Self: Sized;
+    fn dump(&mut self) -> Result<()>;
+}
+
+impl<'de, T> FileStore for T
+where
+    T: FilePath + Default + serde::de::DeserializeOwned + serde::Serialize,
+{
+    fn load() -> Result<Self> {
+        if !Self::file_path()?.is_file() {
+            let mut default = Self::default();
+            default.dump()?;
+        }
+
+        let file = std::fs::File::open(Self::file_path()?)?;
+        let reader = std::io::BufReader::new(file);
+        Ok(serde_json::from_reader(reader)?)
+    }
+
+    fn dump(&mut self) -> Result<()> {
+        if Self::file_path()?.is_file() {
+            std::fs::remove_file(&Self::file_path()?)?;
+        }
+
+        let file = std::fs::OpenOptions::new()
+            .write(true)
+            .append(false)
+            .create(true)
+            .open(&Self::file_path()?)
+            .context(format!(
+                "Can't open/create file for writing: {}",
+                Self::file_path()?.display()
+            ))?;
+
+        let writer = std::io::BufWriter::new(file);
+        serde_json::to_writer_pretty(writer, &self)?;
+        Ok(())
     }
 }

@@ -1,8 +1,7 @@
-use crate::common::config::FileStore;
+use crate::common::fs::FileStore;
 use anyhow::Result;
 use structopt::{self, StructOpt};
 
-use crate::common;
 use crate::extension;
 
 mod format;
@@ -31,7 +30,7 @@ pub struct Arguments {
 }
 
 pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()> {
-    let mut config = common::config::Config::load()?;
+    let mut config = crate::config::Config::load()?;
     extension::manage::update_config(&mut config)?;
     let config = config;
     let extension_names =

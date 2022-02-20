@@ -121,9 +121,9 @@ impl std::ops::DerefMut for ProfileHandle {
     }
 }
 
-impl common::config::FilePath for ProfileHandle {
+impl common::fs::FilePath for ProfileHandle {
     fn file_path() -> Result<std::path::PathBuf> {
-        let paths = common::fs::ConfigPaths::new()?;
+        let paths = crate::config::Paths::new()?;
         Ok(paths.profile_file)
     }
 }
