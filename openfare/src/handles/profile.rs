@@ -3,7 +3,7 @@ use anyhow::Result;
 
 /// Profile structure which wraps core library Profile and adds managerial data fields.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
-pub struct Profile {
+pub struct ProfileHandle {
     #[serde(flatten)]
     profile: openfare_lib::profile::Profile,
 
@@ -26,7 +26,7 @@ pub enum FromUrlMethod {
     HttpGetJson,
 }
 
-impl Profile {
+impl ProfileHandle {
     pub fn from_url(url: &crate::common::url::Url) -> Result<Self> {
         match Self::from_http_get(&url) {
             Ok(profile) => Ok(profile),
@@ -98,7 +98,7 @@ impl Profile {
     }
 }
 
-impl crate::common::json::Subject<openfare_lib::profile::Profile> for Profile {
+impl crate::common::json::Subject<openfare_lib::profile::Profile> for ProfileHandle {
     fn subject(&self) -> &openfare_lib::profile::Profile {
         &self.profile
     }
@@ -107,7 +107,7 @@ impl crate::common::json::Subject<openfare_lib::profile::Profile> for Profile {
     }
 }
 
-impl std::ops::Deref for Profile {
+impl std::ops::Deref for ProfileHandle {
     type Target = openfare_lib::profile::Profile;
 
     fn deref(&self) -> &openfare_lib::profile::Profile {
@@ -115,20 +115,20 @@ impl std::ops::Deref for Profile {
     }
 }
 
-impl std::ops::DerefMut for Profile {
+impl std::ops::DerefMut for ProfileHandle {
     fn deref_mut(&mut self) -> &mut openfare_lib::profile::Profile {
         &mut self.profile
     }
 }
 
-impl common::config::FilePath for Profile {
+impl common::config::FilePath for ProfileHandle {
     fn file_path() -> Result<std::path::PathBuf> {
         let paths = common::fs::ConfigPaths::new()?;
         Ok(paths.profile_file)
     }
 }
 
-impl std::fmt::Display for Profile {
+impl std::fmt::Display for ProfileHandle {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,

@@ -6,7 +6,6 @@ mod common;
 mod extension;
 mod handles;
 mod price;
-mod profile;
 mod setup;
 
 fn main() {

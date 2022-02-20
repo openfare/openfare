@@ -70,10 +70,10 @@ pub fn add(args: &AddArguments) -> Result<()> {
     Ok(())
 }
 
-fn get_payee(profile: &crate::profile::Profile) -> openfare_lib::lock::payee::Payee {
+fn get_payee(profile: &crate::handles::ProfileHandle) -> openfare_lib::lock::payee::Payee {
     let url = if let Some(from_url_status) = &profile.from_url_status {
         match from_url_status.method {
-            crate::profile::FromUrlMethod::Git => {
+            crate::handles::profile::FromUrlMethod::Git => {
                 // Prefer HTTPS git URL in lock.
                 from_url_status
                     .url
@@ -81,7 +81,9 @@ fn get_payee(profile: &crate::profile::Profile) -> openfare_lib::lock::payee::Pa
                     .as_https_url()
                     .or(Some(from_url_status.url.original.clone()))
             }
-            crate::profile::FromUrlMethod::HttpGetJson => Some(from_url_status.url.to_string()),
+            crate::handles::profile::FromUrlMethod::HttpGetJson => {
+                Some(from_url_status.url.to_string())
+            }
         }
     } else {
         None
@@ -93,7 +95,7 @@ fn get_payee(profile: &crate::profile::Profile) -> openfare_lib::lock::payee::Pa
     }
 }
 
-fn get_profile(url: &Option<String>) -> Result<crate::profile::Profile> {
+fn get_profile(url: &Option<String>) -> Result<crate::handles::ProfileHandle> {
     // Parse URL argument.
     let url = if let Some(url) = &url {
         Some(crate::common::url::Url::from_str(&url)?)
@@ -101,18 +103,21 @@ fn get_profile(url: &Option<String>) -> Result<crate::profile::Profile> {
         None
     };
     Ok(if let Some(url) = &url {
-        crate::profile::Profile::from_url(&url)?
+        crate::handles::ProfileHandle::from_url(&url)?
     } else {
-        crate::profile::Profile::load()?
+        crate::handles::ProfileHandle::load()?
     })
 }
 
 /// Get payee label from label argument or URL.
-fn get_label(label_arg: &Option<String>, profile: &crate::profile::Profile) -> Result<String> {
+fn get_label(
+    label_arg: &Option<String>,
+    profile: &crate::handles::ProfileHandle,
+) -> Result<String> {
     let url_label = if let Some(from_url_status) = &profile.from_url_status {
         match from_url_status.method {
-            crate::profile::FromUrlMethod::Git => from_url_status.url.git.username.clone(),
-            crate::profile::FromUrlMethod::HttpGetJson => None,
+            crate::handles::profile::FromUrlMethod::Git => from_url_status.url.git.username.clone(),
+            crate::handles::profile::FromUrlMethod::HttpGetJson => None,
         }
     } else {
         None
@@ -233,7 +238,7 @@ pub fn update(args: &UpdateArguments) -> Result<()> {
         // Update local profile with local data rather than via URL.
         if let Some(local_payee_label) = &local_payee_label {
             if label == local_payee_label {
-                let profile = crate::profile::Profile::load()?;
+                let profile = crate::handles::ProfileHandle::load()?;
                 let latest_profile = (*profile).clone();
                 if payee.profile != latest_profile {
                     log::debug!("Updating local profile: {}", label);
@@ -245,7 +250,7 @@ pub fn update(args: &UpdateArguments) -> Result<()> {
 
         if let Some(url) = &payee.url {
             let url = crate::common::url::Url::from_str(&url)?;
-            let latest_profile = (*crate::profile::Profile::from_url(&url)?).clone();
+            let latest_profile = (*crate::handles::ProfileHandle::from_url(&url)?).clone();
             if payee.profile != latest_profile {
                 log::debug!("Updating profile: {}", label);
                 payee.profile = latest_profile;
@@ -259,7 +264,7 @@ pub fn update(args: &UpdateArguments) -> Result<()> {
 fn get_lock_local_payee(
     lock_handle: &crate::handles::LockHandle,
 ) -> Result<Option<openfare_lib::lock::payee::Label>> {
-    let profile = crate::profile::Profile::load()?;
+    let profile = crate::handles::ProfileHandle::load()?;
     let label = if let Some((label, _)) =
         openfare_lib::lock::payee::get_lock_payee(&*profile, &lock_handle.lock.payees)
     {

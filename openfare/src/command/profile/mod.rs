@@ -84,7 +84,7 @@ pub struct SetArguments {
 }
 
 fn set(args: &SetArguments) -> Result<()> {
-    let mut profile = crate::profile::Profile::load()?;
+    let mut profile = crate::handles::ProfileHandle::load()?;
     profile.set(&args.path, &args.value)?;
     profile.dump()?;
     Ok(())
@@ -114,7 +114,7 @@ pub struct ShowArguments {
 }
 
 fn show(args: &ShowArguments) -> Result<()> {
-    let profile = crate::profile::Profile::load()?;
+    let profile = crate::handles::ProfileHandle::load()?;
     let value = profile.get(&args.path)?;
     println!("{}", serde_json::to_string_pretty(&value)?);
     Ok(())

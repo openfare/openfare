@@ -31,7 +31,7 @@ pub fn push(args: &Arguments) -> Result<()> {
 
     clone_repo(&url, &tmp_directory_path)?;
 
-    let profile = crate::profile::Profile::load()?;
+    let profile = crate::handles::ProfileHandle::load()?;
     let remote_profile = (*profile).clone().into();
 
     insert_profile(&remote_profile, &tmp_directory_path)?;
