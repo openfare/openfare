@@ -26,7 +26,7 @@ pub fn add(args: &AddArguments) -> Result<()> {
         .iter()
         .map(|id| id.to_string())
         .collect::<std::collections::BTreeSet<_>>();
-    let mut lock_handle = common::LockFileHandle::load(&args.lock_file_args.path)?;
+    let mut lock_handle = crate::handles::LockHandle::load(&args.lock_file_args.path)?;
 
     for (_plan_id, plan) in lock_handle
         .lock
@@ -63,7 +63,7 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
         .iter()
         .map(|id| id.to_string())
         .collect::<std::collections::BTreeSet<_>>();
-    let mut lock_handle = common::LockFileHandle::load(&args.lock_file_args.path)?;
+    let mut lock_handle = crate::handles::LockHandle::load(&args.lock_file_args.path)?;
 
     for (_plan_id, plan) in lock_handle
         .lock

@@ -32,7 +32,7 @@ pub struct AddArguments {
 }
 
 pub fn add(args: &AddArguments) -> Result<()> {
-    let mut lock_handle = common::LockFileHandle::load(&args.lock_file_args.path)?;
+    let mut lock_handle = crate::handles::LockHandle::load(&args.lock_file_args.path)?;
     if lock_handle.lock.plans.is_empty() {
         return Err(format_err!(
             "No payment plan found. Add a plan first: openfare lock add plan"
@@ -131,7 +131,7 @@ fn add_shares_to_plans(
     payee_label: &str,
     payee_shares: u64,
     plan_ids: &std::collections::BTreeSet<String>,
-    lock_handle: &mut common::LockFileHandle,
+    lock_handle: &mut crate::handles::LockHandle,
 ) {
     for (_plan_id, plan) in lock_handle
         .lock
@@ -172,7 +172,7 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
         .iter()
         .map(|id| id.to_string())
         .collect::<std::collections::BTreeSet<_>>();
-    let mut lock_handle = common::LockFileHandle::load(&args.lock_file_args.path)?;
+    let mut lock_handle = crate::handles::LockHandle::load(&args.lock_file_args.path)?;
 
     // If no payee labels given, use local payee label.
     let labels = if args.labels.is_empty() {
@@ -221,7 +221,7 @@ pub struct UpdateArguments {
 }
 
 pub fn update(args: &UpdateArguments) -> Result<()> {
-    let mut lock_handle = common::LockFileHandle::load(&args.lock_file_args.path)?;
+    let mut lock_handle = crate::handles::LockHandle::load(&args.lock_file_args.path)?;
     let local_payee_label = get_lock_local_payee(&lock_handle)?;
 
     for (label, payee) in &mut lock_handle.lock.payees {
@@ -257,7 +257,7 @@ pub fn update(args: &UpdateArguments) -> Result<()> {
 
 /// Returns the payee label associated with the local profile.
 fn get_lock_local_payee(
-    lock_handle: &common::LockFileHandle,
+    lock_handle: &crate::handles::LockHandle,
 ) -> Result<Option<openfare_lib::lock::payee::Label>> {
     let profile = crate::profile::Profile::load()?;
     let label = if let Some((label, _)) =

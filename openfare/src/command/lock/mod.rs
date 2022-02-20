@@ -66,7 +66,7 @@ pub struct NewArguments {
 }
 
 fn new(args: &NewArguments) -> Result<()> {
-    let lock_handle = common::LockFileHandle::new(&args.lock_file_args.path, args.force)?;
+    let lock_handle = crate::handles::LockHandle::new(&args.lock_file_args.path, args.force)?;
     println!("Created new lock file: {}", lock_handle.path().display());
     Ok(())
 }
@@ -157,7 +157,7 @@ pub struct ShowArguments {
 }
 
 fn show(args: &ShowArguments) -> Result<()> {
-    let lock_handle = common::LockFileHandle::load(&None)?;
+    let lock_handle = crate::handles::LockHandle::load(&None)?;
     let value = lock_handle.get(&args.path)?;
     println!("{}", serde_json::to_string_pretty(&value)?);
     Ok(())

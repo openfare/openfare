@@ -43,7 +43,7 @@ pub struct AddCompulsoryArguments {
 }
 
 pub fn add_compulsory(args: &AddCompulsoryArguments) -> Result<()> {
-    let mut lock_handle = common::LockFileHandle::load(&args.lock_file_args.path)?;
+    let mut lock_handle = crate::handles::LockHandle::load(&args.lock_file_args.path)?;
     let id = openfare_lib::lock::plan::next_id(&lock_handle.lock.plans)?;
 
     let conditions = args.conditions.clone().try_into()?;
@@ -80,7 +80,7 @@ pub struct AddVoluntaryArguments {
 }
 
 pub fn add_voluntary(args: &AddVoluntaryArguments) -> Result<()> {
-    let mut lock_handle = common::LockFileHandle::load(&args.lock_file_args.path)?;
+    let mut lock_handle = crate::handles::LockHandle::load(&args.lock_file_args.path)?;
     let id = openfare_lib::lock::plan::next_id(&lock_handle.lock.plans)?;
     let plan = openfare_lib::lock::plan::Plan {
         r#type: openfare_lib::lock::plan::PlanType::Voluntary,
@@ -116,7 +116,7 @@ pub struct RemoveArguments {
 }
 
 pub fn remove(args: &RemoveArguments) -> Result<()> {
-    let mut lock_handle = common::LockFileHandle::load(&None)?;
+    let mut lock_handle = crate::handles::LockHandle::load(&None)?;
     let ids = if args.id.is_empty() {
         lock_handle
             .lock
