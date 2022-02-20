@@ -33,7 +33,7 @@ OpenFare reveals the demand for funding across the entire software dependency tr
 
 Setting up a project to receive donations is easy. Simply use the `openfare` tool to generate a `OpenFare.lock` file in the project's top level directory.
 
-In this example `OpenFare.lock` file Steve and John split their donations 10/4. John can be paid via PayPal or lightning keysend. Steve can only be paid via PayPal:
+In this example `OpenFare.lock` file Steve and John split their donations 10/4. John can be paid via PayPal or via the Bitcoin Lightning Network. Steve can only be paid via PayPal:
 
 ```json
 {
@@ -54,8 +54,8 @@ In this example `OpenFare.lock` file Steve and John split their donations 10/4. 
                 "paypal": {
                     "email": "john@example.com"
                 },
-                "btc-lightning-keysend": {
-                    "public-key": "03488242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7dd5"
+                "btc-lightning": {
+                    "keysend": "03488242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7dd5"
                 }
             }
         },
@@ -87,7 +87,7 @@ The OpenFare License is a lot like the MIT License. The code can be modified, fo
 
 The `OpenFare.lock` file defines commercial payment plans for a software package. It is created using the `openfare` tool and is always located next to the project OpenFare `LICENSE` file (usually in the top level directory).
 
-The following example describes a single payment plan. The plan is applicable to commercial organizations which use the software before 2022-12-19 and which have more than 100 employees. It stipulates that this version of the software necessitates a one off payment totalling 20.00 USD. The payment is split 10/4 between Steve and John. John can be paid via PayPal or lightning keysend. Steve can only be paid via PayPal.
+The following example describes a single payment plan. The plan is applicable to commercial organizations which use the software before 2022-12-19 and which have more than 100 employees. It stipulates that this version of the software necessitates a one off payment totalling 20.00 USD. The payment is split 10/4 between Steve and John. John can be paid via PayPal or via the Bitcoin Lightning Network. Steve can only be paid via PayPal.
 
 ```json
 {
@@ -113,8 +113,8 @@ The following example describes a single payment plan. The plan is applicable to
                 "paypal": {
                     "email": "john@example.com"
                 },
-                "btc-lightning-keysend": {
-                    "public-key": "03488242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7dd5"
+                "btc-lightning": {
+                    "keysend": "03488242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7dd5"
                 }
             }
         },
@@ -138,7 +138,7 @@ Your OpenFare profile describes how you can receive funds.
 Add payment methods to your profile:
 
 ```bash
-openfare profile add payment-method btc-ln-keysend <public-key>
+openfare profile add payment-method btc-ln --keysend <public-key>
 ```
 
 ```bash

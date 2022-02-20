@@ -6,8 +6,8 @@ pub type Name = String;
 pub enum Methods {
     #[serde(rename = "paypal")]
     PayPal,
-    #[serde(rename = "btc-lightning-keysend")]
-    BtcLightningKeysend,
+    #[serde(rename = "btc-lightning")]
+    BtcLightning,
 }
 
 pub trait MethodType {
@@ -62,21 +62,21 @@ impl MethodType for PayPal {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
-pub struct BtcLightningKeysend {
-    public_key: String,
+pub struct BtcLightning {
+    keysend: String,
 }
 
-impl BtcLightningKeysend {
-    pub fn new(public_key: &str) -> Result<Self> {
+impl BtcLightning {
+    pub fn new(keysend: &str) -> Result<Self> {
         Ok(Self {
-            public_key: public_key.to_string(),
+            keysend: keysend.to_string(),
         })
     }
 }
 
-impl MethodType for BtcLightningKeysend {
+impl MethodType for BtcLightning {
     fn type_method() -> Methods {
-        Methods::BtcLightningKeysend
+        Methods::BtcLightning
     }
 }
 
@@ -89,8 +89,8 @@ pub fn check(
                 let method = serde_json::from_value::<PayPal>(json_value.clone())?;
                 serde_json::to_value(&method)?
             }
-            Methods::BtcLightningKeysend => {
-                let method = serde_json::from_value::<BtcLightningKeysend>(json_value.clone())?;
+            Methods::BtcLightning => {
+                let method = serde_json::from_value::<BtcLightning>(json_value.clone())?;
                 serde_json::to_value(&method)?
             }
         };

@@ -38,8 +38,8 @@ impl Profile {
                         serde_json::from_value::<payment_methods::PayPal>(json_value.clone())?;
                     Box::new(method) as Box<dyn payment_methods::PaymentMethod>
                 }
-                payment_methods::Methods::BtcLightningKeysend => {
-                    let method = serde_json::from_value::<payment_methods::BtcLightningKeysend>(
+                payment_methods::Methods::BtcLightning => {
+                    let method = serde_json::from_value::<payment_methods::BtcLightning>(
                         json_value.clone(),
                     )?;
                     Box::new(method) as Box<dyn payment_methods::PaymentMethod>

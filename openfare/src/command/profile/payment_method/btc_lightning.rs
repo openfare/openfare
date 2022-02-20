@@ -2,9 +2,9 @@ use crate::common::config::FileStore;
 use anyhow::Result;
 use structopt::{self, StructOpt};
 
-type Method = openfare_lib::profile::payment_methods::BtcLightningKeysend;
+type Method = openfare_lib::profile::payment_methods::BtcLightning;
 const METHOD_TYPE: openfare_lib::profile::payment_methods::Methods =
-    openfare_lib::profile::payment_methods::Methods::BtcLightningKeysend;
+    openfare_lib::profile::payment_methods::Methods::BtcLightning;
 
 #[derive(Debug, StructOpt, Clone)]
 #[structopt(
@@ -14,12 +14,12 @@ const METHOD_TYPE: openfare_lib::profile::payment_methods::Methods =
 )]
 pub struct AddArguments {
     /// Public key destination
-    #[structopt(name = "public-key")]
-    pub public_key: String,
+    #[structopt(name = "keysend")]
+    pub keysend: String,
 }
 
 pub fn add(args: &AddArguments) -> Result<()> {
-    let payment_method = Method::new(&args.public_key)?;
+    let payment_method = Method::new(&args.keysend)?;
     let mut profile = crate::handles::ProfileHandle::load()?;
     (*profile).set_payment_method(
         &(Box::new(payment_method)

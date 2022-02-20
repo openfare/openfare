@@ -1,17 +1,17 @@
 use anyhow::Result;
 use structopt::{self, StructOpt};
-mod btc_lightning_keysend;
+mod btc_lightning;
 mod paypal;
 
 #[derive(Debug, StructOpt, Clone)]
 pub enum AddSubcommands {
-    /// Set PayPal payment method.
+    /// Set payment method: PayPal.
     #[structopt(name = "paypal")]
     PayPal(paypal::AddArguments),
 
-    /// Set BTC lightning keysend payment method.
-    #[structopt(name = "btc-ln-keysend")]
-    BtcLightningKeysend(btc_lightning_keysend::AddArguments),
+    /// Set payment method: Bitcoin Lightning Network.
+    #[structopt(name = "btc-ln")]
+    BtcLightning(btc_lightning::AddArguments),
 }
 
 pub fn add(subcommand: &AddSubcommands) -> Result<()> {
@@ -19,8 +19,8 @@ pub fn add(subcommand: &AddSubcommands) -> Result<()> {
         AddSubcommands::PayPal(args) => {
             paypal::add(&args)?;
         }
-        AddSubcommands::BtcLightningKeysend(args) => {
-            btc_lightning_keysend::add(&args)?;
+        AddSubcommands::BtcLightning(args) => {
+            btc_lightning::add(&args)?;
         }
     }
     Ok(())
@@ -28,13 +28,13 @@ pub fn add(subcommand: &AddSubcommands) -> Result<()> {
 
 #[derive(Debug, StructOpt, Clone)]
 pub enum RemoveSubcommands {
-    /// Remove PayPal payment method.
+    /// Remove payment method: PayPal.
     #[structopt(name = "paypal")]
     PayPal(paypal::RemoveArguments),
 
-    /// Remove BTC lightning keysend payment method.
-    #[structopt(name = "btc-ln-keysend")]
-    BtcLightningKeysend(btc_lightning_keysend::RemoveArguments),
+    /// Remove payment method: Bitcoin Lightning Network.
+    #[structopt(name = "btc-ln")]
+    BtcLightning(btc_lightning::RemoveArguments),
 }
 
 pub fn remove(subcommand: &RemoveSubcommands) -> Result<()> {
@@ -42,8 +42,8 @@ pub fn remove(subcommand: &RemoveSubcommands) -> Result<()> {
         RemoveSubcommands::PayPal(args) => {
             paypal::remove(&args)?;
         }
-        RemoveSubcommands::BtcLightningKeysend(args) => {
-            btc_lightning_keysend::remove(&args)?;
+        RemoveSubcommands::BtcLightning(args) => {
+            btc_lightning::remove(&args)?;
         }
     }
     Ok(())
