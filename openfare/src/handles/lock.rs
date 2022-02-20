@@ -35,16 +35,9 @@ impl LockHandle {
     pub fn load(user_lock_file_path: &Option<std::path::PathBuf>) -> Result<Self> {
         let path = user_lock_file_path.clone().or(find_lock_file()?);
         if let Some(path) = path {
-            let lock = from_file(&path)?;
-            let lock_hash = Some(Self::get_lock_hash(&lock)?);
-            let lock_handle = Self {
-                lock,
-                lock_hash,
-                path,
-            };
-            Ok(lock_handle)
+            Self::try_from(&path)
         } else {
-            Err(format_err!(
+            Err(anyhow::format_err!(
                 "Filed to find lock file. Provide path or change working directory."
             ))
         }
@@ -57,6 +50,20 @@ impl LockHandle {
     fn get_lock_hash(lock: &openfare_lib::lock::Lock) -> Result<blake3::Hash> {
         let serialized_lock = serde_json::to_string(&lock)?;
         Ok(blake3::hash(&serialized_lock.as_bytes()))
+    }
+}
+
+impl std::convert::TryFrom<&std::path::PathBuf> for LockHandle {
+    type Error = anyhow::Error;
+    fn try_from(path: &std::path::PathBuf) -> Result<Self> {
+        let lock = from_file(&path)?;
+        let lock_hash = Some(Self::get_lock_hash(&lock)?);
+        let lock_handle = Self {
+            lock,
+            lock_hash,
+            path: path.clone(),
+        };
+        Ok(lock_handle)
     }
 }
 
