@@ -13,13 +13,14 @@ const METHOD_TYPE: openfare_lib::profile::payment_methods::Methods =
     global_settings = &[structopt::clap::AppSettings::DisableVersion]
 )]
 pub struct AddArguments {
-    /// Public key destination
-    #[structopt(name = "keysend")]
-    pub keysend: String,
+    /// LNURL. Example: lnurl1dp69eireddf...
+    pub lnurl: String,
+    /// Optional fallback: keysend node public key.
+    pub keysend: Option<String>,
 }
 
 pub fn add(args: &AddArguments) -> Result<()> {
-    let payment_method = Method::new(&args.keysend)?;
+    let payment_method = Method::new(&args.lnurl, &args.keysend)?;
     let mut profile = crate::handles::ProfileHandle::load()?;
     (*profile).set_payment_method(
         &(Box::new(payment_method)

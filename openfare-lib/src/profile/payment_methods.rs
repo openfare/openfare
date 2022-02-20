@@ -63,13 +63,15 @@ impl MethodType for PayPal {
 
 #[derive(Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct BtcLightning {
-    keysend: String,
+    lnurl: String,
+    keysend: Option<String>,
 }
 
 impl BtcLightning {
-    pub fn new(keysend: &str) -> Result<Self> {
+    pub fn new(lnurl: &str, keysend: &Option<String>) -> Result<Self> {
         Ok(Self {
-            keysend: keysend.to_string(),
+            lnurl: lnurl.to_string(),
+            keysend: keysend.clone(),
         })
     }
 }
