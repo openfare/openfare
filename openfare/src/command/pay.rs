@@ -16,8 +16,8 @@ pub struct Arguments {
     pub service: Option<crate::services::Service>,
 
     /// Set specified payment service as default.
-    #[structopt(long = "set-default", short, name = "set-default")]
-    pub set_default: bool,
+    #[structopt(long, short)]
+    pub default: bool,
 
     /// Specify an extension for handling the package and its dependencies.
     /// Example values: py, js, rs
@@ -28,7 +28,7 @@ pub struct Arguments {
 pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()> {
     let mut config = crate::config::Config::load()?;
     extensions::manage::update_config(&mut config)?;
-    if args.set_default {
+    if args.default {
         if let Some(service) = &args.service {
             config.services.default = service.clone();
             config.dump()?;
