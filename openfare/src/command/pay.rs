@@ -11,6 +11,14 @@ use crate::extensions;
     global_settings = &[structopt::clap::AppSettings::DisableVersion]
 )]
 pub struct Arguments {
+    /// Specify payment service.
+    #[structopt(long, short)]
+    pub service: Option<crate::services::Service>,
+
+    /// Set specified payment service as default.
+    #[structopt(long = "set-default", short, name = "set-default")]
+    pub set_default: bool,
+
     /// Specify an extension for handling the package and its dependencies.
     /// Example values: py, js, rs
     #[structopt(long = "extension", short = "e", name = "name")]
@@ -20,42 +28,21 @@ pub struct Arguments {
 pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()> {
     let mut config = crate::config::Config::load()?;
     extensions::manage::update_config(&mut config)?;
+    if args.set_default {
+        if let Some(service) = &args.service {
+            config.services.default = service.clone();
+            config.dump()?;
+        }
+    }
+
     let config = config;
     let extension_names =
         extensions::manage::handle_extension_names_arg(&args.extension_names, &config)?;
 
-    let all_extension_dependency_locks =
-        get_dependencies_locks(&extension_names, &extension_args, &config)?;
+    let all_extension_locks = get_dependencies_locks(&extension_names, &extension_args, &config)?;
 
-    let mut items = Vec::<_>::new();
-    for extension_dependency_locks in all_extension_dependency_locks {
-        let packages_plans = get_packages_plans(
-            &extension_dependency_locks.extension_name,
-            &extension_dependency_locks.package_locks,
-            &config,
-        )?;
-        items.extend(packages_plans);
-    }
-
-    let order = openfare_lib::api::portal::basket::Order {
-        items,
-        api_key: config.services.portal.api_key.clone(),
-    };
-
-    if order.is_empty() {
-        println!("No applicable payment plans found.");
-        return Ok(());
-    }
-
-    let checkout_url = submit_order(&order, &config)?;
-    println!("Checkout via URL:\n{}", checkout_url);
+    crate::services::pay(&all_extension_locks, &args.service, &config)?;
     Ok(())
-}
-
-struct ExtensionDependenciesLocks {
-    pub extension_name: String,
-    pub package_locks:
-        std::collections::BTreeMap<openfare_lib::package::Package, openfare_lib::lock::Lock>,
 }
 
 /// Get dependencies locks from all extensions.
@@ -63,7 +50,7 @@ fn get_dependencies_locks(
     extension_names: &std::collections::BTreeSet<String>,
     extension_args: &Vec<String>,
     config: &crate::config::Config,
-) -> Result<Vec<ExtensionDependenciesLocks>> {
+) -> Result<Vec<crate::services::common::ExtensionLocks>> {
     let working_directory = std::env::current_dir()?;
     log::debug!("Current working directory: {}", working_directory.display());
 
@@ -108,77 +95,11 @@ fn get_dependencies_locks(
                 })
                 .collect();
 
-            Some(ExtensionDependenciesLocks {
+            Some(crate::services::common::ExtensionLocks {
                 extension_name: extension.name(),
                 package_locks: dependencies_locks,
             })
         })
         .collect();
     Ok(extension_dependencies_locks)
-}
-
-/// Get applicable payment plans from packages.
-fn get_packages_plans(
-    extension_name: &str,
-    package_locks: &std::collections::BTreeMap<
-        openfare_lib::package::Package,
-        openfare_lib::lock::Lock,
-    >,
-    config: &crate::config::Config,
-) -> Result<Vec<openfare_lib::api::portal::basket::Item>> {
-    let mut packages_plans: Vec<_> = vec![];
-    for (package, lock) in package_locks {
-        let plans =
-            openfare_lib::lock::plan::filter_applicable(&lock.plans, &config.profile.parameters)?;
-        if plans.is_empty() {
-            // Skip package if no applicable plans found.
-            continue;
-        }
-
-        let plans: Vec<_> = plans
-            .into_iter()
-            .map(|(plan_id, plan)| openfare_lib::api::portal::basket::Plan { plan_id, plan })
-            .collect();
-
-        let total_price = plans
-            .iter()
-            .map(|p| p.plan.payments.total.clone().unwrap_or_default())
-            .sum();
-
-        let order_item = openfare_lib::api::portal::basket::Item {
-            package: package.clone(),
-            extension_name: extension_name.to_string(),
-            plans,
-            total_price,
-            payees: lock.payees.clone(),
-        };
-        packages_plans.push(order_item);
-    }
-    Ok(packages_plans)
-}
-
-fn submit_order(
-    order: &openfare_lib::api::portal::basket::Order,
-    config: &crate::config::Config,
-) -> Result<url::Url> {
-    let client = reqwest::blocking::Client::new();
-    let url = config
-        .services
-        .portal
-        .url
-        .join(&openfare_lib::api::portal::basket::ROUTE)?;
-
-    log::debug!("Submitting orders: {:?}", order);
-    log::debug!("HTTP POST orders to endpoint: {}", url);
-    let response = client.post(url.clone()).json(&order).send()?;
-    if response.status() != 200 {
-        return Err(anyhow::format_err!(
-            "Portal response error ({status}):\n{url}",
-            status = response.status(),
-            url = url.to_string()
-        ));
-    }
-
-    let response: openfare_lib::api::portal::basket::Response = response.json()?;
-    Ok(response.checkout_url)
 }

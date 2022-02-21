@@ -1,17 +1,10 @@
 mod lnpay;
 mod portal;
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub enum ServiceType {
-    Portal,
-    #[serde(rename = "lnpay")]
-    LnPay,
-}
-
 /// Payment services.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Services {
-    pub default: ServiceType,
+    pub default: crate::services::Service,
     pub portal: portal::Portal,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub lnpay: Option<lnpay::LnPay>,
@@ -20,7 +13,7 @@ pub struct Services {
 impl std::default::Default for Services {
     fn default() -> Self {
         Self {
-            default: ServiceType::Portal,
+            default: crate::services::Service::Portal,
             portal: portal::Portal::default(),
             lnpay: None,
         }
