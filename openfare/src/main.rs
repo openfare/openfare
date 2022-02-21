@@ -7,6 +7,7 @@ mod config;
 mod extensions;
 mod handles;
 mod price;
+mod services;
 mod setup;
 
 fn main() {
