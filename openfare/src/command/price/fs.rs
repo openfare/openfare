@@ -1,7 +1,7 @@
 use anyhow::Result;
 
 use super::format;
-use crate::extension;
+use crate::extensions;
 
 /// Returns price information for a project and its dependencies.
 pub fn price(
@@ -12,9 +12,12 @@ pub fn price(
     let working_directory = std::env::current_dir()?;
     log::debug!("Current working directory: {}", working_directory.display());
 
-    let extensions = extension::manage::get_enabled(&extension_names, &config)?;
-    let extensions_results =
-        extension::fs_defined_dependencies_locks(&working_directory, &extensions, &extension_args)?;
+    let extensions = extensions::manage::get_enabled(&extension_names, &config)?;
+    let extensions_results = extensions::fs_defined_dependencies_locks(
+        &working_directory,
+        &extensions,
+        &extension_args,
+    )?;
 
     let mut locks_found = false;
 

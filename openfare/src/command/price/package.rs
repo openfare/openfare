@@ -1,5 +1,5 @@
 use super::format;
-use crate::extension;
+use crate::extensions;
 use anyhow::Result;
 
 /// Prints a price report for a specific package and its dependencies.
@@ -10,8 +10,8 @@ pub fn price(
     extension_args: &Vec<String>,
     config: &crate::config::Config,
 ) -> Result<()> {
-    let extensions = extension::manage::get_enabled(&extension_names, &config)?;
-    let extensions_results = extension::package_dependencies_locks(
+    let extensions = extensions::manage::get_enabled(&extension_names, &config)?;
+    let extensions_results = extensions::package_dependencies_locks(
         &package_name,
         &package_version,
         &extensions,

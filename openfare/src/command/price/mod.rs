@@ -2,7 +2,7 @@ use crate::common::fs::FileStore;
 use anyhow::Result;
 use structopt::{self, StructOpt};
 
-use crate::extension;
+use crate::extensions;
 
 mod format;
 mod fs;
@@ -31,10 +31,10 @@ pub struct Arguments {
 
 pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()> {
     let mut config = crate::config::Config::load()?;
-    extension::manage::update_config(&mut config)?;
+    extensions::manage::update_config(&mut config)?;
     let config = config;
     let extension_names =
-        extension::manage::handle_extension_names_arg(&args.extension_names, &config)?;
+        extensions::manage::handle_extension_names_arg(&args.extension_names, &config)?;
 
     match &args.package_name {
         Some(package_name) => {

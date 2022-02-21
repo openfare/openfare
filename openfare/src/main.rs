@@ -4,7 +4,7 @@ use structopt::StructOpt;
 mod command;
 mod common;
 mod config;
-mod extension;
+mod extensions;
 mod handles;
 mod price;
 mod setup;

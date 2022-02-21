@@ -2,7 +2,7 @@ use anyhow::{format_err, Result};
 use openfare_lib::extension::{FromLib, FromProcess};
 use std::collections::HashMap;
 
-use crate::extension::common;
+use crate::extensions::common;
 
 pub static EXTENSION_FILE_NAME_PREFIX: &str = "openfare-";
 

@@ -2,7 +2,7 @@ use crate::common::fs::FileStore;
 use anyhow::Result;
 use structopt::{self, StructOpt};
 
-use crate::extension;
+use crate::extensions;
 
 #[derive(Debug, StructOpt, Clone)]
 #[structopt(
@@ -19,10 +19,10 @@ pub struct Arguments {
 
 pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()> {
     let mut config = crate::config::Config::load()?;
-    extension::manage::update_config(&mut config)?;
+    extensions::manage::update_config(&mut config)?;
     let config = config;
     let extension_names =
-        extension::manage::handle_extension_names_arg(&args.extension_names, &config)?;
+        extensions::manage::handle_extension_names_arg(&args.extension_names, &config)?;
 
     let all_extension_dependency_locks =
         get_dependencies_locks(&extension_names, &extension_args, &config)?;
@@ -67,9 +67,12 @@ fn get_dependencies_locks(
     let working_directory = std::env::current_dir()?;
     log::debug!("Current working directory: {}", working_directory.display());
 
-    let extensions = extension::manage::get_enabled(&extension_names, &config)?;
-    let extensions_results =
-        extension::fs_defined_dependencies_locks(&working_directory, &extensions, &extension_args)?;
+    let extensions = extensions::manage::get_enabled(&extension_names, &config)?;
+    let extensions_results = extensions::fs_defined_dependencies_locks(
+        &working_directory,
+        &extensions,
+        &extension_args,
+    )?;
 
     let extension_dependencies_locks: Vec<_> = extensions
         .iter()

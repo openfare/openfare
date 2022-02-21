@@ -4,7 +4,7 @@ use structopt::{self, StructOpt};
 use crate::common::fs::FileStore;
 
 use crate::common;
-use crate::extension;
+use crate::extensions;
 
 #[derive(Debug, Clone, StructOpt)]
 pub struct Arguments {
@@ -100,19 +100,19 @@ fn add(args: &AddArguments) -> Result<()> {
         let url = args.name_or_url.clone();
         if let Some(url) = try_parse_user_url(&url)? {
             log::debug!("Sanitized URL: {}", url);
-            extension::manage::add_from_url(&url, &bin_directory)?
+            extensions::manage::add_from_url(&url, &bin_directory)?
         } else {
             return Err(format_err!("Failed to parse URL: {}", url));
         }
     } else {
         log::debug!("Identified argument as name.");
-        let name = extension::manage::clean_name(&args.name_or_url);
+        let name = extensions::manage::clean_name(&args.name_or_url);
         let url = get_url_from_name(&name)?;
-        extension::manage::add_from_url(&url, &bin_directory)?
+        extensions::manage::add_from_url(&url, &bin_directory)?
     };
 
     let mut config = crate::config::Config::load()?;
-    extension::manage::update_config(&mut config)?;
+    extensions::manage::update_config(&mut config)?;
 
     println!("Added extension: {}", extension_name);
     Ok(())
@@ -170,10 +170,10 @@ pub struct RemoveArguments {
 
 fn remove(args: &RemoveArguments) -> Result<()> {
     let mut config = crate::config::Config::load()?;
-    extension::manage::update_config(&mut config)?;
+    extensions::manage::update_config(&mut config)?;
 
-    let name = extension::manage::clean_name(&args.name);
-    extension::manage::remove(&name)?;
+    let name = extensions::manage::clean_name(&args.name);
+    extensions::manage::remove(&name)?;
     println!("Removed extension: {}", name);
     Ok(())
 }
@@ -191,10 +191,10 @@ pub struct EnableArguments {
 
 fn enable(args: &EnableArguments) -> Result<()> {
     let mut config = crate::config::Config::load()?;
-    extension::manage::update_config(&mut config)?;
+    extensions::manage::update_config(&mut config)?;
 
-    let name = extension::manage::clean_name(&args.name);
-    let all_extension_names = extension::manage::get_all_names(&config)?;
+    let name = extensions::manage::clean_name(&args.name);
+    let all_extension_names = extensions::manage::get_all_names(&config)?;
     if !all_extension_names.contains(&name) {
         return Err(format_err!(
             "Failed to find extension. Known extensions: {}",
@@ -205,7 +205,7 @@ fn enable(args: &EnableArguments) -> Result<()> {
         ));
     }
 
-    extension::manage::enable(&name, &mut config)?;
+    extensions::manage::enable(&name, &mut config)?;
     println!("Enabled extension: {}", name);
     Ok(())
 }
@@ -223,10 +223,10 @@ pub struct DisableArguments {
 
 fn disable(args: &DisableArguments) -> Result<()> {
     let mut config = crate::config::Config::load()?;
-    extension::manage::update_config(&mut config)?;
+    extensions::manage::update_config(&mut config)?;
 
-    let name = extension::manage::clean_name(&args.name);
-    let all_extension_names = extension::manage::get_all_names(&config)?;
+    let name = extensions::manage::clean_name(&args.name);
+    let all_extension_names = extensions::manage::get_all_names(&config)?;
     if !all_extension_names.contains(&name) {
         return Err(format_err!(
             "Failed to find extension. Known extensions: {}",
@@ -237,15 +237,15 @@ fn disable(args: &DisableArguments) -> Result<()> {
         ));
     }
 
-    extension::manage::disable(&name, &mut config)?;
+    extensions::manage::disable(&name, &mut config)?;
     println!("Disabled extension: {}", name);
     Ok(())
 }
 
 fn show(_verbosity: u8) -> Result<()> {
     let mut config = crate::config::Config::load()?;
-    extension::manage::update_config(&mut config)?;
-    for name in extension::manage::get_all_names(&config)? {
+    extensions::manage::update_config(&mut config)?;
+    for name in extensions::manage::get_all_names(&config)? {
         println!("{}", name);
     }
     Ok(())

@@ -18,7 +18,7 @@ fn setup_config(paths: &crate::config::Paths, force: bool) -> Result<()> {
     if force || !paths.config_file.is_file() {
         log::debug!("Generating config file: {}", paths.config_file.display());
         let mut config = crate::config::Config::default();
-        crate::extension::manage::update_config(&mut config)?;
+        crate::extensions::manage::update_config(&mut config)?;
     } else {
         log::debug!(
             "Not overwriting existing config file (--force: {:?}): {}",
