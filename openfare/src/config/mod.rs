@@ -8,9 +8,7 @@ mod services;
 
 pub use paths::Paths;
 
-#[derive(
-    Debug, Clone, Default, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize,
-)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
 pub struct Config {
     pub core: core::Core,
     pub services: services::Services,

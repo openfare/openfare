@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Portal {
     pub url: url::Url,
     #[serde(rename = "api-key")]
