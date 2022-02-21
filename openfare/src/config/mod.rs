@@ -3,8 +3,8 @@ use anyhow::Result;
 mod core;
 mod extensions;
 mod paths;
-mod portal;
 mod profile;
+mod services;
 
 pub use paths::Paths;
 
@@ -13,7 +13,7 @@ pub use paths::Paths;
 )]
 pub struct Config {
     pub core: core::Core,
-    pub portal: portal::Portal,
+    pub services: services::Services,
     pub profile: profile::Profile,
     pub extensions: extensions::Extensions,
 }
