@@ -1,4 +1,4 @@
-mod lnpay;
+pub mod lnpay;
 mod portal;
 
 /// Payment services.
@@ -17,6 +17,15 @@ impl std::default::Default for Services {
             portal: portal::Portal::default(),
             lnpay: None,
         }
+    }
+}
+
+impl crate::common::json::Subject<Services> for Services {
+    fn subject(&self) -> &Services {
+        &self
+    }
+    fn subject_mut(&mut self) -> &mut Services {
+        self
     }
 }
 

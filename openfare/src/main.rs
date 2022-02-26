@@ -6,6 +6,7 @@ mod common;
 mod config;
 mod extensions;
 mod handles;
+mod payments;
 mod price;
 mod services;
 mod setup;

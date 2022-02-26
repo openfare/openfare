@@ -1,12 +1,16 @@
 use anyhow::{format_err, Result};
 use std::str::FromStr;
 
+mod conversions;
+
 #[derive(
     Debug, Clone, Hash, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize,
 )]
 pub enum Currency {
     USD,
+
     BTC,
+    SATS,
 }
 
 impl Currency {
@@ -14,6 +18,7 @@ impl Currency {
         match self {
             Self::USD => 2,
             Self::BTC => 8,
+            Self::SATS => 0,
         }
     }
 
@@ -21,6 +26,7 @@ impl Currency {
         match self {
             Self::USD => "$",
             Self::BTC => "₿",
+            Self::SATS => "sats",
         }
         .to_string()
     }
@@ -36,9 +42,10 @@ impl std::convert::TryFrom<&str> for Currency {
     type Error = anyhow::Error;
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let value = value.to_string().to_uppercase();
-        Ok(match value.as_str() {
-            "USD" => Self::USD,
-            "BTC" => Self::BTC,
+        Ok(match value.to_lowercase().as_str() {
+            "usd" => Self::USD,
+            "btc" => Self::BTC,
+            "sats" => Self::SATS,
             _ => {
                 return Err(format_err!("Unknown currency: {}", value));
             }
@@ -51,6 +58,7 @@ impl std::fmt::Display for Currency {
         let currency = match self {
             Self::USD => "USD",
             Self::BTC => "BTC",
+            Self::SATS => "SATS",
         };
         write!(formatter, "{}", currency)
     }
@@ -66,12 +74,48 @@ pub struct Price {
 
 impl Price {
     pub fn to_symbolic(&self) -> String {
-        format!(
-            "{currency}{:.1$}",
-            self.quantity,
-            self.currency.decimal_points() as usize,
-            currency = self.currency.to_symbol(),
-        )
+        match self.currency {
+            Currency::USD | Currency::BTC => {
+                format!(
+                    "{currency}{:.1$}",
+                    self.quantity,
+                    self.currency.decimal_points() as usize,
+                    currency = self.currency.to_symbol(),
+                )
+            }
+            Currency::SATS => {
+                format!(
+                    "{:.1$}{currency}",
+                    self.quantity,
+                    self.currency.decimal_points() as usize,
+                    currency = self.currency.to_symbol(),
+                )
+            }
+        }
+    }
+
+    pub fn to_btc(&self) -> Result<Price> {
+        match &self.currency {
+            Currency::USD => conversions::usd_to_btc(&self),
+            Currency::BTC => Ok(self.clone()),
+            Currency::SATS => conversions::sats_to_btc(&self),
+        }
+    }
+
+    pub fn to_sats(&self) -> Result<Price> {
+        match &self.currency {
+            Currency::USD => conversions::usd_to_sats(&self),
+            Currency::BTC => conversions::btc_to_sats(&self),
+            Currency::SATS => Ok(self.clone()),
+        }
+    }
+
+    pub fn to_usd(&self) -> Result<Price> {
+        match &self.currency {
+            Currency::USD => Ok(self.clone()),
+            Currency::BTC => conversions::btc_to_usd(&self),
+            Currency::SATS => conversions::sats_to_usd(&self),
+        }
     }
 }
 
@@ -108,6 +152,13 @@ impl std::convert::TryFrom<&str> for Price {
             rust_decimal::prelude::RoundingStrategy::AwayFromZero,
         );
         Ok(price)
+    }
+}
+
+impl std::str::FromStr for Price {
+    type Err = anyhow::Error;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Price::try_from(s)
     }
 }
 
@@ -208,9 +259,10 @@ fn parse_currency(regex_capture: &Option<regex::Match>) -> Result<Currency> {
     let error_message = "Failed to parse currency";
     let currency = regex_capture.ok_or(format_err!(error_message))?.as_str();
 
-    let currency = match currency.to_uppercase().as_str() {
-        "USD" => Currency::USD,
-        "BTC" => Currency::BTC,
+    let currency = match currency.to_lowercase().as_str() {
+        "usd" => Currency::USD,
+        "btc" => Currency::BTC,
+        "sats" => Currency::SATS,
         _ => {
             return Err(format_err!(error_message));
         }
@@ -223,10 +275,19 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_to_symbolic() -> anyhow::Result<()> {
+    fn test_to_symbolic_usd() -> anyhow::Result<()> {
         let price = Price::try_from("50   usd")?;
         let result = price.to_symbolic();
         let expected = "$50.00".to_string();
+        assert!(result == expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_to_symbolic_sat() -> anyhow::Result<()> {
+        let price = Price::try_from("50   sats")?;
+        let result = price.to_symbolic();
+        let expected = "50sats".to_string();
         assert!(result == expected);
         Ok(())
     }
@@ -280,6 +341,15 @@ mod tests {
             quantity: rust_decimal::Decimal::from_str("50.02")?,
             currency: Currency::USD,
         };
+        assert!(result == expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_usd_to_btc() -> anyhow::Result<()> {
+        let result = Price::try_from("50.02   usd")?;
+        let result = result.to_btc()?.currency;
+        let expected = Currency::BTC;
         assert!(result == expected);
         Ok(())
     }

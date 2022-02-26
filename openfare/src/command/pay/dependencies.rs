@@ -1,56 +1,18 @@
-use crate::common::fs::FileStore;
-use anyhow::Result;
-use structopt::{self, StructOpt};
-
 use crate::extensions;
+use anyhow::Result;
 
-#[derive(Debug, StructOpt, Clone)]
-#[structopt(
-    name = "no_version",
-    no_version,
-    global_settings = &[structopt::clap::AppSettings::DisableVersion]
-)]
-pub struct Arguments {
-    /// Specify payment service.
-    #[structopt(long, short)]
-    pub service: Option<crate::services::Service>,
-
-    /// Set specified payment service as default.
-    #[structopt(long, short)]
-    pub default: bool,
-
-    /// Specify an extension for handling the package and its dependencies.
-    /// Example values: py, js, rs
-    #[structopt(long = "extension", short = "e", name = "name")]
-    pub extension_names: Option<Vec<String>>,
-}
-
-pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()> {
-    let mut config = crate::config::Config::load()?;
-    extensions::manage::update_config(&mut config)?;
-    if args.default {
-        if let Some(service) = &args.service {
-            config.services.default = service.clone();
-            config.dump()?;
-        }
-    }
-
-    let config = config;
-    let extension_names =
-        extensions::manage::handle_extension_names_arg(&args.extension_names, &config)?;
-
-    let all_extension_locks = get_dependencies_locks(&extension_names, &extension_args, &config)?;
-
-    crate::services::pay(&all_extension_locks, &args.service, &config)?;
-    Ok(())
+pub struct ExtensionLocks {
+    pub extension_name: String,
+    pub package_locks:
+        std::collections::BTreeMap<openfare_lib::package::Package, openfare_lib::lock::Lock>,
 }
 
 /// Get dependencies locks from all extensions.
-fn get_dependencies_locks(
+pub fn get_locks(
     extension_names: &std::collections::BTreeSet<String>,
     extension_args: &Vec<String>,
     config: &crate::config::Config,
-) -> Result<Vec<crate::services::common::ExtensionLocks>> {
+) -> Result<Vec<ExtensionLocks>> {
     let working_directory = std::env::current_dir()?;
     log::debug!("Current working directory: {}", working_directory.display());
 
@@ -95,11 +57,46 @@ fn get_dependencies_locks(
                 })
                 .collect();
 
-            Some(crate::services::common::ExtensionLocks {
+            Some(ExtensionLocks {
                 extension_name: extension.name(),
                 package_locks: dependencies_locks,
             })
         })
         .collect();
     Ok(extension_dependencies_locks)
+}
+
+/// Get applicable payment plans from packages.
+pub fn get_packages_plans(
+    extension_name: &str,
+    package_locks: &std::collections::BTreeMap<
+        openfare_lib::package::Package,
+        openfare_lib::lock::Lock,
+    >,
+    config: &crate::config::Config,
+) -> Result<Vec<openfare_lib::api::services::basket::Item>> {
+    let mut packages_plans: Vec<_> = vec![];
+    for (package, lock) in package_locks {
+        let plans =
+            openfare_lib::lock::plan::filter_applicable(&lock.plans, &config.profile.parameters)?;
+        if plans.is_empty() {
+            // Skip package if no applicable plans found.
+            continue;
+        }
+
+        let total_price = plans
+            .iter()
+            .map(|(_id, plan)| plan.payments.total.clone().unwrap_or_default())
+            .sum();
+
+        let order_item = openfare_lib::api::services::portal::basket::Item {
+            package: package.clone(),
+            extension_name: extension_name.to_string(),
+            plans,
+            total_price,
+            payees: lock.payees.clone(),
+        };
+        packages_plans.push(order_item);
+    }
+    Ok(packages_plans)
 }

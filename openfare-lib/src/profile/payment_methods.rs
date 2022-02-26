@@ -61,10 +61,12 @@ impl MethodType for PayPal {
     }
 }
 
+pub type LnUrl = String;
+
 #[derive(Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct BtcLightning {
-    lnurl: String,
-    keysend: Option<String>,
+    pub lnurl: LnUrl,
+    pub keysend: Option<String>,
 }
 
 impl BtcLightning {

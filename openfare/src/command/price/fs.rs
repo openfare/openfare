@@ -59,38 +59,3 @@ pub fn price(
     }
     Ok(())
 }
-
-// fn report_dependencies(
-//     package_dependencies: &openfare_lib::extension::FileDefinedDependencies,
-// ) -> Result<()> {
-//     log::info!(
-//         "Generating report for dependencies specification file: {}",
-//         package_dependencies.path.display()
-//     );
-//     let dependencies = &package_dependencies.dependencies;
-
-//     let dependency_reports: Result<Vec<report::PriceReport>> = dependencies
-//         .into_iter()
-//         .map(|dependency| -> Result<report::PriceReport> {
-//             Ok(report::get_price_report(
-//                 &dependency,
-//                 &package_dependencies.registry_host_name,
-//             )?)
-//         })
-//         .collect();
-//     let dependency_reports = dependency_reports?;
-
-//     log::info!("Number of dependencies found: {}", dependency_reports.len());
-//     if dependency_reports.is_empty() {
-//         return Ok(());
-//     }
-
-//     let table = table::get(&dependency_reports, false)?;
-//     println!(
-//         "Registry: {name}\n{path}",
-//         name = package_dependencies.registry_host_name,
-//         path = package_dependencies.path.display(),
-//     );
-//     table.printstd();
-//     Ok(())
-// }

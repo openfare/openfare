@@ -2,7 +2,7 @@
 pub struct Portal {
     pub url: url::Url,
     #[serde(rename = "api-key")]
-    pub api_key: openfare_lib::api::portal::common::ApiKey,
+    pub api_key: openfare_lib::api::services::portal::ApiKey,
     pub email: Option<String>,
 }
 

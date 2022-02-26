@@ -4,7 +4,7 @@ mod core;
 mod extensions;
 mod paths;
 mod profile;
-mod services;
+pub mod services;
 
 pub use paths::Paths;
 

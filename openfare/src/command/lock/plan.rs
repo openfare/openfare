@@ -53,8 +53,7 @@ pub fn add_compulsory(args: &AddCompulsoryArguments) -> Result<()> {
         conditions,
         payments: openfare_lib::lock::plan::Payments {
             total: Some(
-                openfare_lib::lock::plan::price::Price::try_from(args.fee.as_str())
-                    .expect("parse fee price"),
+                openfare_lib::price::Price::try_from(args.fee.as_str()).expect("parse fee price"),
             ),
             shares: None,
         },

@@ -1,5 +1,6 @@
 use anyhow::Result;
 
+// TODO: Rename: Subject -> JsonComponent
 pub trait Subject<SubT> {
     fn subject(&self) -> &SubT;
     fn subject_mut(&mut self) -> &mut SubT;

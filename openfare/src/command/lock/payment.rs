@@ -34,9 +34,7 @@ pub fn add(args: &AddArguments) -> Result<()> {
         .iter_mut()
         .filter(|(id, _plan)| plan_ids.contains(id.as_str()) || plan_ids.is_empty())
     {
-        plan.payments.total = Some(openfare_lib::lock::plan::price::Price::try_from(
-            args.total.as_str(),
-        )?);
+        plan.payments.total = Some(openfare_lib::price::Price::try_from(args.total.as_str())?);
     }
 
     Ok(())

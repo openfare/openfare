@@ -7,6 +7,7 @@ mod lock;
 mod pay;
 mod price;
 mod profile;
+mod service;
 
 #[derive(Debug, StructOpt, Clone)]
 pub enum Command {
@@ -21,6 +22,9 @@ pub enum Command {
 
     /// Manage lock file.
     Lock(lock::Arguments),
+
+    /// Manage payment services.
+    Service(service::Arguments),
 
     /// Configure settings.
     Config(config::Arguments),
@@ -44,6 +48,9 @@ pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()>
         }
         Command::Lock(args) => {
             lock::run_command(&args)?;
+        }
+        Command::Service(args) => {
+            service::run_command(&args)?;
         }
         Command::Config(args) => {
             config::run_command(&args)?;

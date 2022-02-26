@@ -38,7 +38,7 @@ pub fn get_report(
 
     let price_report = PriceReport {
         package_reports: package_reports,
-        price: openfare_lib::lock::plan::price::Price {
+        price: openfare_lib::price::Price {
             quantity: rust_decimal::Decimal::from(total_price),
             currency: config.core.preferred_currency.clone(),
         },
@@ -49,14 +49,14 @@ pub fn get_report(
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct PriceReport {
     pub package_reports: Vec<PackagePriceReport>,
-    pub price: openfare_lib::lock::plan::price::Price,
+    pub price: openfare_lib::price::Price,
 }
 
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct PackagePriceReport {
     pub package: openfare_lib::package::Package,
     pub plan_id: Option<openfare_lib::lock::plan::Id>,
-    pub price_quantity: Option<openfare_lib::lock::plan::price::Quantity>,
+    pub price_quantity: Option<openfare_lib::price::Quantity>,
     pub notes: Vec<String>,
 }
 

@@ -1,12 +1,12 @@
 use anyhow::{format_err, Result};
 
 pub mod conditions;
-pub mod price;
 
 use super::payee;
 
 pub type Id = String;
 pub type Plans = std::collections::BTreeMap<Id, Plan>;
+pub type Shares = std::collections::BTreeMap<payee::Label, u64>;
 pub type SplitPercent = String;
 
 pub fn next_id(plans: &Plans) -> Result<Id> {
@@ -79,6 +79,7 @@ pub fn filter_applicable(
     plans: &Plans,
     parameters: &crate::lock::plan::conditions::Parameters,
 ) -> Result<Plans> {
+    // TODO: Return None if no applicable plans found.
     let mut applicable_plans = Plans::new();
     for (plan_id, plan) in plans {
         if plan.is_applicable(&parameters)? {
@@ -91,7 +92,7 @@ pub fn filter_applicable(
 #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Payments {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub total: Option<price::Price>,
+    pub total: Option<crate::price::Price>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub shares: Option<std::collections::BTreeMap<payee::Label, u64>>,
+    pub shares: Option<Shares>,
 }

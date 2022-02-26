@@ -3,7 +3,7 @@
 )]
 pub struct Core {
     #[serde(rename = "preferred-currency")]
-    pub preferred_currency: openfare_lib::lock::plan::price::Currency,
+    pub preferred_currency: openfare_lib::price::Currency,
 }
 
 impl std::fmt::Display for Core {
