@@ -8,12 +8,9 @@ use crate::extensions;
 
 #[derive(Debug, Clone, StructOpt)]
 pub struct Arguments {
-    #[structopt(name = "verbosity", short, long, parse(from_occurrences))]
-    verbosity: u8,
-
     // SUBCOMMANDS
     #[structopt(subcommand)]
-    commands: Option<Subcommands>,
+    commands: Subcommands,
 }
 
 #[derive(Debug, StructOpt, Clone)]
@@ -29,30 +26,33 @@ enum Subcommands {
 
     /// Disable extension without deleting.
     Disable(DisableArguments),
+
+    /// Show extensions.
+    Show(ShowArguments),
 }
 
 pub fn run_command(args: &Arguments) -> Result<()> {
-    if let Some(subcommand) = &args.commands {
-        match subcommand {
-            Subcommands::Add(args) => {
-                log::info!("Running command: extensions add");
-                add(&args)?;
-            }
-            Subcommands::Remove(args) => {
-                log::info!("Running command: extensions remove");
-                remove(&args)?;
-            }
-            Subcommands::Enable(args) => {
-                log::info!("Running command: extensions enable");
-                enable(&args)?;
-            }
-            Subcommands::Disable(args) => {
-                log::info!("Running command: extensions disable");
-                disable(&args)?;
-            }
+    match &args.commands {
+        Subcommands::Add(args) => {
+            log::info!("Running command: extensions add");
+            add(&args)?;
         }
-    } else {
-        show(args.verbosity)?;
+        Subcommands::Remove(args) => {
+            log::info!("Running command: extensions remove");
+            remove(&args)?;
+        }
+        Subcommands::Enable(args) => {
+            log::info!("Running command: extensions enable");
+            enable(&args)?;
+        }
+        Subcommands::Disable(args) => {
+            log::info!("Running command: extensions disable");
+            disable(&args)?;
+        }
+        Subcommands::Show(args) => {
+            log::info!("Running command: extensions show");
+            show(&args)?;
+        }
     }
     Ok(())
 }
@@ -242,7 +242,15 @@ fn disable(args: &DisableArguments) -> Result<()> {
     Ok(())
 }
 
-fn show(_verbosity: u8) -> Result<()> {
+#[derive(Debug, StructOpt, Clone)]
+#[structopt(
+    name = "no_version",
+    no_version,
+    global_settings = &[structopt::clap::AppSettings::DisableVersion]
+)]
+pub struct ShowArguments {}
+
+fn show(_args: &ShowArguments) -> Result<()> {
     let mut config = crate::config::Config::load()?;
     extensions::manage::update_config(&mut config)?;
     for name in extensions::manage::get_all_names(&config)? {
