@@ -1,7 +1,7 @@
 #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize)]
 pub struct LnPay {
-    #[serde(rename = "secret-api-key")]
-    pub secret_api_key: String,
+    #[serde(rename = "api-key")]
+    pub api_key: String,
 }
 
 impl std::fmt::Display for LnPay {

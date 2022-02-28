@@ -9,14 +9,14 @@ pub type Invoice = String;
 
 #[derive(Debug, Clone)]
 pub struct Client {
-    secret_api_key: String,
+    api_key: String,
     client: reqwest::blocking::Client,
 }
 
 impl Client {
-    pub fn new(secret_api_key: &str) -> Self {
+    pub fn new(api_key: &str) -> Self {
         Self {
-            secret_api_key: secret_api_key.to_string(),
+            api_key: api_key.to_string(),
             client: reqwest::blocking::Client::new(),
         }
     }
@@ -26,7 +26,7 @@ impl Client {
         self.client
             .get(url.clone())
             .header(reqwest::header::USER_AGENT, crate::common::HTTP_USER_AGENT)
-            .header("X-Api-Key", self.secret_api_key.clone())
+            .header("X-Api-Key", self.api_key.clone())
     }
 
     /// Post request builder.
@@ -34,7 +34,7 @@ impl Client {
         self.client
             .post(url.clone())
             .header(reqwest::header::USER_AGENT, crate::common::HTTP_USER_AGENT)
-            .header("X-Api-Key", self.secret_api_key.clone())
+            .header("X-Api-Key", self.api_key.clone())
     }
 
     /// Send request.
@@ -235,7 +235,7 @@ pub fn pay(
 ) -> Result<()> {
     let lnpay_config = config
         .services
-        .lnpay.clone().ok_or(anyhow::format_err!("Failed to find LNPAY config under services. Add LNPAY service: openfare service add lnpay --secret-api-key=<key>"))?;
+        .lnpay.clone().ok_or(anyhow::format_err!("Failed to find LNPAY config under services. Add LNPAY service: openfare service add lnpay --api-key=<key>"))?;
     if let Some(donation_splits) = donation_splits {
         pay_splits(&donation_splits, &lnpay_config)?;
     }
@@ -248,7 +248,7 @@ fn pay_splits(
     lnpay_config: &crate::config::services::lnpay::LnPay,
 ) -> Result<()> {
     let total_payment: rust_decimal::Decimal = splits.iter().map(|(_, price)| price.quantity).sum();
-    let client = Client::new(&lnpay_config.secret_api_key);
+    let client = Client::new(&lnpay_config.api_key);
 
     loop {
         if let Some(wallet) = client.wallet(DEFAULT_WALLET_NAME)? {
@@ -344,8 +344,8 @@ pub fn is_payee_applicable(payee: &openfare_lib::lock::payee::Payee) -> Result<b
 }
 
 pub fn lnurl_receive_address(config: &crate::config::Config) -> Result<String> {
-    let lnpay_config = config.services.lnpay.clone().ok_or(anyhow::format_err!("Failed to find LNPAY config under services. Add LNPAY service: openfare service add lnpay --secret-api-key=<key>"))?;
-    let client = Client::new(&lnpay_config.secret_api_key);
+    let lnpay_config = config.services.lnpay.clone().ok_or(anyhow::format_err!("Failed to find LNPAY config under services. Add LNPAY service: openfare service add lnpay --api-key=<key>"))?;
+    let client = Client::new(&lnpay_config.api_key);
     let wallet = client.ensure_wallet(DEFAULT_WALLET_NAME)?;
     Ok(client.get_lnurl(&wallet)?)
 }

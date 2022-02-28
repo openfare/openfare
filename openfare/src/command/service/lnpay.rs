@@ -9,8 +9,8 @@ use structopt::{self, StructOpt};
     global_settings = &[structopt::clap::AppSettings::DisableVersion]
 )]
 pub struct AddArguments {
-    /// Secret API key. Found here: https://cloud.lnpay.co/developers/dashboard
-    pub secret_api_key: String,
+    /// API key. Found here: https://cloud.lnpay.co/developers/dashboard
+    pub api_key: String,
 
     /// Set payment method as default.
     #[structopt(long, short)]
@@ -20,7 +20,7 @@ pub struct AddArguments {
 pub fn add(args: &AddArguments) -> Result<()> {
     let mut config = crate::config::Config::load()?;
     config.services.lnpay = Some(crate::config::services::lnpay::LnPay {
-        secret_api_key: args.secret_api_key.clone(),
+        api_key: args.api_key.clone(),
     });
     config.dump()?;
     println!("Added service: LNPAY (https://lnpay.co)");
