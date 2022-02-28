@@ -2,7 +2,7 @@ use anyhow::Result;
 use structopt::{self, StructOpt};
 
 mod config;
-mod extension;
+mod extensions;
 mod lock;
 mod pay;
 mod price;
@@ -30,7 +30,7 @@ pub enum Command {
     Config(config::Arguments),
 
     /// Manage extensions.
-    Extension(extension::Arguments),
+    Extensions(extensions::Arguments),
 }
 
 pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()> {
@@ -55,8 +55,8 @@ pub fn run_command(command: Command, extension_args: &Vec<String>) -> Result<()>
         Command::Config(args) => {
             config::run_command(&args)?;
         }
-        Command::Extension(args) => {
-            extension::run_command(&args)?;
+        Command::Extensions(args) => {
+            extensions::run_command(&args)?;
         }
     }
     Ok(())

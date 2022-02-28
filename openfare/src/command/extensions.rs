@@ -35,19 +35,19 @@ pub fn run_command(args: &Arguments) -> Result<()> {
     if let Some(subcommand) = &args.commands {
         match subcommand {
             Subcommands::Add(args) => {
-                log::info!("Running command: extension add");
+                log::info!("Running command: extensions add");
                 add(&args)?;
             }
             Subcommands::Remove(args) => {
-                log::info!("Running command: extension remove");
+                log::info!("Running command: extensions remove");
                 remove(&args)?;
             }
             Subcommands::Enable(args) => {
-                log::info!("Running command: extension enable");
+                log::info!("Running command: extensions enable");
                 enable(&args)?;
             }
             Subcommands::Disable(args) => {
-                log::info!("Running command: extension disable");
+                log::info!("Running command: extensions disable");
                 disable(&args)?;
             }
         }
