@@ -302,7 +302,7 @@ fn handle_insufficient_balance(
     println!(
         "Wallet '{DEFAULT_WALLET_NAME}' does not contain enough SATS. Current balance: {balance}."
     );
-    println!("Opening QR invoice for remainder (+ 10 sats network fee buffer): {remainder} SATS. Please close once finished.");
+    println!("Opening QR invoice for remainder (+ 10 sats network fee buffer): {remainder} SATS.");
 
     let tmp_dir = tempdir::TempDir::new("openfare_pay_invoice_qr")?;
     let tmp_directory_path = tmp_dir.path().to_path_buf();
@@ -317,9 +317,7 @@ fn show_qr(invoice: &str, tmp_directory_path: &std::path::PathBuf) -> Result<()>
     let image = code.render::<image::Luma<u8>>().build();
     let image_path = tmp_directory_path.join("invoice_qr.jpeg");
     image.save(&image_path)?;
-
-    // TODO: Consider making image window async.
-    open::that(&image_path)?;
+    open::that_in_background(&image_path);
     Ok(())
 }
 
