@@ -30,10 +30,7 @@ pub fn pay(
     service: &Option<Service>,
     config: &crate::config::Config,
 ) -> Result<()> {
-    println!(
-        "Found {} packages with applicable OpenFare plan(s).",
-        items.len()
-    );
+    println!("Found {} packages with OpenFare support.", items.len());
     if items.is_empty() {
         return Ok(());
     }
