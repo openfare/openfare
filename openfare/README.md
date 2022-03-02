@@ -25,158 +25,34 @@ With OpenFare, payments are managed programmatically. Payment plans and methods 
 
 Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss further.
 
-## Funding Free and Open Source Software (FOSS)
+## Summary
 
-OpenFare can be used as a funding mechanism for FOSS. It is compatible with the MIT License as well as most other FOSS licenses.
-
-OpenFare reveals the demand for funding across the entire software dependency tree. Donations made using OpenFare reach the roots. It brings to the surface critical software dependencies which are not in the limelight.
-
-Setting up a project to receive donations is easy. Simply use the `openfare` tool to generate a `OpenFare.lock` file in the project's top level directory.
-
-In this example `OpenFare.lock` file Steve and John split their donations 10/4. John can be paid via PayPal or via the Bitcoin Lightning Network. Steve can only be paid via PayPal:
-
-```json
-{
-    "plans": {
-        "0": {
-            "type": "voluntary",
-            "payments": {
-                "shares": {
-                    "steve": "100",
-                    "john": "40"
-                }
-            }
-        }
-    },
-    "payees": {
-        "john": {
-            "payment-methods": {
-                "paypal": {
-                    "email": "john@example.com"
-                },
-                "btc-lightning": {
-                    "keysend": "03488242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7dd5"
-                }
-            }
-        },
-        "steve": {
-            "payment-methods": {
-                "paypal": {
-                    "email": "steve@example.com"
-                }
-            }
-        }
-    }
-}
-```
-
-## Micropriced Commercial Software
-
-OpenFare can manage payment obligations across thousands of software dependencies. Programmatic management and micropayments means that software maintainers can raise meaningful capital with low prices.
-
-The system:
-
-* payment plans defined in code
-* the OpenFare License
-* a tool for managing payments across thousands of software dependencies.
-
-The OpenFare License is a lot like the MIT License. The code can be modified, forked, reproduced, executed, and compiled without restriction by anyone. With two exceptions:
-
-1. Commercial users are subject to payment plans defined in code.
-2. The license and payment plans can only be modified by the license copyright holder.
-
-The `OpenFare.lock` file defines commercial payment plans for a software package. It is created using the `openfare` tool and is always located next to the project OpenFare `LICENSE` file (usually in the top level directory).
-
-The following example describes a single payment plan. The plan is applicable to commercial organizations which use the software before 2022-12-19 and which have more than 100 employees. It stipulates that this version of the software necessitates a one off payment totalling 20.00 USD. The payment is split 10/4 between Steve and John. John can be paid via PayPal or via the Bitcoin Lightning Network. Steve can only be paid via PayPal.
-
-```json
-{
-    "plans": {
-        "0": {
-            "type": "compulsory",
-            "conditions": {
-                "employees-count": "> 100",
-                "current-time": "< 2022-12-19"
-            },
-            "payments": {
-                "total": "20.00 USD",
-                "shares": {
-                    "steve": 100,
-                    "john": 40
-                }
-            }
-        }
-    },
-    "payees": {
-        "john": {
-            "payment-methods": {
-                "paypal": {
-                    "email": "john@example.com"
-                },
-                "btc-lightning": {
-                    "keysend": "03488242941915ed5a101511b8dfeb6db81e0fcd7546f6a55ef4dedf590a7d7dd5"
-                }
-            }
-        },
-        "steve": {
-            "payment-methods": {
-                "paypal": {
-                    "email": "steve@example.com"
-                }
-            }
-        }
-    }
-}
-```
+* [Introduction](https://openfare.dev/doc/introduction/index.html)
+  * [Funding FOSS](https://openfare.dev/doc/introduction/funding_foss.html)
+  * [Micropriced Commercial Software](https://openfare.dev/doc/introduction/openfare_license.html)
+* [Installation](https://openfare.dev/doc/installation.html)
+* [Command Line Tool](https://openfare.dev/doc/cli/index.html)
+  * [Profile](https://openfare.dev/doc/cli/profile.html)
+  * [Lock](https://openfare.dev/doc/cli/lock.html)
+  * [Service](https://openfare.dev/doc/cli/service/index.html)
+    * [LNPAY](https://openfare.dev/doc/cli/service/lnpay.html)
+  * [Pay](https://openfare.dev/doc/cli/pay.html)
+  * [Price](https://openfare.dev/doc/cli/price.html)
+  * [Config](https://openfare.dev/doc/cli/config.html)
+  * [Extensions](https://openfare.dev/doc/cli/extensions.html)
 
 ## Get Started
 
-### Profile
+#### Create and share your profile.
 
-Your OpenFare profile describes how you can receive funds.
+<a href="https://openfare.dev/doc/cli/profile.html">
+  <img src="assets/profile.svg" align="left" width="70%"/>
+</a>
 
-Add payment methods to your profile:
+  <br clear="left"/>
+  <br clear="left"/>
 
-```bash
-openfare profile add payment-method btc-ln --keysend <public-key>
-```
-
-```bash
-openfare profile add payment-method paypal --email john@example.com
-```
-
-Share your profile:
-
-```bash
-openfare profile push github.com/john
-```
-
-### Lock
-
-A project `OpenFare.lock` file describes how funds are distributed between contributors.
-
-Create a lock file in your project's top level directory:
-
-```bash
-openfare lock new
-```
-
-Add a payment plan (donation or fee funded):
-
-```bash
-openfare lock add plan compulsory --fee "2 USD"
-```
-
-```bash
-openfare lock add plan voluntary
-```
-
-Add contributor profiles to the plan:
-
-```bash
-openfare lock add profile --shares 1000
-```
-
-```bash
-openfare lock add profile --url github.com/steve --shares 1000
-```
+#### Donate to your project's software dependency tree contributors.
+  <a href="https://openfare.dev/doc/cli/pay.html">
+    <img src="assets/donate.svg" align="left" width="70%"/>
+  </a>
