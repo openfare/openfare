@@ -1,15 +1,8 @@
-<p align="center">
-  <a href="https://openfare.dev">
-    <img align="center" src="assets/logo_circle.svg" alt="OpenFare Logo" title="OpenFare" align="right" width="100" />
-  </a>
-  <h1 align="center">OpenFare</h1>
-</p>
+# OpenFare
 
-<p align="center">:coin: Micropayment funded software. :coin:</p>
+> Micropayment funded software.
 
-<p align="center">
-  <a href="https://matrix.to/#/#openfare:matrix.org"><img src="https://img.shields.io/matrix/openfare:matrix.org?label=chat&logo=matrix" alt="Matrix"></a>
-</p>
+---
 
 **OpenFare is a funding mechanism which is deployable with one commit.**
 
@@ -40,19 +33,3 @@ Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss furthe
   * [Price](https://openfare.dev/doc/cli/price.html)
   * [Config](https://openfare.dev/doc/cli/config.html)
   * [Extensions](https://openfare.dev/doc/cli/extensions.html)
-
-## Get Started
-
-#### Create and share your profile.
-
-<a href="https://openfare.dev/doc/cli/profile.html">
-  <img src="assets/profile.svg" align="left" width="70%"/>
-</a>
-
-  <br clear="left"/>
-  <br clear="left"/>
-
-#### Donate to your project's software dependency tree contributors.
-  <a href="https://openfare.dev/doc/cli/pay.html">
-    <img src="assets/donate.svg" align="left" width="70%"/>
-  </a>
