@@ -49,14 +49,27 @@ jobs:
 
       - uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: stable
           target: ${{ matrix.target }}
+
+      - name: Setup for musl
+        id: musl-setup
+        if: "contains(matrix.target, 'x86_64-unknown-linux-musl')"
+        run: |
+            sudo apt install libssl-dev libz-dev musl-tools
 
       - name: Build musl
         if: "contains(matrix.target, 'x86_64-unknown-linux-musl')"
-        run: |
-          docker pull clux/muslrust
-          docker run -v $(dirname `pwd`):/volume -w /volume/openfare --rm -t clux/muslrust cargo build --release --all-features --locked --verbose --package ${{ steps.meta.outputs.NAME }}
+        env:
+          OPENSSL_STATIC: yes
+          PKG_CONFIG_ALLOW_CROSS: 1
+          PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/pkgconfig
+        uses: marcopolo/cargo@master
+        with:
+          command: build
+          args: --release --locked --all-features --verbose --package ${{ steps.meta.outputs.NAME }} --target ${{ matrix.target }}
+          working-directory: ${{ steps.meta.outputs.NAME }}
+          toolchain: stable
 
       - name: Build non-musl
         if: "!contains(matrix.target, 'x86_64-unknown-linux-musl')"
@@ -67,7 +80,7 @@ jobs:
           command: build
           args: --release --locked --all-features --verbose --package ${{ steps.meta.outputs.NAME }} --target ${{ matrix.target }}
           working-directory: ${{ steps.meta.outputs.NAME }}
-          toolchain: nightly
+          toolchain: stable
 
       - name: Archive release assets
         id: archive_assets

@@ -27,7 +27,6 @@ directories = "3.0.1"
 dirs = "3.0.1"
 tempdir = "0.3.7"
 shellexpand = "2.1.0"
-git2 = "0.13.20"
 
 url = { version = "2.1.1", features = ["serde"] }
 reqwest = { version = "0.11.0", features = ["blocking", "json"] }
@@ -37,7 +36,6 @@ serde_json = "1.0.48"
 blake3 = "0.3.7"
 uuid = { version = "0.8.2", features = ["v4"] }
 bincode = "1.2.1"
-rusqlite = { version = "0.23.1", features = ["bundled"] }
 
 zip = "0.5.10"
 flate2 = "1.0.14"
@@ -51,3 +49,12 @@ open = "2.1.0"
 
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3.9" }
+
+# Add openssl-sys as a direct dependency so it can be cross compiled to
+# x86_64-unknown-linux-musl using the "vendored" feature below
+openssl-sys = "*"
+
+[features]
+# Force openssl-sys to statically link in the openssl library. Necessary when
+# cross compiling to x86_64-unknown-linux-musl.
+vendored = ["openssl-sys/vendored"]
