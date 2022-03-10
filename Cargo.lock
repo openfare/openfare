@@ -1529,6 +1529,8 @@ dependencies = [
 [[package]]
 name = "openfare-js"
 version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0c79893843edd4011b4fb36c6f6d2bd1fe714280d28dbf600dad8f6b42fcf765"
 dependencies = [
  "anyhow",
  "env_logger",
