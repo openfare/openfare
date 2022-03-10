@@ -13,11 +13,8 @@ pub fn price(
     log::debug!("Current working directory: {}", working_directory.display());
 
     let extensions = extensions::manage::get_enabled(&extension_names, &config)?;
-    let extensions_results = extensions::fs_defined_dependencies_locks(
-        &working_directory,
-        &extensions,
-        &extension_args,
-    )?;
+    let extensions_results =
+        extensions::project_dependencies_locks(&working_directory, &extensions, &extension_args)?;
 
     let mut locks_found = false;
 

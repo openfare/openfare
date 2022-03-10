@@ -3,8 +3,8 @@ use anyhow::Result;
 use structopt::{self, StructOpt};
 
 mod common;
-pub mod fs_defined_dependencies_locks;
 pub mod package_dependencies_locks;
+pub mod project_dependencies_locks;
 mod static_data;
 
 #[derive(Debug, StructOpt, Clone)]
@@ -17,9 +17,9 @@ enum Command {
     #[structopt(name = package_dependencies_locks::COMMAND_NAME)]
     PackageDependenciesLocks(package_dependencies_locks::Arguments),
 
-    /// Identify file defined dependencies.
-    #[structopt(name = fs_defined_dependencies_locks::COMMAND_NAME)]
-    FsDefinedDependenciesConfigs(fs_defined_dependencies_locks::Arguments),
+    /// Identify project dependencies.
+    #[structopt(name = project_dependencies_locks::COMMAND_NAME)]
+    ProjectDependenciesLocks(project_dependencies_locks::Arguments),
 }
 
 fn run_command<T: Extension + std::fmt::Debug>(command: Command, extension: &mut T) -> Result<()> {
@@ -32,8 +32,8 @@ fn run_command<T: Extension + std::fmt::Debug>(command: Command, extension: &mut
             package_dependencies_locks::run_command(&args, extension)?;
         }
 
-        Command::FsDefinedDependenciesConfigs(args) => {
-            fs_defined_dependencies_locks::run_command(&args, extension)?;
+        Command::ProjectDependenciesLocks(args) => {
+            project_dependencies_locks::run_command(&args, extension)?;
         }
     }
     Ok(())

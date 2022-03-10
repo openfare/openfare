@@ -8,18 +8,22 @@ mod process;
 /// Identify all supported dependency OpenFare locks which are defined in a local project.
 ///
 /// Conducts a parallel search across extensions.
-pub fn fs_defined_dependencies_locks(
+pub fn project_dependencies_locks(
     working_directory: &std::path::PathBuf,
     extensions: &Vec<Box<dyn openfare_lib::extension::Extension>>,
     extension_args: &Vec<String>,
 ) -> Result<
-    Vec<Result<openfare_lib::extension::commands::fs_defined_dependencies_locks::FsDefinedDependenciesLocks>>,
->{
+    Vec<
+        Result<
+            openfare_lib::extension::commands::project_dependencies_locks::ProjectDependenciesLocks,
+        >,
+    >,
+> {
     crossbeam_utils::thread::scope(|s| {
         let mut threads = Vec::new();
         for extension in extensions {
             threads.push(s.spawn(move |_| {
-                extension.fs_defined_dependencies_locks(&working_directory, &extension_args)
+                extension.project_dependencies_locks(&working_directory, &extension_args)
             }));
         }
         let mut result = Vec::new();

@@ -126,9 +126,9 @@ pub trait Extension: Send + Sync {
     ) -> Result<super::commands::package_dependencies_locks::PackageDependenciesLocks>;
 
     /// Return OpenFare locks for a local project's dependencies.
-    fn fs_defined_dependencies_locks(
+    fn project_dependencies_locks(
         &self,
         working_directory: &std::path::PathBuf,
         extension_args: &Vec<String>,
-    ) -> Result<super::commands::fs_defined_dependencies_locks::FsDefinedDependenciesLocks>;
+    ) -> Result<super::commands::project_dependencies_locks::ProjectDependenciesLocks>;
 }

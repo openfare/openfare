@@ -94,17 +94,17 @@ impl common::Extension for ProcessExtension {
     }
 
     /// Returns a list of local package dependencies specification files.
-    fn fs_defined_dependencies_locks(
+    fn project_dependencies_locks(
         &self,
         working_directory: &std::path::PathBuf,
         extension_args: &Vec<String>,
-    ) -> Result<commands::fs_defined_dependencies_locks::FsDefinedDependenciesLocks> {
+    ) -> Result<commands::project_dependencies_locks::ProjectDependenciesLocks> {
         let working_directory = working_directory.to_str().ok_or(format_err!(
             "Failed to parse path into string: {}",
             working_directory.display()
         ))?;
         let mut args = vec![
-            super::commands::fs_defined_dependencies_locks::COMMAND_NAME,
+            super::commands::project_dependencies_locks::COMMAND_NAME,
             "--working-directory",
             working_directory,
         ];
@@ -113,7 +113,7 @@ impl common::Extension for ProcessExtension {
             args.push(extension_arg);
         }
 
-        let output: Box<commands::fs_defined_dependencies_locks::FsDefinedDependenciesLocks> =
+        let output: Box<commands::project_dependencies_locks::ProjectDependenciesLocks> =
             run_process(&self.process_path_, &args)?;
         Ok(*output)
     }
