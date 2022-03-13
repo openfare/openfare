@@ -141,7 +141,7 @@ fn extract_zip(
 /// Extract .tar.gz archives.
 ///
 /// Note that .tgz archives are the same as .tar.gz archives.
-fn extract_tar_gz(
+pub fn extract_tar_gz(
     archive_path: &std::path::PathBuf,
     destination_directory: &std::path::PathBuf,
 ) -> Result<std::path::PathBuf> {

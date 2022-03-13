@@ -28,6 +28,10 @@ hex = "0.4.3"
 uuid = { version = "0.8.2", features = ["serde", "v4"] }
 rust_decimal = "1.22.0"
 
+zip = "0.5.10"
+flate2 = "1.0.14"
+tar = "0.4.33"
+
 # Add openssl-sys as a direct dependency so it can be cross compiled to
 # x86_64-unknown-linux-musl using the "vendored" feature below
 openssl-sys = "0.9.72"

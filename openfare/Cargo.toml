@@ -37,10 +37,6 @@ blake3 = "0.3.7"
 uuid = { version = "0.8.2", features = ["v4"] }
 bincode = "1.2.1"
 
-zip = "0.5.10"
-flate2 = "1.0.14"
-tar = "0.4.33"
-
 tokei = "12.1.2"
 prettytable-rs = "0.8.0"
 qrcode = { version = "0.12.0", features = ["image"] }

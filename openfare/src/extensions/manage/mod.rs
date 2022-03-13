@@ -24,7 +24,7 @@ pub fn add_from_url(
     };
     log::info!("Using archive URL: {}", archive_url);
 
-    let archive_type = crate::common::fs::archive::ArchiveType::try_from(
+    let archive_type = openfare_lib::common::fs::archive::ArchiveType::try_from(
         &std::path::PathBuf::from(archive_url.path()),
     )?;
 
@@ -37,8 +37,8 @@ pub fn add_from_url(
     let archive_path =
         tmp_directory_path.join(format!("archive.{}", archive_type.try_to_string()?));
 
-    crate::common::fs::archive::download(&archive_url, &archive_path)?;
-    crate::common::fs::archive::extract(&archive_path, &tmp_directory_path)?;
+    openfare_lib::common::fs::archive::download(&archive_url, &archive_path)?;
+    openfare_lib::common::fs::archive::extract(&archive_path, &tmp_directory_path)?;
 
     let (bin_path, extension_name) = get_bin_file_metadata(&tmp_directory_path)?.ok_or(
         format_err!("Failed to identify extension binary in archive."),
@@ -116,8 +116,10 @@ fn get_name_from_bin(
 
 fn is_supported_archive_url(url: &url::Url) -> Result<bool> {
     let path = std::path::PathBuf::from(url.path());
-    Ok(crate::common::fs::archive::ArchiveType::try_from(&path)?
-        != crate::common::fs::archive::ArchiveType::Unknown)
+    Ok(
+        openfare_lib::common::fs::archive::ArchiveType::try_from(&path)?
+            != openfare_lib::common::fs::archive::ArchiveType::Unknown,
+    )
 }
 
 /// Returns a release archive URL.

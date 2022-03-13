@@ -1,5 +1,4 @@
 use anyhow::{Context, Result};
-pub mod archive;
 
 pub fn ensure_extensions_bin_directory() -> Result<Option<std::path::PathBuf>> {
     // Attempt to create an extensions directory in the users home directory.

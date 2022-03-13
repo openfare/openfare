@@ -1500,7 +1500,6 @@ dependencies = [
  "directories",
  "dirs 3.0.2",
  "env_logger",
- "flate2",
  "image",
  "log",
  "maplit",
@@ -1517,13 +1516,11 @@ dependencies = [
  "serde_json",
  "shellexpand",
  "structopt",
- "tar",
  "tempdir",
  "tokei",
  "url",
  "uuid",
  "winapi 0.3.9",
- "zip",
 ]
 
 [[package]]
@@ -1557,6 +1554,7 @@ dependencies = [
  "bincode",
  "chrono",
  "env_logger",
+ "flate2",
  "hex",
  "lazy-regex",
  "lazy_static",
@@ -1568,8 +1566,10 @@ dependencies = [
  "serde",
  "serde_json",
  "structopt",
+ "tar",
  "url",
  "uuid",
+ "zip",
 ]
 
 [[package]]
