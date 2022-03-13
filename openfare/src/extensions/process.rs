@@ -10,8 +10,12 @@ pub static EXTENSION_FILE_NAME_PREFIX: &str = "openfare-";
 pub fn get_all() -> Result<Vec<Box<dyn openfare_lib::extension::Extension>>> {
     log::debug!("Identifying all extensions.");
 
-    let mut all_extensions = vec![Box::new(openfare_js_lib::JsExtension::new())
-        as Box<dyn openfare_lib::extension::Extension>];
+    let mut all_extensions = vec![
+        Box::new(openfare_js_lib::JsExtension::new())
+            as Box<dyn openfare_lib::extension::Extension>,
+        Box::new(openfare_rs_lib::RsExtension::new())
+            as Box<dyn openfare_lib::extension::Extension>,
+    ];
 
     for extension in get_process_extensions()? {
         all_extensions.push(Box::new(extension) as Box<dyn openfare_lib::extension::Extension>);
