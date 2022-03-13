@@ -9,7 +9,7 @@ default-run = "openfare"
 description = "Micropayment funded software."
 
 [dependencies]
-openfare-lib = "0.6.0"
+openfare-lib = "0.6.1"
 openfare-js = "0.6.0"
 
 anyhow = "1.0.31"
