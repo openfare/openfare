@@ -39,8 +39,9 @@ fn run_command<T: Extension + std::fmt::Debug>(command: Command, extension: &mut
     Ok(())
 }
 
+// TODO: Use extension name and version in cli help.
 #[derive(Debug, StructOpt, Clone)]
-#[structopt(about = "Package Code Reviews")]
+#[structopt(about = "Micropayment funded software.")]
 #[structopt(global_setting = structopt::clap::AppSettings::ColoredHelp)]
 #[structopt(global_setting = structopt::clap::AppSettings::DeriveDisplayOrder)]
 struct Opts {
