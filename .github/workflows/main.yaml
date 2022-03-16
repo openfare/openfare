@@ -52,24 +52,12 @@ jobs:
           toolchain: stable
           target: ${{ matrix.target }}
 
-      - name: Setup for musl
-        id: musl-setup
-        if: "contains(matrix.target, 'x86_64-unknown-linux-musl')"
-        run: |
-            sudo apt install libssl-dev libz-dev musl-tools
-
       - name: Build musl
         if: "contains(matrix.target, 'x86_64-unknown-linux-musl')"
-        env:
-          OPENSSL_STATIC: yes
-          PKG_CONFIG_ALLOW_CROSS: 1
-          PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/pkgconfig
-        uses: marcopolo/cargo@master
-        with:
-          command: build
-          args: --release --locked --all-features --verbose --package ${{ steps.meta.outputs.NAME }} --target ${{ matrix.target }}
-          working-directory: ${{ steps.meta.outputs.NAME }}
-          toolchain: stable
+        run: |
+            alias podman="sudo docker"
+            mkdir -p ${{ github.workspace }}/target/${{ matrix.target }}/release
+            ./build/musl/build-release.sh ${{ steps.meta.outputs.NAME }} ${{ github.workspace }}/target/${{ matrix.target }}/release/${{ steps.meta.outputs.NAME }}
 
       - name: Build non-musl
         if: "!contains(matrix.target, 'x86_64-unknown-linux-musl')"
