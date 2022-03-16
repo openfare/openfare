@@ -40,7 +40,7 @@ pub fn get_extensions_default_directory() -> Option<std::path::PathBuf> {
 }
 
 #[cfg(windows)]
-fn set_directory_hidden_windows(directory: &std::path::PathBuf) {
+fn set_directory_hidden_windows(_directory: &std::path::PathBuf) {
     // TODO: Hide directory on Windows.
     // winapi::um::fileapi::SetFileAttributesA()
 }
