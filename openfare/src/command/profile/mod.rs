@@ -34,23 +34,18 @@ enum Subcommands {
 pub fn run_command(args: &Arguments) -> Result<()> {
     match &args.commands {
         Subcommands::Add(args) => {
-            log::info!("Running command: profile add");
             add(&args)?;
         }
         Subcommands::Set(args) => {
-            log::info!("Running command: profile set");
             set(&args)?;
         }
         Subcommands::Show(args) => {
-            log::info!("Running command: profile show");
             show(&args)?;
         }
         Subcommands::Remove(args) => {
-            log::info!("Running command: profile remove");
             remove(&args)?;
         }
         Subcommands::Push(args) => {
-            log::info!("Running command: profile push");
             push::push(&args)?;
         }
     }

@@ -22,11 +22,9 @@ enum Subcommands {
 pub fn run_command(args: &Arguments) -> Result<()> {
     match &args.commands {
         Subcommands::Set(args) => {
-            log::info!("Running command: config set");
             set(&args)?;
         }
         Subcommands::Show(args) => {
-            log::info!("Running command: config show");
             show(&args)?;
         }
     }

@@ -34,23 +34,18 @@ enum Subcommands {
 pub fn run_command(args: &Arguments) -> Result<()> {
     match &args.commands {
         Subcommands::Add(args) => {
-            log::info!("Running command: extensions add");
             add(&args)?;
         }
         Subcommands::Remove(args) => {
-            log::info!("Running command: extensions remove");
             remove(&args)?;
         }
         Subcommands::Enable(args) => {
-            log::info!("Running command: extensions enable");
             enable(&args)?;
         }
         Subcommands::Disable(args) => {
-            log::info!("Running command: extensions disable");
             disable(&args)?;
         }
         Subcommands::Show(args) => {
-            log::info!("Running command: extensions show");
             show(&args)?;
         }
     }

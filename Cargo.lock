@@ -1842,7 +1842,7 @@ dependencies = [
 
 [[package]]
 name = "openfare"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "anyhow",
  "bincode",
@@ -1879,9 +1879,9 @@ dependencies = [
 
 [[package]]
 name = "openfare-js"
-version = "0.6.1"
+version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "701de993209a2ceaa2df530b54f8c85c2d3740ad74e55ea2cdb33eee2d74af1d"
+checksum = "7a0c071beae50fdc02e3f7c12766255ed588560e15a096ffac56b1bbcbd0f577"
 dependencies = [
  "anyhow",
  "env_logger 0.8.4",
@@ -1928,12 +1928,13 @@ dependencies = [
 
 [[package]]
 name = "openfare-rs"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a2b9c56355e3c970b8af88796ecec7a1565aac1d4ede3f455e8fe0bf43e23395"
+checksum = "68d3344edffa5ed08a60d40794394a82e7d696cbb57a090e7be7ccc9321a90aa"
 dependencies = [
  "anyhow",
  "cargo",
+ "curl",
  "env_logger 0.8.4",
  "handlebars",
  "log",
