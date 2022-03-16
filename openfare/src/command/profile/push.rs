@@ -21,7 +21,7 @@ pub fn push(args: &Arguments) -> Result<()> {
         if let Some(url) = config.profile.url.clone() {
             crate::common::url::Url::from_str(&url)?
         } else {
-            return Err(anyhow::format_err!("Failed to find URL. Not found in config profile and not given as argument.\nSet profile URL using: openfare config profile.url <url>"));
+            return Err(anyhow::format_err!("Failed to find URL. Not found in config profile and not given as argument.\nSet profile URL using: openfare config set profile.url <url>"));
         }
     };
 
@@ -36,6 +36,7 @@ pub fn push(args: &Arguments) -> Result<()> {
 
     insert_profile(&remote_profile, &tmp_directory_path)?;
     push_repo(&tmp_directory_path)?;
+    println!("Profile push complete.");
 
     // Write updated config profile to disk only if all git operations succeed.
     config.dump()?;
@@ -51,26 +52,19 @@ fn clone_repo(
     } else {
         url.original.clone()
     };
-    let output = crate::common::git::run_command(
+    println!("Cloning repository for writing profile: {}", url.as_str());
+    crate::common::git::run_command(
         vec!["clone", "--depth", "1", url.as_str(), "."],
         &tmp_directory_path,
     )?;
-    log::debug!("Clone output: {:?}", output);
     Ok(())
 }
 
 fn push_repo(tmp_directory_path: &std::path::PathBuf) -> Result<()> {
-    let output = crate::common::git::run_command(vec!["add", "-A"], &tmp_directory_path)?;
-    log::debug!("Add output: {:?}", output);
-
-    let output = crate::common::git::run_command(
-        vec!["commit", "-am", "Update OpenFare profile."],
-        &tmp_directory_path,
-    )?;
-    log::debug!("Commit output: {:?}", output);
-
-    let output = crate::common::git::run_command(vec!["push", "origin"], &tmp_directory_path)?;
-    log::debug!("Push output: {:?}", output);
+    println!("Pushing local clone.");
+    crate::common::git::run_command(vec!["add", "-A"], &tmp_directory_path)?;
+    crate::common::git::commit("Update OpenFare profile.", &tmp_directory_path)?;
+    crate::common::git::run_command(vec!["push", "origin"], &tmp_directory_path)?;
     Ok(())
 }
 
@@ -79,6 +73,7 @@ fn insert_profile(
     directory_path: &std::path::PathBuf,
 ) -> Result<()> {
     let path = directory_path.join(openfare_lib::profile::FILE_NAME);
+    println!("Writing profile to local clone: {}", path.display());
     if path.is_file() {
         std::fs::remove_file(&path)?;
     }

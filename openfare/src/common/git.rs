@@ -4,11 +4,34 @@ pub fn run_command(
     args: Vec<&str>,
     working_directory: &std::path::PathBuf,
 ) -> Result<std::process::Output> {
+    log::debug!(
+        "Executing git command: git {args}\nWorking directory: {working_directory}",
+        args = args.join(" ").to_string(),
+        working_directory = working_directory.display()
+    );
     let output = std::process::Command::new("git")
-        .args(args)
+        .args(&args)
         .current_dir(working_directory)
         .output()?;
+    log::debug!("Command execution complete: {:?}", output);
+
+    if !output.status.success() {
+        let args = args.join(" ").to_string();
+        return Err(anyhow::format_err!(
+            "Git command error: git {args}\n{status}",
+            args = args,
+            status = output.status
+        ));
+    }
     Ok(output)
+}
+
+pub fn commit(message: &str, working_directory: &std::path::PathBuf) -> Result<()> {
+    let args = vec!["commit", "-am", message];
+    if run_command(args, &working_directory).is_err() {
+        log::debug!("Error encountered running git commit command. Possibly no change to commit.")
+    }
+    Ok(())
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
