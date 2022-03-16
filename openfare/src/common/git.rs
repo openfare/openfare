@@ -31,7 +31,12 @@ impl GitUrl {
         if let Some(hostname) = &self.hostname {
             if let Some(username) = &self.username {
                 if let Some(repository) = &self.repository {
-                    return Some(format!("git@{hostname}:{username}/{repository}.git"));
+                    return Some(format!(
+                        "git@{hostname}:{username}/{repository}.git",
+                        hostname = hostname,
+                        username = username,
+                        repository = repository
+                    ));
                 }
             }
         }
@@ -42,7 +47,12 @@ impl GitUrl {
         if let Some(hostname) = &self.hostname {
             if let Some(username) = &self.username {
                 if let Some(repository) = &self.repository {
-                    return Some(format!("https://{hostname}/{username}/{repository}.git"));
+                    return Some(format!(
+                        "https://{hostname}/{username}/{repository}.git",
+                        hostname = hostname,
+                        username = username,
+                        repository = repository
+                    ));
                 }
             }
         }
@@ -71,9 +81,10 @@ fn parse_https_url(url: &str) -> Result<GitUrl> {
     let re = regex::Regex::new(
         r"(http(|s)://)?(?P<hostname>[^/]*)/(?P<username>[^/]*)(/(?P<repository>[^\.]*)(\.git)?)?$",
     )?;
-    let captures = re
-        .captures(url)
-        .ok_or(anyhow::format_err!("Failed to capture regex groups: {url}"))?;
+    let captures = re.captures(url).ok_or(anyhow::format_err!(
+        "Failed to capture regex groups: {url}",
+        url = url
+    ))?;
     let hostname = captures.name("hostname").map_or(None, |m| Some(m.as_str()));
     let username = captures.name("username").map_or(None, |m| Some(m.as_str()));
     let repository = captures
@@ -94,9 +105,10 @@ fn parse_git_url(url: &str) -> Result<GitUrl> {
     let re = regex::Regex::new(
         r"git@(?P<hostname>.*):(?P<username>.*)/(?P<repository>[^\.]*)(\.git)?$",
     )?;
-    let captures = re
-        .captures(url)
-        .ok_or(anyhow::format_err!("Failed to capture regex groups: {url}"))?;
+    let captures = re.captures(url).ok_or(anyhow::format_err!(
+        "Failed to capture regex groups: {url}",
+        url = url
+    ))?;
     let hostname = captures.name("hostname").map_or(None, |m| Some(m.as_str()));
     let username = captures.name("username").map_or(None, |m| Some(m.as_str()));
     let repository = captures

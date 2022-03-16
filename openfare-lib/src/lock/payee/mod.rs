@@ -23,5 +23,9 @@ pub fn get_lock_payee(
 
 pub fn unique_label(payee_label: &Label, payee: &Payee) -> Label {
     let unique_id = payee.profile.unique_id.to_string()[..13].to_string();
-    format!("{payee_label}___{unique_id}")
+    format!(
+        "{payee_label}___{unique_id}",
+        payee_label = payee_label,
+        unique_id = unique_id
+    )
 }

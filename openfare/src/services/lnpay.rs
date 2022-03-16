@@ -155,7 +155,8 @@ impl Client {
             .ok_or(anyhow::format_err!(
                 "Failed to parse wallet default_lnurlpay_id field."
             ))?;
-        let url = url::Url::parse(BASE_URL)?.join(&format!("lnurlp/{lnurlpay_id}"))?;
+        let url = url::Url::parse(BASE_URL)?
+            .join(&format!("lnurlp/{lnurlpay_id}", lnurlpay_id = lnurlpay_id))?;
         let request = self.get(&url);
 
         #[derive(Debug, serde::Deserialize)]
@@ -269,7 +270,7 @@ fn pay_splits(
             } else {
                 println!("Found sufficient funds in wallet: {:?}", wallet);
                 for (payee, amount) in splits {
-                    println!("Paying {amount} to payee:\n{:?}", payee);
+                    println!("Paying {amount} to payee:\n{:?}", payee, amount = amount);
                     let lnurl = get_lnurl(&payee.profile)?.ok_or(anyhow::format_err!(
                         "Code error: Failed to find LNURL for split payment."
                     ))?;
@@ -300,9 +301,14 @@ fn handle_insufficient_balance(
     let invoice = client.invoice_from_lnurl(remainder * 1000, &lnurl)?;
 
     println!(
-        "Wallet '{DEFAULT_WALLET_NAME}' does not contain enough SATS. Current balance: {balance}."
+        "Wallet '{DEFAULT_WALLET_NAME}' does not contain enough SATS. Current balance: {balance}.",
+        DEFAULT_WALLET_NAME = DEFAULT_WALLET_NAME,
+        balance = balance
     );
-    println!("Opening QR invoice for remainder (+ 10 sats network fee buffer): {remainder} SATS.");
+    println!(
+        "Opening QR invoice for remainder (+ 10 sats network fee buffer): {remainder} SATS.",
+        remainder = remainder
+    );
 
     let tmp_dir = tempdir::TempDir::new("openfare_pay_invoice_qr")?;
     let tmp_directory_path = tmp_dir.path().to_path_buf();

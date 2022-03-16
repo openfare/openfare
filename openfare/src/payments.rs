@@ -30,7 +30,8 @@ pub fn donation_splits(
     };
     println!(
         "Splitting donation between {count_packages} packages. {package_donation} each.",
-        count_packages = items.len()
+        count_packages = items.len(),
+        package_donation = package_donation
     );
 
     let mut payee_donations =
