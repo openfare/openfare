@@ -22,7 +22,9 @@ pub struct AddArguments {
     pub service: Option<crate::services::Service>,
 }
 
-pub fn add(args: &AddArguments) -> Result<()> {
+pub fn add(
+    args: &AddArguments,
+) -> Result<Box<dyn openfare_lib::profile::payment_methods::PaymentMethod>> {
     let config = crate::config::Config::load()?;
 
     let lnurl = if let Some(lnurl) = &args.lnurl {
@@ -39,13 +41,14 @@ pub fn add(args: &AddArguments) -> Result<()> {
     };
 
     let payment_method = Method::new(&lnurl, &args.keysend)?;
+    let payment_method = Box::new(payment_method.clone())
+        as Box<dyn openfare_lib::profile::payment_methods::PaymentMethod>;
+
     let mut profile = crate::handles::ProfileHandle::load()?;
-    (*profile).set_payment_method(
-        &(Box::new(payment_method)
-            as Box<dyn openfare_lib::profile::payment_methods::PaymentMethod>),
-    )?;
+    (*profile).set_payment_method(&payment_method)?;
     profile.dump()?;
-    Ok(())
+
+    Ok(payment_method)
 }
 
 #[derive(Debug, StructOpt, Clone)]
