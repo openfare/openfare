@@ -46,16 +46,16 @@ Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss furthe
 
 ## Get Started
 
-#### Create and share your profile.
+#### Create and share your profile to receive funds.
 
 <a href="https://openfare.dev/doc/cli/profile.html">
-  <img src="./assets/profile.svg" align="left" width="70%"/>
+  <img src="./assets/profile.svg" align="center" width="70%"/>
 </a>
 
-  <br clear="left"/>
-  <br clear="left"/>
+  <br clear="center"/>
+  <br clear="center"/>
 
 #### Donate to your project's software dependency tree contributors.
   <a href="https://openfare.dev/doc/cli/pay.html">
-    <img src="./assets/donate.svg" align="left" width="70%"/>
+    <img src="./assets/donate.svg" align="center" width="70%"/>
   </a>
