@@ -149,7 +149,7 @@ fn is_ssh_git_url(url: &str) -> bool {
     url.starts_with("git@")
 }
 
-#[test]
+#[cfg(test)]
 mod tests {
     use super::*;
     use std::str::FromStr;
