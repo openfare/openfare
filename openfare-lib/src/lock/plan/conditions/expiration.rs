@@ -1,54 +1,45 @@
 use super::common;
-use anyhow::{format_err, Result};
-use lazy_regex::regex;
-use std::convert::TryFrom;
+use anyhow::Result;
 
 use chrono::{TimeZone, Utc};
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct CurrentTime {
-    operator: common::Operator,
+pub struct Expiration {
     time: chrono::DateTime<Utc>,
 }
 
-impl std::convert::TryFrom<&str> for CurrentTime {
+impl std::convert::TryFrom<&str> for Expiration {
     type Error = anyhow::Error;
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let (operator, time) = parse_value(&value)?;
-        Ok(Self { operator, time })
+        let time = parse_value(&value)?;
+        Ok(Self { time })
     }
 }
 
-impl CurrentTime {
+impl Expiration {
     pub fn evaluate(&self) -> Result<bool> {
         let current_time = chrono::offset::Utc::now();
+        let expiration = &self.time;
         let result = common::evaluate_operator::<chrono::DateTime<Utc>>(
             &current_time,
-            &self.operator,
-            &self.time,
+            &common::Operator::LessThan,
+            &expiration,
         );
         Ok(result)
     }
 }
 
-impl serde::Serialize for CurrentTime {
+impl serde::Serialize for Expiration {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
     {
-        serializer.serialize_str(
-            format!(
-                "{} {}",
-                self.operator.to_string(),
-                self.time.format("%Y-%m-%d"),
-            )
-            .as_str(),
-        )
+        serializer.serialize_str(format!("{}", self.time.format("%Y-%m-%d"),).as_str())
     }
 }
 
 struct Visitor {
-    marker: std::marker::PhantomData<fn() -> CurrentTime>,
+    marker: std::marker::PhantomData<fn() -> Expiration>,
 }
 
 impl Visitor {
@@ -60,22 +51,22 @@ impl Visitor {
 }
 
 impl<'de> serde::de::Visitor<'de> for Visitor {
-    type Value = CurrentTime;
+    type Value = Expiration;
 
     fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str("a string such as '< 2022-01-31'")
+        formatter.write_str("a string such as '2022-01-31'")
     }
 
     fn visit_str<E>(self, value: &str) -> core::result::Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
-        let (operator, time) = parse_value(&value).expect("parse current-time condition value");
-        Ok(Self::Value { operator, time })
+        let time = parse_value(&value).expect("parse expiration condition value");
+        Ok(Self::Value { time })
     }
 }
 
-impl<'de> serde::Deserialize<'de> for CurrentTime {
+impl<'de> serde::Deserialize<'de> for Expiration {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -84,25 +75,10 @@ impl<'de> serde::Deserialize<'de> for CurrentTime {
     }
 }
 
-fn parse_value(value: &str) -> Result<(common::Operator, chrono::DateTime<Utc>)> {
-    let re = regex!(r"(?P<operator>(>=)|(<=)|(<)|(>)|(=))\s*(?P<time>.*)");
-    let captures = re
-        .captures(value)
-        .ok_or(format_err!("Regex failed to capture field."))?;
-
-    let operator_match = captures
-        .name("operator")
-        .expect("extract operator from regex capture")
-        .as_str();
-    let operator = common::Operator::try_from(operator_match)?;
-
-    let time_match = captures
-        .name("time")
-        .expect("extract time from regex capture")
-        .as_str();
-    let date = chrono::NaiveDate::parse_from_str(&time_match, "%Y-%m-%d")?;
+fn parse_value(value: &str) -> Result<chrono::DateTime<Utc>> {
+    let date = chrono::NaiveDate::parse_from_str(&value, "%Y-%m-%d")?;
     let time = naive_date_to_utc(&date)?;
-    Ok((operator, time))
+    Ok(time)
 }
 
 fn naive_date_to_utc(date: &chrono::NaiveDate) -> Result<chrono::DateTime<Utc>> {
@@ -121,18 +97,17 @@ fn naive_date_to_utc(date: &chrono::NaiveDate) -> Result<chrono::DateTime<Utc>> 
 
 #[test]
 fn test_evaluate_cases() -> Result<()> {
-    let condition = CurrentTime::try_from("< 3022-01-31")?;
+    let condition = Expiration::try_from("3022-01-31")?;
     assert!(condition.evaluate()?);
     Ok(())
 }
 
 #[test]
 fn test_parse_str() -> Result<()> {
-    let result = CurrentTime::try_from("< 2022-01-31")?;
+    let result = Expiration::try_from("2022-01-31")?;
 
     let expected_date = chrono::NaiveDate::parse_from_str("2022-01-31", "%Y-%m-%d")?;
-    let expected = CurrentTime {
-        operator: common::Operator::LessThan,
+    let expected = Expiration {
         time: naive_date_to_utc(&expected_date)?,
     };
 

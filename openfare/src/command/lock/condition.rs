@@ -5,9 +5,9 @@ use super::common;
 
 #[derive(Debug, StructOpt, Clone)]
 pub struct ConditionArguments {
-    /// Current time relative to definite date. Example: "< 2022-01-31"
-    #[structopt(name = "current-time", long, short)]
-    pub current_time: Option<String>,
+    /// Expiration date. Example: "2022-01-31"
+    #[structopt(long, short)]
+    pub expiration: Option<String>,
 
     /// Number of employees in the organization. Example: "> 100"
     #[structopt(name = "employees-count", long, short)]
@@ -19,9 +19,9 @@ impl std::convert::TryInto<openfare_lib::lock::plan::conditions::Conditions>
 {
     type Error = anyhow::Error;
     fn try_into(self) -> Result<openfare_lib::lock::plan::conditions::Conditions, Self::Error> {
-        let current_time = if let Some(current_time) = &self.current_time {
-            Some(openfare_lib::lock::plan::conditions::CurrentTime::try_from(
-                current_time.as_str(),
+        let expiration = if let Some(expiration) = &self.expiration {
+            Some(openfare_lib::lock::plan::conditions::Expiration::try_from(
+                expiration.as_str(),
             )?)
         } else {
             None
@@ -37,7 +37,7 @@ impl std::convert::TryInto<openfare_lib::lock::plan::conditions::Conditions>
         };
 
         Ok(openfare_lib::lock::plan::conditions::Conditions {
-            current_time,
+            expiration,
             employees_count,
         })
     }
@@ -97,9 +97,9 @@ pub struct RemoveArguments {
     #[structopt(long = "employees-count", short)]
     pub employees_count: bool,
 
-    /// Current time relative to definite date.
-    #[structopt(long = "current-time", short)]
-    pub current_time: bool,
+    /// Expiration date.
+    #[structopt(long, short)]
+    pub expiration: bool,
 
     /// Remove all conditions.
     #[structopt(long, short)]
@@ -122,8 +122,8 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
         .iter_mut()
         .filter(|(id, _plan)| plan_ids.contains(id.as_str()) || plan_ids.is_empty())
     {
-        if args.current_time || args.all {
-            plan.conditions.current_time = None;
+        if args.expiration || args.all {
+            plan.conditions.expiration = None;
         }
         if args.employees_count || args.all {
             plan.conditions.employees_count = None;
