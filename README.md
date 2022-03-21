@@ -16,11 +16,16 @@
 
 **OpenFare is a funding mechanism which is deployable with one commit.**
 
-The goal: fund the next million software content creators.
+The goal: facilitate funding the next million software content creators.
 
 OpenFare can be used to fund open source or commercial software at any scale. It is a decentralized protocol which defines how payees can be paid.
 
-With OpenFare, payments are managed programmatically. Payment plans and methods are defined in package code. Which leads to the following advantages:
+OpenFare works by adding a [JSON file](https://openfare.dev/doc/cli/lock.html) to a software package. The JSON file includes:
+
+* Payment addresses for code contributors (so that developers can receive funds directly).
+* A funds split scheme.
+
+Which leads to the following advantages:
 
 * Donations span the entire software dependency tree. Critical software which is outside the limelight is supported.
 
