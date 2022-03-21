@@ -10,12 +10,14 @@ The goal: facilitate funding the next million software content creators.
 
 OpenFare can be used to fund open source or commercial software at any scale. It is a decentralized protocol which defines how payees can be paid.
 
-OpenFare works by adding a [JSON file](https://openfare.dev/doc/cli/lock.html) to a software package. The JSON file includes:
+OpenFare works by adding a [`OpenFare.lock` file](https://openfare.dev/doc/cli/lock.html) to a software package. The file includes:
 
 * Payment addresses for code contributors (so that developers can receive funds directly).
 * A funds split scheme.
 
-Which leads to the following advantages:
+The OpenFare [tool](https://openfare.dev/doc/cli/index.html) can then finds lock files from within a software dependency tree and help send payments to contributors.
+
+This system leads to the following advantages:
 
 * Donations span the entire software dependency tree. Critical software which is outside the limelight is supported.
 
