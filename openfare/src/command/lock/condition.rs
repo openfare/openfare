@@ -5,12 +5,16 @@ use super::common;
 
 #[derive(Debug, StructOpt, Clone)]
 pub struct ConditionArguments {
+    /// For profit organization.
+    #[structopt(long = "for-profit")]
+    pub for_profit: bool,
+
     /// Expiration date. Example: "2022-01-31"
-    #[structopt(long, short)]
+    #[structopt(long)]
     pub expiration: Option<String>,
 
     /// Number of employees in the organization. Example: "> 100"
-    #[structopt(name = "employees-count", long, short)]
+    #[structopt(name = "employees-count", long = "employees-count")]
     pub employees_count: Option<String>,
 }
 
@@ -19,6 +23,11 @@ impl std::convert::TryInto<openfare_lib::lock::plan::conditions::Conditions>
 {
     type Error = anyhow::Error;
     fn try_into(self) -> Result<openfare_lib::lock::plan::conditions::Conditions, Self::Error> {
+        let for_profit = if self.for_profit {
+            Some(openfare_lib::lock::plan::conditions::ForProfit::new())
+        } else {
+            None
+        };
         let expiration = if let Some(expiration) = &self.expiration {
             Some(openfare_lib::lock::plan::conditions::Expiration::try_from(
                 expiration.as_str(),
@@ -37,6 +46,7 @@ impl std::convert::TryInto<openfare_lib::lock::plan::conditions::Conditions>
         };
 
         Ok(openfare_lib::lock::plan::conditions::Conditions {
+            for_profit,
             expiration,
             employees_count,
         })
@@ -93,12 +103,16 @@ pub struct RemoveArguments {
     #[structopt(long, short)]
     pub id: Vec<usize>,
 
+    /// For profit organization.
+    #[structopt(long = "for-profit")]
+    pub for_profit: bool,
+
     /// Number of employees in the organization.
-    #[structopt(long = "employees-count", short)]
+    #[structopt(long = "employees-count")]
     pub employees_count: bool,
 
     /// Expiration date.
-    #[structopt(long, short)]
+    #[structopt(long)]
     pub expiration: bool,
 
     /// Remove all conditions.
@@ -122,6 +136,9 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
         .iter_mut()
         .filter(|(id, _plan)| plan_ids.contains(id.as_str()) || plan_ids.is_empty())
     {
+        if args.for_profit || args.all {
+            plan.conditions.for_profit = None;
+        }
         if args.expiration || args.all {
             plan.conditions.expiration = None;
         }
