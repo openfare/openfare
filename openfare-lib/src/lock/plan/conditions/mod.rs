@@ -50,7 +50,6 @@ impl Conditions {
         let all_conditions_pass = self.as_vec().iter().all(|condition| {
             condition
                 .evaluate(parameters)
-                // .map(|pass| pass)
                 .unwrap_or(false)
         });
         Ok(all_conditions_pass)
