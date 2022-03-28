@@ -1,3 +1,4 @@
+use super::common;
 use anyhow::Result;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -7,12 +8,18 @@ impl ForProfit {
     pub fn new() -> Self {
         Self {}
     }
+}
 
-    pub fn evaluate(&self, parameters: &crate::lock::plan::conditions::Parameters) -> Result<bool> {
+impl common::Condition for ForProfit {
+    fn evaluate(&self, parameters: &crate::lock::plan::conditions::Parameters) -> Result<bool> {
         let result = parameters
             .for_profit
             .ok_or(anyhow::format_err!("Unset parameter value: for-profit."))?;
         Ok(result)
+    }
+
+    fn metadata(&self) -> Box<dyn common::ConditionMetadata> {
+        Box::new(ForProfitMetadata) as Box<dyn common::ConditionMetadata>
     }
 }
 
@@ -65,6 +72,33 @@ impl<'de> serde::Deserialize<'de> for ForProfit {
         D: serde::Deserializer<'de>,
     {
         deserializer.deserialize_str(Visitor::new())
+    }
+}
+
+struct ForProfitMetadata;
+
+impl common::ConditionMetadata for ForProfitMetadata {
+    fn name(&self) -> String {
+        "for-profit".to_string()
+    }
+
+    fn description(&self) -> String {
+        "Organization/individual is for-profit.".to_string()
+    }
+
+    fn is_parameter_set(&self, parameters: &crate::lock::plan::conditions::Parameters) -> bool {
+        parameters.for_profit.is_some()
+    }
+
+    fn validate_parameter(&self, value: &str) -> Result<()> {
+        if value != "true" {
+            Err(anyhow::format_err!(
+                "Unexpected 'for-profit' value: {}",
+                value
+            ))
+        } else {
+            Ok(())
+        }
     }
 }
 

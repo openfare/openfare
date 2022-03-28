@@ -55,3 +55,15 @@ pub fn evaluate_operator<T: std::cmp::PartialOrd>(
         Operator::Equal => variable_value == condition_value,
     }
 }
+
+pub trait Condition {
+    fn evaluate(&self, parameters: &super::Parameters) -> Result<bool>;
+    fn metadata(&self) -> Box<dyn ConditionMetadata>;
+}
+
+pub trait ConditionMetadata {
+    fn name(&self) -> String;
+    fn description(&self) -> String;
+    fn is_parameter_set(&self, parameters: &super::Parameters) -> bool;
+    fn validate_parameter(&self, value: &str) -> Result<()>;
+}

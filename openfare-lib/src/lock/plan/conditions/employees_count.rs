@@ -17,14 +17,19 @@ impl std::convert::TryFrom<&str> for EmployeesCount {
     }
 }
 
-impl EmployeesCount {
-    pub fn evaluate(&self, parameters: &crate::lock::plan::conditions::Parameters) -> Result<bool> {
+impl common::Condition for EmployeesCount {
+    fn evaluate(&self, parameters: &crate::lock::plan::conditions::Parameters) -> Result<bool> {
         let employees_count = parameters.employees_count.ok_or(format_err!(
-            "Attempting to evaluate plan conditions using unset parameter `employees-count`."
+            "Attempting to evaluate plan conditions using unset parameter `{}`.",
+            self.metadata().name()
         ))?;
         let result =
             common::evaluate_operator::<usize>(&employees_count, &self.operator, &self.count);
         Ok(result)
+    }
+
+    fn metadata(&self) -> Box<dyn common::ConditionMetadata> {
+        Box::new(EmployeesCountMetadata) as Box<dyn common::ConditionMetadata>
     }
 }
 
@@ -71,6 +76,32 @@ impl<'de> serde::Deserialize<'de> for EmployeesCount {
         D: serde::Deserializer<'de>,
     {
         deserializer.deserialize_str(Visitor::new())
+    }
+}
+
+struct EmployeesCountMetadata;
+
+impl common::ConditionMetadata for EmployeesCountMetadata {
+    fn name(&self) -> String {
+        "employees-count".to_string()
+    }
+
+    fn description(&self) -> String {
+        "Employees count.".to_string()
+    }
+
+    fn is_parameter_set(&self, parameters: &crate::lock::plan::conditions::Parameters) -> bool {
+        parameters.employees_count.is_some()
+    }
+
+    fn validate_parameter(&self, value: &str) -> Result<()> {
+        let (operator, count) = parse_value(&value)?;
+        if operator == common::Operator::Equal {
+            if count == 0 {
+                return Err(format_err!("Invalid value: {}", value));
+            }
+        }
+        Ok(())
     }
 }
 

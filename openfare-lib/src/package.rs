@@ -21,4 +21,21 @@ impl PackageLocks {
     pub fn has_locks(&self) -> bool {
         self.primary_package_lock.is_some() || !self.dependencies_locks.is_empty()
     }
+
+    // Returns a map of packages to their total set of plan conditions.
+    pub fn package_conditions(
+        &self,
+    ) -> std::collections::BTreeMap<Package, Vec<Box<dyn lock::plan::conditions::Condition>>> {
+        let mut packages_conditions = std::collections::BTreeMap::new();
+        for (package, lock) in &self.dependencies_locks {
+            if let Some(lock) = lock {
+                let mut conditions = vec![];
+                for (_id, plan) in &lock.plans {
+                    conditions.extend(plan.conditions.as_vec());
+                }
+                packages_conditions.insert(package.clone(), conditions);
+            }
+        }
+        packages_conditions
+    }
 }

@@ -5,6 +5,7 @@ mod employees_count;
 mod expiration;
 mod for_profit;
 
+pub use common::{Condition, ConditionMetadata};
 pub use employees_count::EmployeesCount;
 pub use expiration::Expiration;
 pub use for_profit::ForProfit;
@@ -22,17 +23,34 @@ pub struct Conditions {
 }
 
 impl Conditions {
-    pub fn evaluate(&self, parameters: &crate::lock::plan::conditions::Parameters) -> Result<bool> {
-        let mut all_conditions_pass = true;
+    pub fn as_vec(&self) -> Vec<Box<dyn Condition>> {
+        let mut vec = Vec::new();
         if let Some(for_profit) = &self.for_profit {
-            all_conditions_pass &= for_profit.evaluate(&parameters)?;
+            vec.push(Box::new(for_profit.clone()) as Box<dyn Condition>);
         }
         if let Some(expiration) = &self.expiration {
-            all_conditions_pass &= expiration.evaluate()?;
+            vec.push(Box::new(expiration.clone()) as Box<dyn Condition>);
         }
         if let Some(employees_count) = &self.employees_count {
-            all_conditions_pass &= employees_count.evaluate(&parameters)?;
+            vec.push(Box::new(employees_count.clone()) as Box<dyn Condition>);
         }
+        vec
+    }
+
+    pub fn metadata(&self) -> Vec<Box<dyn ConditionMetadata>> {
+        self.as_vec()
+            .iter()
+            .map(|condition| condition.metadata())
+            .collect()
+    }
+
+    pub fn evaluate(&self, parameters: &crate::lock::plan::conditions::Parameters) -> Result<bool> {
+        let all_conditions_pass = self.as_vec().iter().all(|condition| {
+            condition
+                .evaluate(parameters)
+                // .map(|pass| pass)
+                .unwrap_or(false)
+        });
         Ok(all_conditions_pass)
     }
 
@@ -57,6 +75,7 @@ pub struct Parameters {
     #[serde(rename = "for-profit")]
     pub for_profit: Option<bool>,
 
+    // TODO: remove.
     pub commercial: bool,
 
     #[serde(rename = "include-voluntary-donations")]

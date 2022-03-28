@@ -16,8 +16,8 @@ impl std::convert::TryFrom<&str> for Expiration {
     }
 }
 
-impl Expiration {
-    pub fn evaluate(&self) -> Result<bool> {
+impl common::Condition for Expiration {
+    fn evaluate(&self, _parameters: &crate::lock::plan::conditions::Parameters) -> Result<bool> {
         let current_time = chrono::offset::Utc::now();
         let expiration = &self.time;
         let result = common::evaluate_operator::<chrono::DateTime<Utc>>(
@@ -26,6 +26,10 @@ impl Expiration {
             &expiration,
         );
         Ok(result)
+    }
+
+    fn metadata(&self) -> Box<dyn common::ConditionMetadata> {
+        Box::new(ExpirationMetadata) as Box<dyn common::ConditionMetadata>
     }
 }
 
@@ -72,6 +76,27 @@ impl<'de> serde::Deserialize<'de> for Expiration {
         D: serde::Deserializer<'de>,
     {
         deserializer.deserialize_str(Visitor::new())
+    }
+}
+
+struct ExpirationMetadata;
+
+impl common::ConditionMetadata for ExpirationMetadata {
+    fn name(&self) -> String {
+        "expiration".to_string()
+    }
+
+    fn description(&self) -> String {
+        "Payment plan expiration date.".to_string()
+    }
+
+    fn is_parameter_set(&self, _parameters: &crate::lock::plan::conditions::Parameters) -> bool {
+        true
+    }
+
+    fn validate_parameter(&self, value: &str) -> Result<()> {
+        parse_value(&value)?;
+        Ok(())
     }
 }
 

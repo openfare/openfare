@@ -86,7 +86,7 @@ pub fn get_packages_plans(
             .map(|(_id, plan)| plan.payments.total.clone().unwrap_or_default())
             .sum();
 
-        let order_item = openfare_lib::api::services::portal::basket::Item {
+        let order_item = openfare_lib::api::services::basket::Item {
             package: package.clone(),
             extension_name: extension_name.to_string(),
             plans,

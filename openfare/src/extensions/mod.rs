@@ -5,7 +5,7 @@ mod common;
 pub mod manage;
 mod process;
 
-/// Identify all supported dependency OpenFare locks which are defined in a local project.
+/// Identify all supported dependency locks which are defined in a local project.
 ///
 /// Conducts a parallel search across extensions.
 pub fn project_dependencies_locks(
@@ -35,7 +35,7 @@ pub fn project_dependencies_locks(
     .unwrap()
 }
 
-/// Get package dependencies OpenFare locks.
+/// Get package dependencies locks.
 ///
 /// Conducts a parallel search across extensions.
 pub fn package_dependencies_locks(
