@@ -67,7 +67,7 @@ fn get_package_price_report(
     config: &crate::config::Config,
 ) -> Result<PackagePriceReport> {
     let package_lock = match package_lock {
-        Some(c) => c,
+        Some(lock) => lock,
         None => {
             return Ok(PackagePriceReport {
                 package: package.clone(),
