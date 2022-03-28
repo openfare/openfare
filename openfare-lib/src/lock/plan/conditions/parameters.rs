@@ -6,9 +6,6 @@ pub struct Parameters {
     #[serde(rename = "for-profit")]
     pub for_profit: Option<bool>,
 
-    // TODO: remove.
-    pub commercial: bool,
-
     #[serde(rename = "include-voluntary-donations")]
     pub include_voluntary_plans: bool,
 }
@@ -18,7 +15,6 @@ impl std::default::Default for Parameters {
         Self {
             employees_count: None,
             for_profit: None,
-            commercial: true,
             include_voluntary_plans: true,
         }
     }

@@ -61,15 +61,7 @@ impl Plan {
                 // Voluntary plans are subject to conditions.
                 parameters.include_voluntary_plans && self.conditions.evaluate(&parameters)?
             }
-            PlanType::Compulsory => {
-                // Non-commercial not subject to compulsory plans.
-                if !parameters.commercial {
-                    false
-                } else {
-                    // Commercial are subject to compulsory plans based on conditions.
-                    self.conditions.evaluate(&parameters)?
-                }
-            }
+            PlanType::Compulsory => self.conditions.evaluate(&parameters)?,
         })
     }
 }
