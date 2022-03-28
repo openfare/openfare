@@ -47,11 +47,10 @@ impl Conditions {
     }
 
     pub fn evaluate(&self, parameters: &crate::lock::plan::conditions::Parameters) -> Result<bool> {
-        let all_conditions_pass = self.as_vec().iter().all(|condition| {
-            condition
-                .evaluate(parameters)
-                .unwrap_or(false)
-        });
+        let all_conditions_pass = self
+            .as_vec()
+            .iter()
+            .all(|condition| condition.evaluate(parameters).unwrap_or(false));
         Ok(all_conditions_pass)
     }
 

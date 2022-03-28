@@ -5,8 +5,8 @@ use structopt::{self, StructOpt};
 use crate::extensions;
 
 mod format;
-mod fs;
 mod package;
+mod project;
 
 #[derive(Debug, StructOpt, Clone)]
 #[structopt(
@@ -47,7 +47,7 @@ pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()>
             )?;
         }
         None => {
-            fs::price(&extension_names, &extension_args, &config)?;
+            project::price(&extension_names, &extension_args, &config)?;
         }
     }
     Ok(())
