@@ -5,14 +5,12 @@ use crate::extensions;
 
 /// Returns price information for a project and its dependencies.
 pub fn price(
-    extension_names: &std::collections::BTreeSet<String>,
+    extensions: &Vec<Box<dyn openfare_lib::extension::Extension>>,
     extension_args: &Vec<String>,
     config: &crate::config::Config,
 ) -> Result<()> {
     let working_directory = std::env::current_dir()?;
     log::debug!("Current working directory: {}", working_directory.display());
-
-    let extensions = extensions::manage::enabled(&extension_names, &config)?;
     let extensions_results =
         extensions::project::dependencies_locks(&working_directory, &extensions, &extension_args)?;
 

@@ -293,12 +293,12 @@ pub fn remove(name: &str) -> Result<()> {
 }
 
 /// Given an extension's name, returns true if the extension is enabled. Otherwise returns false.
-pub fn is_enabled(name: &str, config: &Config) -> Result<bool> {
+fn is_enabled(name: &str, config: &Config) -> Result<bool> {
     Ok(*config.extensions.enabled.get(name).unwrap_or(&false))
 }
 
 /// Returns enabled extensions.
-pub fn enabled(
+fn enabled(
     filter_for_names: &std::collections::BTreeSet<String>,
     config: &Config,
 ) -> Result<Vec<Box<dyn openfare_lib::extension::Extension>>> {
@@ -338,10 +338,10 @@ pub fn get_all_names(config: &Config) -> Result<std::collections::BTreeSet<Strin
 }
 
 /// Check given extensions are enabled. If not specified select all enabled extensions.
-pub fn handle_extension_names_arg(
+pub fn from_names_arg(
     extension_names: &Option<Vec<String>>,
     config: &Config,
-) -> Result<std::collections::BTreeSet<String>> {
+) -> Result<Vec<Box<dyn openfare_lib::extension::Extension>>> {
     let names = match &extension_names {
         Some(extension_names) => {
             let disabled_names: Vec<_> = extension_names
@@ -361,7 +361,8 @@ pub fn handle_extension_names_arg(
         None => enabled_names(&config)?,
     };
     log::debug!("Using extensions: {:?}", names);
-    Ok(names)
+    let extensions = enabled(&names.into(), &config)?;
+    Ok(extensions)
 }
 
 /// Clean extension name.

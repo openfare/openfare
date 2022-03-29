@@ -6,11 +6,10 @@ use anyhow::Result;
 pub fn price(
     package_name: &str,
     package_version: &Option<&str>,
-    extension_names: &std::collections::BTreeSet<String>,
+    extensions: &Vec<Box<dyn openfare_lib::extension::Extension>>,
     extension_args: &Vec<String>,
     config: &crate::config::Config,
 ) -> Result<()> {
-    let extensions = extensions::manage::enabled(&extension_names, &config)?;
     let extensions_results = extensions::package::dependencies_locks(
         &package_name,
         &package_version,
