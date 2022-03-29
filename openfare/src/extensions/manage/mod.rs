@@ -3,8 +3,9 @@ use anyhow::{format_err, Result};
 use std::convert::TryFrom;
 
 use crate::config::Config;
-use crate::extensions::{common, process};
+use crate::extensions::common;
 mod github;
+mod process;
 
 pub fn add_from_url(
     url: &url::Url,
