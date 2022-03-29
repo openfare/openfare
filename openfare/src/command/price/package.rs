@@ -1,4 +1,4 @@
-use super::format;
+use super::{common, format};
 use crate::extensions;
 use anyhow::Result;
 
@@ -23,9 +23,7 @@ pub fn price(
         extensions::common::filter_results(&extensions, &extensions_results)?
     {
         locks_found |= extension_result.package_locks.has_locks();
-        if let Some(price_report) =
-            crate::price::get_report(&extension_result.package_locks, &config)?
-        {
+        if let Some(price_report) = common::get_report(&extension_result.package_locks, &config)? {
             println!("Registry: {}", extension_result.registry_host_name);
             println!("Total: {}", price_report.price);
             format::print(&price_report, &format::Format::Table, true)?;

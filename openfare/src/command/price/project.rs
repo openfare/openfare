@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use super::format;
+use super::{common, format};
 use crate::extensions;
 
 /// Returns price information for a project and its dependencies.
@@ -20,9 +20,7 @@ pub fn price(
         extensions::common::filter_results(&extensions, &extensions_results)?
     {
         locks_found |= extension_result.package_locks.has_locks();
-        if let Some(price_report) =
-            crate::price::get_report(&extension_result.package_locks, &config)?
-        {
+        if let Some(price_report) = common::get_report(&extension_result.package_locks, &config)? {
             println!(
                 "Project: {path}",
                 path = extension_result.project_path.display()

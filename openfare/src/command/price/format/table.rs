@@ -3,7 +3,7 @@ use prettytable::{self, cell};
 
 /// Generates and returns a table from a given price report.
 pub fn get(
-    price_report: &crate::price::PriceReport,
+    price_report: &super::common::PriceReport,
     first_row_separate: bool,
 ) -> Result<prettytable::Table> {
     let mut table = prettytable::Table::new();
@@ -31,7 +31,7 @@ pub fn get(
     Ok(table)
 }
 
-fn get_row(report: &crate::price::PackagePriceReport) -> prettytable::Row {
+fn get_row(report: &super::common::PackagePriceReport) -> prettytable::Row {
     let price = report
         .price_quantity
         .map(|p| p.to_string())

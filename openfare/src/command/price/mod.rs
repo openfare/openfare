@@ -4,6 +4,7 @@ use structopt::{self, StructOpt};
 
 use crate::extensions;
 
+mod common;
 mod format;
 mod package;
 mod project;
