@@ -16,25 +16,9 @@ pub fn price(
 
     let mut locks_found = false;
 
-    for (extension, extension_result) in extensions.iter().zip(extensions_results.iter()) {
-        log::debug!(
-            "Inspecting package OpenFare locks found by extension: {name} ({version})",
-            name = extension.name(),
-            version = extension.version()
-        );
-
-        let extension_result = match extension_result {
-            Ok(d) => d,
-            Err(error) => {
-                log::error!(
-                    "Extension {name} error: {error}",
-                    name = extension.name(),
-                    error = error
-                );
-                continue;
-            }
-        };
-
+    for (_extension, extension_result) in
+        extensions::common::filter_results(&extensions, &extensions_results)?
+    {
         locks_found |= extension_result.package_locks.has_locks();
         if let Some(price_report) =
             crate::price::get_report(&extension_result.package_locks, &config)?

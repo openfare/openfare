@@ -17,29 +17,12 @@ pub fn get_locks(
     log::debug!("Current working directory: {}", working_directory.display());
     let extensions_results =
         extensions::project::dependencies_locks(&working_directory, &extensions, &extension_args)?;
+    let extensions_results = extensions::common::filter_results(&extensions, &extensions_results)?;
 
-    let extension_dependencies_locks: Vec<_> = extensions
+    let extension_dependencies_locks: Vec<_> = extensions_results
         .iter()
-        .zip(extensions_results.iter())
         .filter_map(|(extension, extension_result)| {
-            log::debug!(
-                "Inspecting package OpenFare locks found by extension: {name} ({version})",
-                name = extension.name(),
-                version = extension.version()
-            );
-
-            let locks = match extension_result {
-                Ok(locks) => locks,
-                Err(error) => {
-                    log::error!(
-                        "Extension {name} error: {error}",
-                        name = extension.name(),
-                        error = error
-                    );
-                    return None;
-                }
-            };
-            let dependencies_locks: std::collections::BTreeMap<_, _> = locks
+            let dependencies_locks: std::collections::BTreeMap<_, _> = extension_result
                 .package_locks
                 .dependencies_locks
                 .iter()
