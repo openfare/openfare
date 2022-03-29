@@ -1,31 +1,13 @@
-use anyhow::{format_err, Result};
-use openfare_lib::extension::{FromLib, FromProcess};
+use anyhow::Result;
+use openfare_lib::extension::FromProcess;
 use std::collections::HashMap;
 
 use crate::extensions::common;
 
 pub static EXTENSION_FILE_NAME_PREFIX: &str = "openfare-";
 
-/// Return handles to all known extensions.
-pub fn get_all() -> Result<Vec<Box<dyn openfare_lib::extension::Extension>>> {
-    log::debug!("Identifying all extensions.");
-
-    let mut all_extensions = vec![
-        Box::new(openfare_js_lib::JsExtension::new())
-            as Box<dyn openfare_lib::extension::Extension>,
-        Box::new(openfare_rs_lib::RsExtension::new())
-            as Box<dyn openfare_lib::extension::Extension>,
-    ];
-
-    for extension in get_process_extensions()? {
-        all_extensions.push(Box::new(extension) as Box<dyn openfare_lib::extension::Extension>);
-    }
-
-    Ok(all_extensions)
-}
-
 /// Discovers and loads process extensions.
-fn get_process_extensions() -> Result<Vec<openfare_lib::extension::process::ProcessExtension>> {
+pub fn get_all() -> Result<Vec<openfare_lib::extension::process::ProcessExtension>> {
     let extension_paths = get_extension_paths()?;
 
     let mut threads = vec![];
@@ -105,8 +87,9 @@ pub fn get_extension_paths() -> Result<HashMap<String, std::path::PathBuf>> {
 }
 
 fn get_candidate_extension_paths() -> Result<Vec<std::path::PathBuf>> {
-    let env_path_value =
-        std::env::var_os("PATH").ok_or(format_err!("Failed to read PATH environment variable."))?;
+    let env_path_value = std::env::var_os("PATH").ok_or(anyhow::format_err!(
+        "Failed to read PATH environment variable."
+    ))?;
     let mut paths = std::env::split_paths(&env_path_value).collect::<Vec<_>>();
 
     if let Some(extensions_home_directory) = crate::common::fs::get_extensions_default_directory() {
@@ -120,9 +103,11 @@ fn get_candidate_extension_paths() -> Result<Vec<std::path::PathBuf>> {
 fn get_extension_name(file_path: &std::path::PathBuf) -> Result<Option<String>> {
     let file_name = file_path
         .file_name()
-        .ok_or(format_err!("Failed to parse path file name."))?
+        .ok_or(anyhow::format_err!("Failed to parse path file name."))?
         .to_str()
-        .ok_or(format_err!("Failed to parse path file name into string."))?
+        .ok_or(anyhow::format_err!(
+            "Failed to parse path file name into string."
+        ))?
         .to_string();
 
     let captures = match regex::Regex::new(&format!(

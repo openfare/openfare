@@ -42,7 +42,6 @@ pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()>
 
     let extension_names =
         extensions::manage::handle_extension_names_arg(&args.extension_names, &config)?;
-
     let all_extension_locks = dependencies::get_locks(&extension_names, &extension_args, &config)?;
     let mut items = vec![];
     for extension_locks in all_extension_locks {

@@ -6,6 +6,25 @@ use crate::config::Config;
 use crate::extensions::common;
 mod github;
 mod process;
+use openfare_lib::extension::FromLib;
+
+/// Return handles to all known extensions.
+pub fn get_all() -> Result<Vec<Box<dyn openfare_lib::extension::Extension>>> {
+    log::debug!("Identifying all extensions.");
+
+    let mut all_extensions = vec![
+        Box::new(openfare_js_lib::JsExtension::new())
+            as Box<dyn openfare_lib::extension::Extension>,
+        Box::new(openfare_rs_lib::RsExtension::new())
+            as Box<dyn openfare_lib::extension::Extension>,
+    ];
+
+    for extension in process::get_all()? {
+        all_extensions.push(Box::new(extension) as Box<dyn openfare_lib::extension::Extension>);
+    }
+
+    Ok(all_extensions)
+}
 
 pub fn add_from_url(
     url: &url::Url,
@@ -168,7 +187,7 @@ mod tests {
 pub fn update_config(config: &mut Config) -> Result<()> {
     log::debug!("Discover extensions and update config.");
 
-    let extensions = process::get_all()?;
+    let extensions = get_all()?;
     let extension_name_map: std::collections::BTreeMap<_, _> = extensions
         .iter()
         .map(|extension| (extension.name(), extension))
@@ -284,7 +303,7 @@ pub fn enabled(
     config: &Config,
 ) -> Result<Vec<Box<dyn openfare_lib::extension::Extension>>> {
     log::debug!("Identifying enabled extensions.");
-    let extensions = process::get_all()?
+    let extensions = get_all()?
         .into_iter()
         .filter(|extension| {
             *config
@@ -299,7 +318,7 @@ pub fn enabled(
 }
 
 /// Returns a set of all enabled installed extensions by names.
-pub fn get_enabled_names(config: &Config) -> Result<std::collections::BTreeSet<String>> {
+fn enabled_names(config: &Config) -> Result<std::collections::BTreeSet<String>> {
     Ok(config
         .extensions
         .enabled
@@ -339,7 +358,7 @@ pub fn handle_extension_names_arg(
                 extension_names.into_iter().cloned().collect()
             }
         }
-        None => get_enabled_names(&config)?,
+        None => enabled_names(&config)?,
     };
     log::debug!("Using extensions: {:?}", names);
     Ok(names)
