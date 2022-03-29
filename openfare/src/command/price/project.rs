@@ -14,7 +14,7 @@ pub fn price(
 
     let extensions = extensions::manage::get_enabled(&extension_names, &config)?;
     let extensions_results =
-        extensions::project_dependencies_locks(&working_directory, &extensions, &extension_args)?;
+        extensions::project::dependencies_locks(&working_directory, &extensions, &extension_args)?;
 
     let mut locks_found = false;
 

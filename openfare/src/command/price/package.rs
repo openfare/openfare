@@ -11,7 +11,7 @@ pub fn price(
     config: &crate::config::Config,
 ) -> Result<()> {
     let extensions = extensions::manage::get_enabled(&extension_names, &config)?;
-    let extensions_results = extensions::package_dependencies_locks(
+    let extensions_results = extensions::package::dependencies_locks(
         &package_name,
         &package_version,
         &extensions,
