@@ -10,7 +10,7 @@ pub fn price(
     extension_args: &Vec<String>,
     config: &crate::config::Config,
 ) -> Result<()> {
-    let extensions = extensions::manage::get_enabled(&extension_names, &config)?;
+    let extensions = extensions::manage::enabled(&extension_names, &config)?;
     let extensions_results = extensions::package::dependencies_locks(
         &package_name,
         &package_version,

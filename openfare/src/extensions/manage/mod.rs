@@ -279,8 +279,8 @@ pub fn is_enabled(name: &str, config: &Config) -> Result<bool> {
 }
 
 /// Returns enabled extensions.
-pub fn get_enabled(
-    names: &std::collections::BTreeSet<String>,
+pub fn enabled(
+    filter_for_names: &std::collections::BTreeSet<String>,
     config: &Config,
 ) -> Result<Vec<Box<dyn openfare_lib::extension::Extension>>> {
     log::debug!("Identifying enabled extensions.");
@@ -293,9 +293,8 @@ pub fn get_enabled(
                 .get(&extension.name())
                 .unwrap_or(&false)
         })
-        .filter(|extension| names.contains(&extension.name()))
+        .filter(|extension| filter_for_names.contains(&extension.name()))
         .collect();
-
     Ok(extensions)
 }
 
