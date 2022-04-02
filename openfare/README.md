@@ -41,3 +41,6 @@ Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss furthe
   * [Price](https://openfare.dev/doc/cli/price.html)
   * [Config](https://openfare.dev/doc/cli/config.html)
   * [Extensions](https://openfare.dev/doc/cli/extensions.html)
+* [Concepts](https://openfare.dev/doc/concepts/index.html)
+  * [Lock File](https://openfare.dev/doc/concepts/lock.html)
+  * [Payment Services](https://openfare.dev/doc/concepts/services.html)
