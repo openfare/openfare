@@ -40,6 +40,7 @@ Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss furthe
 * [Introduction](https://openfare.dev/doc/introduction/index.html)
   * [Funding FOSS](https://openfare.dev/doc/introduction/funding_foss.html)
   * [Micropriced Software](https://openfare.dev/doc/introduction/micropriced_software.html)
+* [Get Started](https://openfare.dev/doc/get_started.html)
 * [Installation](https://openfare.dev/doc/installation.html)
 * [Command Line Tool](https://openfare.dev/doc/cli/index.html)
   * [Profile](https://openfare.dev/doc/cli/profile.html)
@@ -52,6 +53,8 @@ Join the [chat room](https://matrix.to/#/#openfare:matrix.org) to discuss furthe
   * [Extensions](https://openfare.dev/doc/cli/extensions.html)
 
 ## Get Started
+
+Find more information about how to get started [here](https://openfare.dev/doc/get_started.html).
 
 #### Create and share your profile to receive funds.
 
