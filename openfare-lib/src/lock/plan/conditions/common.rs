@@ -63,8 +63,6 @@ pub trait Condition {
 
 pub trait ConditionMetadata: std::fmt::Debug {
     fn name(&self) -> String;
-    fn description(&self) -> String;
     fn interactive_set_parameter(&self, parameters: &mut super::Parameters) -> Result<()>;
     fn is_parameter_set(&self, parameters: &super::Parameters) -> bool;
-    fn validate_parameter(&self, value: &str) -> Result<()>;
 }

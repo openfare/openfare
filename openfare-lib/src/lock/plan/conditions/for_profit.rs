@@ -34,10 +34,6 @@ impl common::ConditionMetadata for ForProfitMetadata {
         "for-profit".to_string()
     }
 
-    fn description(&self) -> String {
-        "Organization/individual for-profit status.".to_string()
-    }
-
     fn interactive_set_parameter(
         &self,
         parameters: &mut crate::lock::plan::conditions::Parameters,
@@ -55,17 +51,6 @@ impl common::ConditionMetadata for ForProfitMetadata {
 
     fn is_parameter_set(&self, parameters: &crate::lock::plan::conditions::Parameters) -> bool {
         parameters.for_profit.is_some()
-    }
-
-    fn validate_parameter(&self, value: &str) -> Result<()> {
-        if value != "true" {
-            Err(anyhow::format_err!(
-                "Unexpected 'for-profit' value: {}",
-                value
-            ))
-        } else {
-            Ok(())
-        }
     }
 }
 

@@ -87,10 +87,6 @@ impl common::ConditionMetadata for ExpirationMetadata {
         "expiration".to_string()
     }
 
-    fn description(&self) -> String {
-        "Payment plan expiration date.".to_string()
-    }
-
     fn interactive_set_parameter(
         &self,
         _parameters: &mut crate::lock::plan::conditions::Parameters,
@@ -100,11 +96,6 @@ impl common::ConditionMetadata for ExpirationMetadata {
 
     fn is_parameter_set(&self, _parameters: &crate::lock::plan::conditions::Parameters) -> bool {
         true
-    }
-
-    fn validate_parameter(&self, value: &str) -> Result<()> {
-        parse_value(&value)?;
-        Ok(())
     }
 }
 

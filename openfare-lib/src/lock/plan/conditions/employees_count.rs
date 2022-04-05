@@ -87,10 +87,6 @@ impl common::ConditionMetadata for EmployeesCountMetadata {
         "employees-count".to_string()
     }
 
-    fn description(&self) -> String {
-        "Employees count.".to_string()
-    }
-
     fn interactive_set_parameter(
         &self,
         parameters: &mut crate::lock::plan::conditions::Parameters,
@@ -115,16 +111,6 @@ impl common::ConditionMetadata for EmployeesCountMetadata {
 
     fn is_parameter_set(&self, parameters: &crate::lock::plan::conditions::Parameters) -> bool {
         parameters.employees_count.is_some()
-    }
-
-    fn validate_parameter(&self, value: &str) -> Result<()> {
-        let (operator, count) = parse_value(&value)?;
-        if operator == common::Operator::Equal {
-            if count == 0 {
-                return Err(format_err!("Invalid value: {}", value));
-            }
-        }
-        Ok(())
     }
 }
 
