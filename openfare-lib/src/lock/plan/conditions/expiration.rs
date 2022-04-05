@@ -79,6 +79,7 @@ impl<'de> serde::Deserialize<'de> for Expiration {
     }
 }
 
+#[derive(Debug, Clone)]
 struct ExpirationMetadata;
 
 impl common::ConditionMetadata for ExpirationMetadata {
@@ -88,6 +89,13 @@ impl common::ConditionMetadata for ExpirationMetadata {
 
     fn description(&self) -> String {
         "Payment plan expiration date.".to_string()
+    }
+
+    fn interactive_set_parameter(
+        &self,
+        _parameters: &mut crate::lock::plan::conditions::Parameters,
+    ) -> Result<()> {
+        Ok(())
     }
 
     fn is_parameter_set(&self, _parameters: &crate::lock::plan::conditions::Parameters) -> bool {

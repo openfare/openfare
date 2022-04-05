@@ -14,7 +14,7 @@ pub use parameters::Parameters;
 
 #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Conditions {
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub for_profit: Option<ForProfit>,
 
     #[serde(skip_serializing_if = "Option::is_none")]

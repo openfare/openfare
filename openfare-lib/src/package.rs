@@ -10,6 +10,8 @@ pub struct Package {
 
 pub type DependenciesLocks = std::collections::BTreeMap<Package, Option<lock::Lock>>;
 
+// TODO: Add 'Result' version of PackageLocks for extension lock file errors.
+
 #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize)]
 pub struct PackageLocks {
     pub primary_package: Option<Package>,
@@ -22,20 +24,33 @@ impl PackageLocks {
         self.primary_package_lock.is_some() || !self.dependencies_locks.is_empty()
     }
 
-    // Returns a map of packages to their total set of plan conditions.
-    pub fn package_conditions(
-        &self,
-    ) -> std::collections::BTreeMap<Package, Vec<Box<dyn lock::plan::conditions::Condition>>> {
-        let mut packages_conditions = std::collections::BTreeMap::new();
-        for (package, lock) in &self.dependencies_locks {
-            if let Some(lock) = lock {
-                let mut conditions = vec![];
-                for (_id, plan) in &lock.plans {
-                    conditions.extend(plan.conditions.as_vec());
+    // Returns a unique vector of conditions metadata from locks.
+    pub fn conditions_metadata(&self) -> Vec<Box<dyn lock::plan::conditions::ConditionMetadata>> {
+        let mut result = vec![];
+
+        let mut handle_lock = |lock: &lock::Lock| {
+            for (_id, plan) in &lock.plans {
+                for metadata in plan.conditions.metadata() {
+                    if !result.iter().any(
+                        |m: &Box<dyn lock::plan::conditions::ConditionMetadata>| {
+                            *m.name() == *metadata.name()
+                        },
+                    ) {
+                        result.push(metadata);
+                    }
                 }
-                packages_conditions.insert(package.clone(), conditions);
+            }
+        };
+
+        if let Some(lock) = &self.primary_package_lock {
+            handle_lock(&lock);
+        }
+        for (_package, lock) in &self.dependencies_locks {
+            if let Some(lock) = lock {
+                handle_lock(&lock);
             }
         }
-        packages_conditions
+
+        result
     }
 }

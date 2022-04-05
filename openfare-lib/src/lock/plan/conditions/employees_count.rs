@@ -79,6 +79,7 @@ impl<'de> serde::Deserialize<'de> for EmployeesCount {
     }
 }
 
+#[derive(Debug, Clone)]
 struct EmployeesCountMetadata;
 
 impl common::ConditionMetadata for EmployeesCountMetadata {
@@ -88,6 +89,28 @@ impl common::ConditionMetadata for EmployeesCountMetadata {
 
     fn description(&self) -> String {
         "Employees count.".to_string()
+    }
+
+    fn interactive_set_parameter(
+        &self,
+        parameters: &mut crate::lock::plan::conditions::Parameters,
+    ) -> Result<()> {
+        println!("Select a range for the number of employees (x) within your organization:");
+        let items = vec![
+            "1 <= x < 50",
+            "50 <= x < 500",
+            "500 <= x < 1000",
+            "1000 <= x",
+        ];
+        let chosen: Vec<usize> = dialoguer::MultiSelect::new().items(&items).interact()?;
+
+        // if let Some(first_index) = chosen.first() {
+        //     if let Some(value) = items.get(*first_index) {
+        //         let (_operator, count) = parse_value(&value)?;
+        //         parameters.employees_count = Some(count);
+        //     }
+        // }
+        Ok(())
     }
 
     fn is_parameter_set(&self, parameters: &crate::lock::plan::conditions::Parameters) -> bool {
