@@ -1,4 +1,4 @@
-mod lock;
+pub(crate) mod lock;
 pub mod profile;
 
 pub use lock::LockHandle;

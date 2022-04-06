@@ -20,7 +20,7 @@ pub struct Profile {
     #[serde(rename = "unique-id")]
     pub unique_id: uuid::Uuid,
     #[serde(rename = "payment-methods")]
-    payment_methods: std::collections::BTreeMap<payment_methods::Methods, serde_json::Value>,
+    pub payment_methods: std::collections::BTreeMap<payment_methods::Methods, serde_json::Value>,
 }
 
 impl Profile {

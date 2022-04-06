@@ -1,0 +1,72 @@
+{
+  "$id": "https://example.com/lockfile.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "A description of how funds are distributed between contributors",
+  "title": "OpenFare lockfile",
+  "type": "object",
+  "properties": {
+    "scheme-version": {
+      "description": "version of lockfile",
+      "type": "string"
+    },
+    "plans": {
+      "description": "payment plans",
+      "type": "object",
+      "patternProperties": { "^(0)|([1-9][0-9]*)$": { "oneOf": [
+        {"$ref": "#/$defs/voluntary_plan"},
+        {"$ref": "#/$defs/compulsory_plan"}
+      ]}},
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "shares": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "minProperties": 1
+    },
+    "payees": {
+      "description": "Who to pay money to",
+      "type": "object",
+      "patternProperties": { "": { "$ref": "#/$defs/payee"}},
+      "minProperties": 1,
+      "additionalProperties": false
+    }
+  },
+  "required": [ "scheme-version", "plans", "payees", "shares" ],
+  "additionalProperties": false,
+
+  "$defs": {
+    "voluntary_plan": {
+      "type": "object",
+      "properties": {
+        "type": {"const": "voluntary" },
+        "conditions": { }
+      },
+      "required": [ "type" ],
+      "additionalProperties": false
+    },
+    "compulsory_plan": {
+      "type": "object",
+      "properties": {
+        "type": {"const":  "compulsory" },
+        "conditions": { },
+        "price": { "type":  "string" }
+      },
+      "required": [ "type", "conditions", "price" ],
+      "additionalProperties": false
+    },
+    "payee": {
+      "type": "object",
+      "properties": {
+        "url": {"type": "string" },
+        "unique-id": {"type":  "string"},
+        "payment-methods": {"type": "object"}
+      },
+      "required": [ "unique-id", "payment-methods" ],
+      "additionalProperties": false
+    }
+  }
+}

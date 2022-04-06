@@ -6,6 +6,7 @@ mod common;
 mod condition;
 mod plan;
 mod profile;
+mod validate;
 
 #[derive(Debug, Clone, StructOpt)]
 pub struct Arguments {
@@ -28,6 +29,8 @@ enum Subcommands {
     Update(UpdateArguments),
     /// Show lock fields.
     Show(ShowArguments),
+    /// Check if a lock file contains errors
+    Validate(ValidateArguments),
 }
 
 pub fn run_command(args: &Arguments) -> Result<()> {
@@ -49,6 +52,9 @@ pub fn run_command(args: &Arguments) -> Result<()> {
         }
         Subcommands::Show(args) => {
             show(&args)?;
+        }
+        Subcommands::Validate(args) => {
+            validate(&args)?;
         }
     }
     Ok(())
@@ -169,4 +175,21 @@ fn show(args: &ShowArguments) -> Result<()> {
     let value = lock_handle.get(&args.path)?;
     println!("{}", serde_json::to_string_pretty(&value)?);
     Ok(())
+}
+
+#[derive(Debug, StructOpt, Clone)]
+pub struct ValidateArguments {
+    /// Optional path to lock file.
+    #[structopt(flatten)]
+    pub lock_file_args: common::LockFilePathArg,
+}
+
+fn validate(args: &ValidateArguments) -> Result<()> {
+    let result = validate::validate_lock_file(&args.lock_file_args);
+
+    if result.is_ok() {
+        println!("Lockfile is valid! ✅");
+    }
+
+    result
 }

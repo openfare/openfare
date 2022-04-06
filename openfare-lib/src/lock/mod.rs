@@ -34,7 +34,7 @@ fn test_serialize() -> anyhow::Result<()> {
     let mut plan = plan::Plan {
         r#type: plan::PlanType::Voluntary,
         conditions: plan::conditions::Conditions::default(),
-        payments: plan::Payments::default(),
+        price: Some(crate::price::Price::default()),
     };
 
     plan.conditions.employees_count = Some(plan::conditions::EmployeesCount::try_from(

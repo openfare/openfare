@@ -114,7 +114,7 @@ impl crate::common::json::Subject<openfare_lib::lock::Lock> for LockHandle {
     }
 }
 
-fn find_lock_file() -> Result<Option<std::path::PathBuf>> {
+pub fn find_lock_file() -> Result<Option<std::path::PathBuf>> {
     let working_directory = std::env::current_dir()?;
 
     assert!(working_directory.is_absolute());
