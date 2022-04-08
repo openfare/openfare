@@ -121,8 +121,10 @@ fn naive_date_to_utc(date: &chrono::NaiveDate) -> Result<chrono::DateTime<Utc>> 
 
 #[test]
 fn test_evaluate_cases() -> Result<()> {
+    use common::Condition;
     let condition = Expiration::try_from("3022-01-31")?;
-    assert!(condition.evaluate()?);
+    let parameters = crate::lock::plan::conditions::Parameters::default();
+    assert!(condition.evaluate(&parameters)?);
     Ok(())
 }
 

@@ -56,6 +56,8 @@ impl common::ConditionMetadata for ForProfitMetadata {
 
 #[test]
 fn test_evaluate_cases() -> Result<()> {
+    use common::Condition;
+
     let mut parameters = crate::lock::plan::conditions::Parameters::default();
     parameters.for_profit = Some(true);
 
