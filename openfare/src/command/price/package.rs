@@ -36,3 +36,28 @@ pub fn price(
     }
     Ok(())
 }
+
+pub fn query_extensions<'a>(
+    package_name: &str,
+    package_version: &Option<&str>,
+    extensions: &'a Vec<Box<dyn openfare_lib::extension::Extension>>,
+    extension_args: &Vec<String>,
+) -> Result<
+    Vec<(
+        &'a Box<dyn openfare_lib::extension::Extension>,
+        openfare_lib::extension::commands::package_dependencies_locks::PackageDependenciesLocks,
+    )>,
+> {
+    let extensions_results = extensions::package::dependencies_locks(
+        &package_name,
+        &package_version,
+        &extensions,
+        &extension_args,
+    )?;
+    Ok(
+        extensions::common::filter_results(&extensions, &extensions_results)?
+            .into_iter()
+            .map(|(extension, result)| (extension, result.to_owned()))
+            .collect(),
+    )
+}

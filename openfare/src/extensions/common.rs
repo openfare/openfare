@@ -8,10 +8,10 @@ pub fn get_config_path(extension_name: &str) -> Result<std::path::PathBuf> {
     )))
 }
 
-pub fn filter_results<'a, T>(
+pub fn filter_results<'a, 'b, T>(
     extensions: &'a Vec<Box<dyn openfare_lib::extension::Extension>>,
-    results: &'a Vec<Result<T>>,
-) -> Result<Vec<(&'a Box<dyn openfare_lib::extension::Extension>, &'a T)>> {
+    results: &'b Vec<Result<T>>,
+) -> Result<Vec<(&'a Box<dyn openfare_lib::extension::Extension>, &'b T)>> {
     let mut filtered_results = vec![];
     for (extension, result) in extensions.iter().zip(results.iter()) {
         log::debug!(

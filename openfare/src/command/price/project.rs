@@ -36,3 +36,24 @@ pub fn price(
     }
     Ok(())
 }
+
+pub fn query_extensions<'a>(
+    extensions: &'a Vec<Box<dyn openfare_lib::extension::Extension>>,
+    extension_args: &Vec<String>,
+) -> Result<
+    Vec<(
+        &'a Box<dyn openfare_lib::extension::Extension>,
+        openfare_lib::extension::commands::project_dependencies_locks::ProjectDependenciesLocks,
+    )>,
+> {
+    let working_directory = std::env::current_dir()?;
+    log::debug!("Current working directory: {}", working_directory.display());
+    let extensions_results =
+        extensions::project::dependencies_locks(&working_directory, &extensions, &extension_args)?;
+    Ok(
+        extensions::common::filter_results(&extensions, &extensions_results)?
+            .into_iter()
+            .map(|(extension, result)| (extension, result.to_owned()))
+            .collect(),
+    )
+}

@@ -79,6 +79,7 @@ impl<'de> serde::Deserialize<'de> for Expiration {
     }
 }
 
+#[derive(Debug, Clone)]
 struct ExpirationMetadata;
 
 impl common::ConditionMetadata for ExpirationMetadata {
@@ -86,17 +87,15 @@ impl common::ConditionMetadata for ExpirationMetadata {
         "expiration".to_string()
     }
 
-    fn description(&self) -> String {
-        "Payment plan expiration date.".to_string()
+    fn interactive_set_parameter(
+        &self,
+        _parameters: &mut crate::lock::plan::conditions::Parameters,
+    ) -> Result<()> {
+        Ok(())
     }
 
     fn is_parameter_set(&self, _parameters: &crate::lock::plan::conditions::Parameters) -> bool {
         true
-    }
-
-    fn validate_parameter(&self, value: &str) -> Result<()> {
-        parse_value(&value)?;
-        Ok(())
     }
 }
 
@@ -122,8 +121,10 @@ fn naive_date_to_utc(date: &chrono::NaiveDate) -> Result<chrono::DateTime<Utc>> 
 
 #[test]
 fn test_evaluate_cases() -> Result<()> {
+    use common::Condition;
     let condition = Expiration::try_from("3022-01-31")?;
-    assert!(condition.evaluate()?);
+    let parameters = crate::lock::plan::conditions::Parameters::default();
+    assert!(condition.evaluate(&parameters)?);
     Ok(())
 }
 

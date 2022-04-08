@@ -1,12 +1,15 @@
 use super::common;
 use anyhow::Result;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct ForProfit {}
+#[derive(Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct ForProfit {
+    #[serde(rename = "for-profit")]
+    pub state: bool,
+}
 
 impl ForProfit {
     pub fn new() -> Self {
-        Self {}
+        Self { state: true }
     }
 }
 
@@ -23,58 +26,7 @@ impl common::Condition for ForProfit {
     }
 }
 
-impl serde::Serialize for ForProfit {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str("true")
-    }
-}
-
-struct Visitor {
-    marker: std::marker::PhantomData<fn() -> ForProfit>,
-}
-
-impl Visitor {
-    fn new() -> Self {
-        Visitor {
-            marker: std::marker::PhantomData,
-        }
-    }
-}
-
-impl<'de> serde::de::Visitor<'de> for Visitor {
-    type Value = ForProfit;
-
-    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str("the string 'true'")
-    }
-
-    fn visit_str<E>(self, value: &str) -> core::result::Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        if value != "true" {
-            Err(E::custom(format!(
-                "Unexpected 'for-profit' value: {}",
-                value
-            )))
-        } else {
-            Ok(Self::Value {})
-        }
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for ForProfit {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        deserializer.deserialize_str(Visitor::new())
-    }
-}
-
+#[derive(Debug, Clone)]
 struct ForProfitMetadata;
 
 impl common::ConditionMetadata for ForProfitMetadata {
@@ -82,28 +34,30 @@ impl common::ConditionMetadata for ForProfitMetadata {
         "for-profit".to_string()
     }
 
-    fn description(&self) -> String {
-        "Organization/individual is for-profit.".to_string()
+    fn interactive_set_parameter(
+        &self,
+        parameters: &mut crate::lock::plan::conditions::Parameters,
+    ) -> Result<()> {
+        if dialoguer::Confirm::new()
+            .with_prompt("Is the software used by a for-profit organization/individual?")
+            .interact()?
+        {
+            parameters.for_profit = Some(true);
+        } else {
+            parameters.for_profit = Some(false);
+        }
+        Ok(())
     }
 
     fn is_parameter_set(&self, parameters: &crate::lock::plan::conditions::Parameters) -> bool {
         parameters.for_profit.is_some()
     }
-
-    fn validate_parameter(&self, value: &str) -> Result<()> {
-        if value != "true" {
-            Err(anyhow::format_err!(
-                "Unexpected 'for-profit' value: {}",
-                value
-            ))
-        } else {
-            Ok(())
-        }
-    }
 }
 
 #[test]
 fn test_evaluate_cases() -> Result<()> {
+    use common::Condition;
+
     let mut parameters = crate::lock::plan::conditions::Parameters::default();
     parameters.for_profit = Some(true);
 

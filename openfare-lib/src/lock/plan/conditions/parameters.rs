@@ -1,7 +1,7 @@
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Parameters {
     #[serde(rename = "employees-count")]
-    pub employees_count: Option<usize>,
+    pub employees_count: Option<super::employees_count::Range>,
 
     #[serde(rename = "for-profit")]
     pub for_profit: Option<bool>,
