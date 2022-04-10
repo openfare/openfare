@@ -53,4 +53,20 @@ impl PackageLocks {
 
         result
     }
+
+    /// Filter for valid dependencies locks.
+    pub fn filter_valid_dependencies_locks(&self) -> Self {
+        let mut result = self.clone();
+        for (package, lock) in &self.dependencies_locks {
+            if let Some(lock) = lock {
+                if lock.plans.is_empty() {
+                    continue;
+                }
+                result
+                    .dependencies_locks
+                    .insert(package.clone(), Some(lock.clone()));
+            }
+        }
+        result
+    }
 }
