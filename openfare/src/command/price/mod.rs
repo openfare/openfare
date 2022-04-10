@@ -44,7 +44,12 @@ pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()>
                 &extension_args,
             )?;
             for (_extension, result) in extensions_results {
-                check_conditions_parameters_set(&result.package_locks, &mut config)?;
+                if !openfare_lib::lock::plan::conditions::parameters::check_set(
+                    &result.package_locks.conditions_metadata(),
+                    &mut config.profile.parameters,
+                )? {
+                    config.dump()?;
+                }
             }
             package::price(
                 &package_name,
@@ -57,34 +62,15 @@ pub fn run_command(args: &Arguments, extension_args: &Vec<String>) -> Result<()>
         None => {
             let extensions_results = project::query_extensions(&extensions, &extension_args)?;
             for (_extension, result) in extensions_results {
-                check_conditions_parameters_set(&result.package_locks, &mut config)?;
+                if !openfare_lib::lock::plan::conditions::parameters::check_set(
+                    &result.package_locks.conditions_metadata(),
+                    &mut config.profile.parameters,
+                )? {
+                    config.dump()?;
+                }
             }
             project::price(&extensions, &extension_args, &config)?;
         }
-    }
-    Ok(())
-}
-
-/// Check correct parameters set for the given package locks conditions.
-fn check_conditions_parameters_set(
-    package_locks: &openfare_lib::package::PackageLocks,
-    config: &mut crate::config::Config,
-) -> Result<()> {
-    let mut parameter_modified = false;
-    for metadata in package_locks.conditions_metadata() {
-        log::info!("Checking condition {}", metadata.name());
-        if !metadata.is_parameter_set(&config.profile.parameters) {
-            println!(
-                "Please set profile condition parameter: {}",
-                metadata.name()
-            );
-            metadata.interactive_set_parameter(&mut config.profile.parameters)?;
-            parameter_modified = true;
-        }
-    }
-    if parameter_modified {
-        log::info!("Saving modified profile parameters.");
-        config.dump()?;
     }
     Ok(())
 }

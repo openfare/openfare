@@ -4,7 +4,7 @@ mod common;
 mod employees_count;
 mod expiration;
 mod for_profit;
-mod parameters;
+pub mod parameters;
 
 pub use common::{Condition, ConditionMetadata};
 pub use employees_count::EmployeesCount;
