@@ -88,8 +88,8 @@ fn get_package_price_report(
             PackagePriceReport {
                 package: package.clone(),
                 plan_id: Some((*plan_id).clone()),
-                price_quantity: Some(if let Some(total) = &plan.payments.total {
-                    total.quantity
+                price_quantity: Some(if let Some(price) = &plan.price {
+                    price.quantity
                 } else {
                     rust_decimal::Decimal::from(0)
                 }),
@@ -115,8 +115,8 @@ fn select_plan<'a>(
     let max_price: rust_decimal::Decimal = applicable_plans
         .iter()
         .map(|(_, plan)| {
-            if let Some(total) = &plan.payments.total {
-                total.quantity
+            if let Some(price) = &plan.price {
+                price.quantity
             } else {
                 rust_decimal::Decimal::from(0)
             }
@@ -125,8 +125,8 @@ fn select_plan<'a>(
     applicable_plans
         .iter()
         .filter(|(_, plan)| {
-            if let Some(total) = &plan.payments.total {
-                total.quantity == max_price
+            if let Some(price) = &plan.price {
+                price.quantity == max_price
             } else {
                 false
             }

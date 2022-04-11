@@ -48,7 +48,10 @@ impl std::str::FromStr for PlanType {
 pub struct Plan {
     pub r#type: PlanType,
     pub conditions: conditions::Conditions,
-    pub payments: Payments,
+
+    /// The price of the plan.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub price: Option<crate::price::Price>,
 }
 
 impl Plan {
@@ -79,10 +82,4 @@ pub fn filter_applicable(
         }
     }
     Ok(applicable_plans)
-}
-
-#[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize)]
-pub struct Payments {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub total: Option<crate::price::Price>,
 }

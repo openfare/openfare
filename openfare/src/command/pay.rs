@@ -111,7 +111,7 @@ pub fn get_basket_items(
 
         let total_price = plans
             .iter()
-            .map(|(_id, plan)| plan.payments.total.clone().unwrap_or_default())
+            .map(|(_id, plan)| plan.price.clone().unwrap_or_default())
             .sum();
 
         let item = openfare_lib::api::services::basket::Item {

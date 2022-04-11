@@ -51,11 +51,7 @@ pub fn add_compulsory(args: &AddCompulsoryArguments) -> Result<()> {
     let plan = openfare_lib::lock::plan::Plan {
         r#type: openfare_lib::lock::plan::PlanType::Compulsory,
         conditions,
-        payments: openfare_lib::lock::plan::Payments {
-            total: Some(
-                openfare_lib::price::Price::try_from(args.fee.as_str()).expect("parse fee price"),
-            ),
-        },
+        price: Some(args.fee.parse().expect("parse price")),
     };
     lock_handle.lock.plans.insert(id.clone(), plan.clone());
 
@@ -83,7 +79,7 @@ pub fn add_voluntary(args: &AddVoluntaryArguments) -> Result<()> {
     let plan = openfare_lib::lock::plan::Plan {
         r#type: openfare_lib::lock::plan::PlanType::Voluntary,
         conditions: openfare_lib::lock::plan::conditions::Conditions::default(),
-        payments: openfare_lib::lock::plan::Payments { total: None },
+        price: None,
     };
     lock_handle.lock.plans.insert(id.clone(), plan.clone());
 
