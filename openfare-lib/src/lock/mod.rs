@@ -1,5 +1,6 @@
 pub mod payee;
 pub mod plan;
+pub mod shares;
 
 pub static FILE_NAME: &str = "OpenFare.lock";
 pub static SCHEME_VERSION: &str = "1";
@@ -11,6 +12,8 @@ pub struct Lock {
     pub scheme_version: String,
     pub plans: plan::Plans,
     pub payees: payee::Payees,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shares: Option<shares::Shares>,
 }
 
 impl std::default::Default for Lock {
@@ -19,6 +22,7 @@ impl std::default::Default for Lock {
             scheme_version: SCHEME_VERSION.to_string(),
             plans: plan::Plans::new(),
             payees: payee::Payees::new(),
+            shares: None,
         }
     }
 }

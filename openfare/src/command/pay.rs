@@ -120,6 +120,7 @@ pub fn get_basket_items(
             plans,
             total_price,
             payees: lock.payees.clone(),
+            shares: lock.shares.clone(),
         };
         basket_items.push(item);
     }

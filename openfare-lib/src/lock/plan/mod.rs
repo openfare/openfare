@@ -85,6 +85,4 @@ pub fn filter_applicable(
 pub struct Payments {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub total: Option<crate::price::Price>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub shares: Option<Shares>,
 }

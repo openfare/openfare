@@ -11,10 +11,6 @@ use structopt::{self, StructOpt};
     global_settings = &[structopt::clap::AppSettings::DisableVersion]
 )]
 pub struct AddArguments {
-    /// Payment plan ID(s). All plans included if unset.
-    #[structopt(long, short)]
-    pub id: Vec<usize>,
-
     /// Number of payment split shares.
     #[structopt(long, short)]
     pub shares: u64,
@@ -39,19 +35,13 @@ pub fn add(args: &AddArguments) -> Result<()> {
         ));
     }
 
-    let plan_ids = args
-        .id
-        .iter()
-        .map(|id| id.to_string())
-        .collect::<std::collections::BTreeSet<_>>();
-
     let profile = get_profile(&args.url)?;
 
     // Profile already included in lock as payee. Add shares only.
     if let Some((label, _payee)) =
         openfare_lib::lock::payee::get_lock_payee(&(*profile).clone(), &lock_handle.lock.payees)
     {
-        add_shares_to_plans(&label, args.shares, &plan_ids, &mut lock_handle);
+        add_shares(&label, args.shares, &mut lock_handle);
         return Ok(());
     }
 
@@ -66,7 +56,7 @@ pub fn add(args: &AddArguments) -> Result<()> {
     };
 
     lock_handle.lock.payees.insert(label.clone(), payee);
-    add_shares_to_plans(&label, args.shares, &plan_ids, &mut lock_handle);
+    add_shares(&label, args.shares, &mut lock_handle);
     Ok(())
 }
 
@@ -132,23 +122,11 @@ fn get_label(
     }
 }
 
-fn add_shares_to_plans(
-    payee_label: &str,
-    payee_shares: u64,
-    plan_ids: &std::collections::BTreeSet<String>,
-    lock_handle: &mut crate::handles::LockHandle,
-) {
-    for (_plan_id, plan) in lock_handle
-        .lock
-        .plans
-        .iter_mut()
-        .filter(|(id, _plan)| plan_ids.contains(id.as_str()) || plan_ids.is_empty())
-    {
-        if let Some(shares) = &mut plan.payments.shares {
-            shares.insert(payee_label.to_string(), payee_shares);
-        } else {
-            plan.payments.shares = Some(maplit::btreemap! {payee_label.to_string() => payee_shares})
-        }
+fn add_shares(payee_label: &str, payee_shares: u64, lock_handle: &mut crate::handles::LockHandle) {
+    if let Some(shares) = &mut lock_handle.lock.shares {
+        shares.insert(payee_label.to_string(), payee_shares);
+    } else {
+        lock_handle.lock.shares = Some(maplit::btreemap! {payee_label.to_string() => payee_shares})
     }
 }
 
@@ -163,20 +141,11 @@ pub struct RemoveArguments {
     #[structopt(name = "label")]
     pub labels: Vec<String>,
 
-    /// Payment plan ID(s). All plans included if unset.
-    #[structopt(long, short)]
-    pub id: Vec<usize>,
-
     #[structopt(flatten)]
     pub lock_file_args: common::LockFilePathArg,
 }
 
 pub fn remove(args: &RemoveArguments) -> Result<()> {
-    let plan_ids = args
-        .id
-        .iter()
-        .map(|id| id.to_string())
-        .collect::<std::collections::BTreeSet<_>>();
     let mut lock_handle = crate::handles::LockHandle::load(&args.lock_file_args.path)?;
 
     // If no payee labels given, use local payee label.
@@ -188,23 +157,13 @@ pub fn remove(args: &RemoveArguments) -> Result<()> {
         args.labels.clone()
     };
 
-    // Remove from plans.
-    for (_plan_id, plan) in lock_handle
-        .lock
-        .plans
-        .iter_mut()
-        .filter(|(id, _plan)| plan_ids.contains(id.as_str()) || plan_ids.is_empty())
-    {
-        for label in &labels {
-            if let Some(shares) = &mut plan.payments.shares {
-                shares.remove(label.as_str());
-            }
-        }
-    }
-
-    // Remove from payees.
     for label in labels {
+        // Remove from payees.
         lock_handle.lock.payees.remove(&label);
+        // Remove from shares.
+        if let Some(shares) = &mut lock_handle.lock.shares {
+            shares.remove(&label);
+        }
     }
 
     Ok(())

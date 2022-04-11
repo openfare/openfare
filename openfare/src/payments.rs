@@ -37,20 +37,9 @@ pub fn donation_splits(
     let mut payee_donations =
         Vec::<(openfare_lib::lock::payee::Payee, openfare_lib::price::Price)>::new();
     for item in items {
-        // Accept only one applicable voluntary plan per package.
-        let plan = item
-            .plans
-            .iter()
-            .filter(|(_id, plan)| plan.r#type == openfare_lib::lock::plan::PlanType::Voluntary)
-            .next()
-            .ok_or(anyhow::format_err!(
-                "Code error: expected one voluntary payment plan at this point."
-            ))?
-            .1;
-
         let payees = filter_for_applicable_payees(&item.payees, is_payee_applicable)?;
 
-        if let Some(shares) = &plan.payments.shares {
+        if let Some(shares) = &item.shares {
             // Only consider shares for applicable payees.
             let shares = filter_for_applicable_shares(&shares, &payees)?;
             let total: u64 = shares.iter().map(|(_, share)| share).sum();
@@ -107,15 +96,16 @@ fn filter_voluntary(
         .iter()
         .cloned()
         .filter(|item| {
-            item.plans
+            let voluntary_plans = item
+                .plans
                 .iter()
                 .filter(|(_id, plan)| plan.r#type == openfare_lib::lock::plan::PlanType::Voluntary)
-                .any(|(id, _plan)| match item.plan_payees(&id) {
-                    Some(payees) => payees
-                        .iter()
-                        .any(|(_label, payee)| is_payee_applicable(&payee).unwrap_or(false)),
-                    None => false,
-                })
+                .collect::<Vec<_>>();
+
+            let valid_payees =
+                filter_for_applicable_payees(&item.valid_payees(), is_payee_applicable)
+                    .unwrap_or_default();
+            !valid_payees.is_empty() && !voluntary_plans.is_empty()
         })
         .collect()
 }
