@@ -13,8 +13,8 @@ pub struct AddArguments {
     #[structopt(long, short)]
     pub id: Vec<u8>,
 
-    /// Payment total fee.
-    pub total: String,
+    /// Plan total price. Example: "1.23USD".
+    pub price: String,
 
     #[structopt(flatten)]
     pub lock_file_args: common::LockFilePathArg,
@@ -34,7 +34,7 @@ pub fn add(args: &AddArguments) -> Result<()> {
         .iter_mut()
         .filter(|(id, _plan)| plan_ids.contains(id.as_str()) || plan_ids.is_empty())
     {
-        plan.price = Some(openfare_lib::price::Price::try_from(args.total.as_str())?);
+        plan.price = Some(args.price.parse().expect("parse price"));
     }
 
     Ok(())

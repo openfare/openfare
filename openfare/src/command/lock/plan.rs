@@ -31,9 +31,9 @@ pub fn add(subcommand: &AddArguments) -> Result<()> {
     global_settings = &[structopt::clap::AppSettings::DisableVersion]
 )]
 pub struct AddCompulsoryArguments {
-    /// Payment plan total fee. Example: "50.2USD"
+    /// Payment plan price. Example: "50.2USD"
     #[structopt(long, short)]
-    pub fee: String,
+    pub price: String,
 
     #[structopt(flatten)]
     pub conditions: super::condition::ConditionArguments,
@@ -51,7 +51,7 @@ pub fn add_compulsory(args: &AddCompulsoryArguments) -> Result<()> {
     let plan = openfare_lib::lock::plan::Plan {
         r#type: openfare_lib::lock::plan::PlanType::Compulsory,
         conditions,
-        price: Some(args.fee.parse().expect("parse price")),
+        price: Some(args.price.parse().expect("parse price")),
     };
     lock_handle.lock.plans.insert(id.clone(), plan.clone());
 
