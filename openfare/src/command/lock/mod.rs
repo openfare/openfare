@@ -4,7 +4,6 @@ use structopt::{self, StructOpt};
 
 mod common;
 mod condition;
-mod payment;
 mod plan;
 mod profile;
 
@@ -21,7 +20,7 @@ enum Subcommands {
     New(NewArguments),
     /// Add plan, profile, etc.
     Add(AddArguments),
-    /// Remove plan, profile, payment, condition, etc.
+    /// Remove plan, profile, condition, etc.
     Remove(RemoveSubcommands),
     /// Update payee profiles.
     Update(UpdateArguments),
@@ -79,9 +78,6 @@ pub enum AddArguments {
     /// Add payee profile to payment plan(s).
     Profile(profile::AddArguments),
 
-    /// Add payment parameters.
-    Payment(payment::AddArguments),
-
     /// Add condition(s) to plan(s).
     Condition(condition::AddArguments),
 }
@@ -93,9 +89,6 @@ fn add(args: &AddArguments) -> Result<()> {
         }
         AddArguments::Profile(args) => {
             profile::add(&args)?;
-        }
-        AddArguments::Payment(args) => {
-            payment::add(&args)?;
         }
         AddArguments::Condition(args) => {
             condition::add(&args)?;
@@ -113,9 +106,6 @@ pub enum RemoveSubcommands {
     /// Remove payee profile from payment plan(s).
     Profile(profile::RemoveArguments),
 
-    /// Remove payment parameters from payment plan(s).
-    Payment(payment::RemoveArguments),
-
     /// Remove condition(s) from payment plan(s).
     Condition(condition::RemoveArguments),
 }
@@ -127,9 +117,6 @@ fn remove(subcommand: &RemoveSubcommands) -> Result<()> {
         }
         RemoveSubcommands::Profile(args) => {
             profile::remove(&args)?;
-        }
-        RemoveSubcommands::Payment(args) => {
-            payment::remove(&args)?;
         }
         RemoveSubcommands::Condition(args) => {
             condition::remove(&args)?;
