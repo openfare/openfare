@@ -1,4 +1,4 @@
-use crate::common::json::Get;
+use crate::common::json::{Get, Set};
 use anyhow::Result;
 use structopt::{self, StructOpt};
 
@@ -20,6 +20,8 @@ enum Subcommands {
     New(NewArguments),
     /// Add plan, profile, etc.
     Add(AddArguments),
+    /// Set lock field.
+    Set(SetArguments),
     /// Remove plan, profile, condition, etc.
     Remove(RemoveSubcommands),
     /// Update payee profiles.
@@ -35,6 +37,9 @@ pub fn run_command(args: &Arguments) -> Result<()> {
         }
         Subcommands::Add(args) => {
             add(&args)?;
+        }
+        Subcommands::Set(args) => {
+            set(&args)?;
         }
         Subcommands::Remove(args) => {
             remove(&args)?;
@@ -133,6 +138,22 @@ pub struct UpdateArguments {
 
 fn update(args: &UpdateArguments) -> Result<()> {
     profile::update(&args.profile)?;
+    Ok(())
+}
+
+#[derive(Debug, StructOpt, Clone)]
+pub struct SetArguments {
+    /// Field path.
+    #[structopt(name = "field-path")]
+    pub path: String,
+
+    /// Field value.
+    pub value: String,
+}
+
+fn set(args: &SetArguments) -> Result<()> {
+    let mut lock_handle = crate::handles::LockHandle::load(&None)?;
+    lock_handle.set(&args.path, &args.value)?;
     Ok(())
 }
 
