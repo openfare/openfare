@@ -3,6 +3,7 @@ pub type Payees = std::collections::BTreeMap<Label, Payee>;
 pub type PaymentMethodName = String;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Payee {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,

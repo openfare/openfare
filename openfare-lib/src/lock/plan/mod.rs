@@ -45,6 +45,7 @@ impl std::str::FromStr for PlanType {
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Plan {
     pub r#type: PlanType,
     pub conditions: conditions::Conditions,

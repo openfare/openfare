@@ -1,8 +1,6 @@
 use crate::command::lock::common;
 use crate::handles::lock;
-use anyhow::anyhow;
 use anyhow::Result;
-use jsonschema::ErrorIterator;
 use serde_json::Value;
 
 pub fn validate_lock_file(maybe_lock_file_path: &common::LockFilePathArg) -> Result<()> {
@@ -13,26 +11,12 @@ pub fn validate_lock_file(maybe_lock_file_path: &common::LockFilePathArg) -> Res
 }
 
 pub fn validate_lock_file_json(lock_file_json: Value) -> Result<()> {
-    let result = openfare_lib::lock::SCHEMA.validate(&lock_file_json);
-    if let Err(errors) = result {
-        let error_string = lockfile_errors_to_string(errors);
-        return Err(anyhow!("Invalid lockfile\n".to_owned() + &error_string));
-    }
-    Ok(())
+    let lock: openfare_lib::lock::Lock = serde_json::from_value(lock_file_json)?;
+    lock.validate()
 }
 
 pub fn validate_lock_file_string(lock_file_string: String) -> Result<()> {
     validate_lock_file_json(serde_json::from_str(&lock_file_string).unwrap())
-}
-
-fn lockfile_errors_to_string(errors: ErrorIterator) -> String {
-    let mut error_string = String::new();
-    error_string += &("----------------------\n");
-    for error in errors {
-        error_string += format!("Validation error: {}\n", error).as_str();
-        error_string += format!("Instance path: {}\n", error.instance_path).as_str();
-    }
-    error_string
 }
 
 fn get_lock_file_pathbuf(
@@ -157,6 +141,7 @@ mod tests {
         } else {
             panic!("Adjustment failed");
         }
+        println!("{}", serde_json::to_string_pretty(&lockfile).unwrap());
         lockfile
     }
     fn generate_test_lockfile_with_non_number_plan_key() -> Value {

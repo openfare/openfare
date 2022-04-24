@@ -16,6 +16,7 @@ impl std::convert::From<Profile> for RemoteProfile {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Profile {
     #[serde(rename = "unique-id")]
     pub unique_id: uuid::Uuid,
