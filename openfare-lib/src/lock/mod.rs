@@ -4,6 +4,9 @@ pub mod payee;
 pub mod plan;
 pub mod shares;
 
+#[cfg(test)]
+mod tests;
+
 pub static FILE_NAME: &str = "OpenFare.lock";
 pub static SCHEME_VERSION: &str = "1";
 
