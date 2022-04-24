@@ -1,7 +1,23 @@
-use crate::command::lock::common;
+use super::common;
 use crate::handles::lock;
 use anyhow::Result;
 use serde_json::Value;
+use structopt::{self, StructOpt};
+
+#[derive(Debug, StructOpt, Clone)]
+pub struct Arguments {
+    /// Optional path to lock file.
+    #[structopt(flatten)]
+    pub lock_file_args: common::LockFilePathArg,
+}
+
+pub fn run_command(args: &Arguments) -> Result<()> {
+    let result = validate_lock_file(&args.lock_file_args);
+    if result.is_ok() {
+        println!("Lockfile is valid! ✅");
+    }
+    result
+}
 
 pub fn validate_lock_file(maybe_lock_file_path: &common::LockFilePathArg) -> Result<()> {
     let lock_file_pathbuf = get_lock_file_pathbuf(maybe_lock_file_path)?;

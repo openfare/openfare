@@ -30,7 +30,7 @@ enum Subcommands {
     /// Show lock fields.
     Show(ShowArguments),
     /// Check if a lock file contains errors
-    Validate(ValidateArguments),
+    Validate(validate::Arguments),
 }
 
 pub fn run_command(args: &Arguments) -> Result<()> {
@@ -54,7 +54,7 @@ pub fn run_command(args: &Arguments) -> Result<()> {
             show(&args)?;
         }
         Subcommands::Validate(args) => {
-            validate(&args)?;
+            validate::run_command(&args)?;
         }
     }
     Ok(())
@@ -175,21 +175,4 @@ fn show(args: &ShowArguments) -> Result<()> {
     let value = lock_handle.get(&args.path)?;
     println!("{}", serde_json::to_string_pretty(&value)?);
     Ok(())
-}
-
-#[derive(Debug, StructOpt, Clone)]
-pub struct ValidateArguments {
-    /// Optional path to lock file.
-    #[structopt(flatten)]
-    pub lock_file_args: common::LockFilePathArg,
-}
-
-fn validate(args: &ValidateArguments) -> Result<()> {
-    let result = validate::validate_lock_file(&args.lock_file_args);
-
-    if result.is_ok() {
-        println!("Lockfile is valid! ✅");
-    }
-
-    result
 }
