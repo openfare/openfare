@@ -2081,6 +2081,7 @@ dependencies = [
  "env_logger 0.8.4",
  "flate2",
  "hex 0.4.3",
+ "jsonschema",
  "lazy-regex",
  "lazy_static",
  "log",

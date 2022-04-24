@@ -5,6 +5,14 @@ pub mod shares;
 pub static FILE_NAME: &str = "OpenFare.lock";
 pub static SCHEME_VERSION: &str = "1";
 
+lazy_static! {
+    pub static ref SCHEMA: jsonschema::JSONSchema = {
+        let schema = std::include_str!("schema.json");
+        let schema = serde_json::from_str(schema).expect("serde parsed lock schema");
+        jsonschema::JSONSchema::compile(&schema).expect("compiled lock schema")
+    };
+}
+
 /// A software package's OpenFare lock file (OpenFare.lock).
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Lock {

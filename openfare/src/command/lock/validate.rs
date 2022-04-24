@@ -2,10 +2,8 @@ use crate::command::lock::common;
 use crate::handles::lock;
 use anyhow::anyhow;
 use anyhow::Result;
-use jsonschema::{ErrorIterator, JSONSchema};
+use jsonschema::ErrorIterator;
 use serde_json::Value;
-
-const SCHEMA_AS_STRING: &str = std::include_str!("lockfile.schema.json");
 
 pub fn validate_lock_file(maybe_lock_file_path: &common::LockFilePathArg) -> Result<()> {
     let lock_file_pathbuf = get_lock_file_pathbuf(maybe_lock_file_path)?;
@@ -15,8 +13,7 @@ pub fn validate_lock_file(maybe_lock_file_path: &common::LockFilePathArg) -> Res
 }
 
 pub fn validate_lock_file_json(lock_file_json: Value) -> Result<()> {
-    let schema = get_compiled_schema();
-    let result = schema.validate(&lock_file_json);
+    let result = openfare_lib::lock::SCHEMA.validate(&lock_file_json);
     if let Err(errors) = result {
         let error_string = lockfile_errors_to_string(errors);
         return Err(anyhow!("Invalid lockfile\n".to_owned() + &error_string));
@@ -50,11 +47,6 @@ fn get_lock_file_pathbuf(
 
 fn file_to_string(file_path: &str) -> String {
     std::fs::read_to_string(file_path).unwrap()
-}
-
-fn get_compiled_schema() -> JSONSchema {
-    let schema_json = serde_json::from_str(SCHEMA_AS_STRING).unwrap();
-    JSONSchema::compile(&schema_json).expect("Schema invalid")
 }
 
 #[cfg(test)]
@@ -238,11 +230,6 @@ mod tests {
 
     fn validate_lock_file_json_and_print_errs(val: Value) -> Result<()> {
         print_if_err(validate_lock_file_json(val))
-    }
-
-    #[test]
-    fn test_schema_can_compile() {
-        get_compiled_schema();
     }
 
     #[test]
