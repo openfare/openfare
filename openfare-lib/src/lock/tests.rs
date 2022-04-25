@@ -8,7 +8,7 @@ use plan::{Plan, PlanType};
 use serde_json::{json, Value};
 use {shares, Lock};
 
-fn generate_minimal_valid_lockfile() -> Value {
+fn generate_minimal_valid_lock() -> Value {
     let mut lock = Lock::default();
     lock.plans.insert(
         "0".to_string(),
@@ -40,7 +40,7 @@ fn generate_minimal_valid_lockfile() -> Value {
 
     serde_json::to_value(&lock).unwrap()
 }
-fn generate_test_lockfile() -> Value {
+fn generate_test_lock() -> Value {
     let mut lock = Lock::default();
     lock.plans.insert(
         "0".to_string(),
@@ -97,73 +97,73 @@ fn generate_test_lockfile() -> Value {
 
     serde_json::to_value(&lock).unwrap()
 }
-fn generate_test_lockfile_with_typo() -> Value {
-    let mut lockfile = generate_test_lockfile();
-    let steve = lockfile["payees"]["steve"].as_object_mut().unwrap();
+fn generate_test_lock_file_with_typo() -> Value {
+    let mut lock = generate_test_lock();
+    let steve = lock["payees"]["steve"].as_object_mut().unwrap();
     if let Some(url) = steve.remove("url") {
         steve.insert("ur1".to_string(), url);
     } else {
         panic!("Adjustment failed");
     }
-    lockfile
+    lock
 }
-fn generate_test_lockfile_with_non_number_plan_key() -> Value {
-    let mut lockfile = generate_test_lockfile();
-    let plans = lockfile["plans"].as_object_mut().unwrap();
+fn generate_test_lock_file_with_non_number_plan_key() -> Value {
+    let mut lock = generate_test_lock();
+    let plans = lock["plans"].as_object_mut().unwrap();
     if let Some(plan0) = plans.remove("0") {
         plans.insert("this_is_a_non_number_plan_key".to_string(), plan0);
     } else {
         panic!("Adjustment failed");
     }
-    lockfile
+    lock
 }
-fn generate_test_lockfile_with_past_zero_plan_key() -> Value {
-    let mut lockfile = generate_test_lockfile();
-    let plans = lockfile["plans"].as_object_mut().unwrap();
+fn generate_test_lock_file_with_past_zero_plan_key() -> Value {
+    let mut lock = generate_test_lock();
+    let plans = lock["plans"].as_object_mut().unwrap();
     if let Some(plan0) = plans.remove("0") {
         plans.insert("9001".to_string(), plan0);
     } else {
         panic!("Adjustment failed");
     }
-    lockfile
+    lock
 }
-fn generate_test_lockfile_with_negative_shares() -> Value {
-    let mut lockfile = generate_test_lockfile();
-    lockfile["shares"]
+fn generate_test_lock_file_with_negative_shares() -> Value {
+    let mut lock = generate_test_lock();
+    lock["shares"]
         .as_object_mut()
         .unwrap()
         .insert("steve".to_string(), json!(-50));
-    println!("{}", serde_json::to_string_pretty(&lockfile).unwrap());
-    lockfile
+    println!("{}", serde_json::to_string_pretty(&lock).unwrap());
+    lock
 }
-fn generate_test_lockfile_with_invalid_plan_condition() -> Value {
-    let mut lockfile = generate_test_lockfile();
-    lockfile["plans"]["0"]["conditions"]
+fn generate_test_lock_file_with_invalid_plan_condition() -> Value {
+    let mut lock = generate_test_lock();
+    lock["plans"]["0"]["conditions"]
         .as_object_mut()
         .unwrap()
         .insert(
             "fake_condition".to_string(),
             Value::String("THIS SOFTWARE CANNOT BE USED FOR ANY PURPOSE ON WENSDAYS".to_string()),
         );
-    lockfile
+    lock
 }
-fn generate_test_lockfile_with_more_share_labels_than_payees() -> Value {
-    let mut lockfile = generate_test_lockfile();
-    lockfile["shares"]
+fn generate_test_lock_file_with_more_share_labels_than_payees() -> Value {
+    let mut lock = generate_test_lock();
+    lock["shares"]
         .as_object_mut()
         .unwrap()
         .insert("otherNotSteve".to_string(), json!(5));
-    lockfile
+    lock
 }
-fn generate_test_lockfile_with_incorrect_share_label() -> Value {
-    let mut lockfile = generate_test_lockfile();
-    let shares = lockfile["shares"].as_object_mut().unwrap();
+fn generate_test_lock_file_with_incorrect_share_label() -> Value {
+    let mut lock = generate_test_lock();
+    let shares = lock["shares"].as_object_mut().unwrap();
     if let Some(steves_shares) = shares.remove("steve") {
         shares.insert("someGuy".to_string(), steves_shares);
     } else {
         panic!("Adjustment failed");
     }
-    lockfile
+    lock
 }
 
 fn print_if_err(result: Result<()>) -> Result<()> {
@@ -181,36 +181,36 @@ fn validate_lock_file_json_and_print_errs(val: Value) -> Result<()> {
 }
 
 #[test]
-fn test_empty_lockfile_not_valid() {
+fn test_empty_lock_file_not_valid() {
     assert!(validate_lock_file_json_and_print_errs(json!("")).is_err());
 }
 #[test]
-fn test_almost_empty_lockfile_not_valid() {
+fn test_almost_empty_lock_file_not_valid() {
     assert!(validate_lock_file_json_and_print_errs(json!("{}")).is_err());
 }
 #[test]
 fn test_minimal_lock_file_is_valid() {
-    assert!(validate_lock_file_json_and_print_errs(generate_minimal_valid_lockfile()).is_ok());
+    assert!(validate_lock_file_json_and_print_errs(generate_minimal_valid_lock()).is_ok());
 }
 #[test]
 fn test_more_complex_lock_file_is_valid() {
-    assert!(validate_lock_file_json_and_print_errs(generate_test_lockfile()).is_ok());
+    assert!(validate_lock_file_json_and_print_errs(generate_test_lock()).is_ok());
 }
 #[test]
 fn test_minor_typo_not_valid() {
-    assert!(validate_lock_file_json_and_print_errs(generate_test_lockfile_with_typo()).is_err());
+    assert!(validate_lock_file_json_and_print_errs(generate_test_lock_file_with_typo()).is_err());
 }
 #[test]
 fn test_plan_numbers_can_start_past_zero() {
     assert!(validate_lock_file_json_and_print_errs(
-        generate_test_lockfile_with_past_zero_plan_key()
+        generate_test_lock_file_with_past_zero_plan_key()
     )
     .is_ok());
 }
 #[test]
 fn test_plan_key_must_be_number() {
     assert!(validate_lock_file_json_and_print_errs(
-        generate_test_lockfile_with_non_number_plan_key()
+        generate_test_lock_file_with_non_number_plan_key()
     )
     .is_err());
 }
@@ -218,14 +218,14 @@ fn test_plan_key_must_be_number() {
 #[ignore] // failing
 fn test_valid_payment_conditions_only() {
     assert!(validate_lock_file_json_and_print_errs(
-        generate_test_lockfile_with_invalid_plan_condition()
+        generate_test_lock_file_with_invalid_plan_condition()
     )
     .is_err());
 }
 #[test]
 fn test_shares_cannot_be_negative() {
     assert!(
-        validate_lock_file_json_and_print_errs(generate_test_lockfile_with_negative_shares())
+        validate_lock_file_json_and_print_errs(generate_test_lock_file_with_negative_shares())
             .is_err()
     );
 }
@@ -233,7 +233,7 @@ fn test_shares_cannot_be_negative() {
 #[ignore] // failing
 fn test_cannot_have_more_share_labels_than_payees() {
     assert!(validate_lock_file_json_and_print_errs(
-        generate_test_lockfile_with_more_share_labels_than_payees()
+        generate_test_lock_file_with_more_share_labels_than_payees()
     )
     .is_err());
 }
@@ -241,7 +241,7 @@ fn test_cannot_have_more_share_labels_than_payees() {
 #[ignore] // failing
 fn test_share_labels_must_match_payees() {
     assert!(validate_lock_file_json_and_print_errs(
-        generate_test_lockfile_with_incorrect_share_label()
+        generate_test_lock_file_with_incorrect_share_label()
     )
     .is_err());
 }

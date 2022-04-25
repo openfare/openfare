@@ -2,11 +2,11 @@
   "$id": "https://example.com/lockfile.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "A description of how funds are distributed between contributors",
-  "title": "OpenFare lockfile",
+  "title": "OpenFare Lock File Schema",
   "type": "object",
   "properties": {
     "scheme-version": {
-      "description": "version of lockfile",
+      "description": "lock file schema version",
       "type": "string"
     },
     "plans": {

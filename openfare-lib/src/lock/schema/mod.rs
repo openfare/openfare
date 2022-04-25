@@ -15,7 +15,7 @@ pub fn validate(value: &serde_json::Value) -> Result<()> {
     if let Err(errors) = result {
         let error_string = validation_errors_to_string(errors);
         return Err(anyhow::format_err!(
-            "Invalid lockfile\n".to_owned() + &error_string
+            "Invalid lock file\n".to_owned() + &error_string
         ));
     }
     Ok(())
