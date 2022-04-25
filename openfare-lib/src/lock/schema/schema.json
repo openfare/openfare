@@ -1,5 +1,5 @@
 {
-  "$id": "https://openfare.dev/doc/concepts/lock/schema.json",
+  "$id": "https://raw.githubusercontent.com/openfare/openfare/master/openfare-lib/src/lock/schema/schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "A description of how funds are distributed between contributors",
   "title": "OpenFare Lock File Schema",
