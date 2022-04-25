@@ -1,5 +1,5 @@
 {
-  "$id": "https://example.com/lockfile.schema.json",
+  "$id": "https://openfare.dev/doc/concepts/lock/schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "A description of how funds are distributed between contributors",
   "title": "OpenFare Lock File Schema",
