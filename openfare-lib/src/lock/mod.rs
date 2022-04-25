@@ -40,22 +40,3 @@ impl std::default::Default for Lock {
         }
     }
 }
-
-#[test]
-fn test_serialize() -> anyhow::Result<()> {
-    let mut lock = Lock::default();
-
-    let mut plan = plan::Plan {
-        r#type: plan::PlanType::Voluntary,
-        conditions: plan::conditions::Conditions::default(),
-        price: Some(crate::price::Price::default()),
-    };
-
-    plan.conditions.employees_count = Some(plan::conditions::EmployeesCount::try_from(
-        "1 <= count < 50",
-    )?);
-    lock.plans.insert("0".to_string(), plan);
-
-    serde_json::to_string_pretty(&lock)?;
-    Ok(())
-}
