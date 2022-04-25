@@ -1,16 +1,16 @@
 {
   "$id": "https://raw.githubusercontent.com/openfare/openfare/master/openfare-lib/src/lock/schema/schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "description": "A description of how funds are distributed between contributors",
+  "description": "Invoicing metadata and contributor payment methods.",
   "title": "OpenFare Lock File Schema",
   "type": "object",
   "properties": {
     "scheme-version": {
-      "description": "lock file schema version",
+      "description": "Lock file schema version.",
       "type": "string"
     },
     "plans": {
-      "description": "payment plans",
+      "description": "Payment plans.",
       "type": "object",
       "patternProperties": { "^(0)|([1-9][0-9]*)$": { "oneOf": [
         {"$ref": "#/$defs/voluntary_plan"},
@@ -20,6 +20,7 @@
       "additionalProperties": false
     },
     "shares": {
+      "description": "A payees split scheme for sharing funds.",
       "type": "object",
       "additionalProperties": {
         "type": "integer",
@@ -28,7 +29,7 @@
       "minProperties": 1
     },
     "payees": {
-      "description": "Who to pay money to",
+      "description": "Package contributors to whom money is paid.",
       "type": "object",
       "patternProperties": { "": { "$ref": "#/$defs/payee"}},
       "minProperties": 1,
