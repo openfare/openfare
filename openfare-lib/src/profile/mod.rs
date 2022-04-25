@@ -16,11 +16,12 @@ impl std::convert::From<Profile> for RemoteProfile {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Profile {
     #[serde(rename = "unique-id")]
     pub unique_id: uuid::Uuid,
     #[serde(rename = "payment-methods")]
-    payment_methods: std::collections::BTreeMap<payment_methods::Methods, serde_json::Value>,
+    pub payment_methods: std::collections::BTreeMap<payment_methods::Methods, serde_json::Value>,
 }
 
 impl Profile {

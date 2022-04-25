@@ -24,6 +24,7 @@ crossbeam-utils = "0.8.1"
 maplit = "1.0.2"
 dialoguer = "0.10.0"
 rust_decimal = "1.20"
+jsonschema = "0.15.1"
 
 directories = "3.0.1"
 dirs = "3.0.1"

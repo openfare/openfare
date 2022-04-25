@@ -6,6 +6,7 @@ mod common;
 mod condition;
 mod plan;
 mod profile;
+mod validate;
 
 #[derive(Debug, Clone, StructOpt)]
 pub struct Arguments {
@@ -28,6 +29,8 @@ enum Subcommands {
     Update(UpdateArguments),
     /// Show lock fields.
     Show(ShowArguments),
+    /// Check if a lock file contains errors
+    Validate(validate::Arguments),
 }
 
 pub fn run_command(args: &Arguments) -> Result<()> {
@@ -49,6 +52,9 @@ pub fn run_command(args: &Arguments) -> Result<()> {
         }
         Subcommands::Show(args) => {
             show(&args)?;
+        }
+        Subcommands::Validate(args) => {
+            validate::run_command(&args)?;
         }
     }
     Ok(())
