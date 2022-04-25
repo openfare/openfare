@@ -13,7 +13,7 @@ pub fn run_command(args: &Arguments) -> Result<()> {
     let lock_handle = crate::handles::LockHandle::load(&args.lock_file_args.path)?;
     match lock_handle.lock.validate() {
         Ok(_) => {
-            println!("Lockfile is valid! ✅")
+            println!("Lock file is valid.")
         }
         Err(e) => {
             println!("Error validating lock file: {}", e)
